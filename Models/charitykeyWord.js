@@ -14,7 +14,7 @@ var charitykeyWordSchema = new Schema({
     },
     //**************************Must for all Schemas**********************************//
     createdOn: {
-        type: Number,
+        type: Date,
         required: true
     },
     updatedOn: {

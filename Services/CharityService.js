@@ -24,6 +24,12 @@ var createCharityOwnerId = function (objToSave, callback) {
     new Models.charityOwner(objToSave).save(callback)
 };
 
+
+//Insert User in DB
+var createCharityOwnerKeyWord = function (objToSave, callback) {
+    new Models.charitykeyWord(objToSave).save(callback)
+};
+
 //Update User in DB
 var updateCharityOwner = function (criteria, dataToSet, options, callback) {
     Models.charity.findOneAndUpdate(criteria, dataToSet, options, callback);
@@ -47,6 +53,7 @@ module.exports = {
     updateCharityOwner: updateCharityOwner,
     createCharityOwnerId: createCharityOwnerId,
     updateCharityOwnerId: updateCharityOwnerId,
+    createCharityOwnerKeyWord: createCharityOwnerKeyWord,
     getCharityOwnerId: getCharityOwnerId,
     getCharityOwner: getCharityOwner
 };

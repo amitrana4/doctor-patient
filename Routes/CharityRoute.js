@@ -128,10 +128,11 @@ module.exports = [
     },
     {
         method: 'POST',
-        path: '/api/charity/profileOne',
+        path: '/api/charity/profile',
         handler: function (request, reply) {
             var payloadData = request.payload;
-            Controller.CharityController.CharityOwnerProfileStep1(payloadData, function (err, data) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            Controller.CharityController.CharityOwnerProfileStep1(payloadData, CharityData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
@@ -142,6 +143,7 @@ module.exports = [
         config: {
             description: 'Add Profile of Charity Owner',
             tags: ['api', 'charity'],
+            auth: 'CharityAuth',
             payload: {
                 output: 'file',
                 parse: true,
@@ -149,6 +151,7 @@ module.exports = [
                 maxBytes: 20485760
             },
             validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
                 payload: {
                     logoFileId: Joi.any()
                         .meta({swaggerType: 'file'})
@@ -157,7 +160,18 @@ module.exports = [
                     foundationDate: Joi.string().required().trim(),
                     type: Joi.string().required().trim(),
                     description: Joi.string().required().trim(),
-                    keyWord: Joi.string().required().trim()
+                    keyWord: Joi.string().required().trim(),
+                    officeAddress1: Joi.string().required().trim(),
+                    officeAddress2: Joi.string().optional().trim(),
+                    officeCity: Joi.string().required().trim(),
+                    officeState: Joi.string().required().trim(),
+                    officeCountry: Joi.string().required().trim()
+                    /*pictures: Joi.array().required()
+                        .meta({swaggerType: 'file'})
+                        .description('image files'),
+                    videos: Joi.any().required()
+                        .meta({swaggerType: 'file'})
+                        .description('Video file')*/
                 },
                 failAction: UniversalFunctions.failActionFunction
             },

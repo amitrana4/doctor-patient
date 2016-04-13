@@ -196,8 +196,43 @@ var STATUS_MSG = {
         },
         COUNTRY_REQUIRED: {
             statusCode:400,
-            customMessage : 'Country Required',
+            customMessage : 'Country is Required',
             type : 'COUNTRY_REQUIRED'
+        },
+        STATE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'State is Required',
+            type : 'STATE_REQUIRED'
+        },
+        CITY_REQUIRED: {
+            statusCode:400,
+            customMessage : 'City is Required',
+            type : 'City_REQUIRED'
+        },
+        FOUNDATIONDATE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Foundation date is Required',
+            type : 'FOUNDATION_DATE_REQUIRED'
+        },
+        OFFICEADDRESS1_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Office Address1 is Required',
+            type : 'OFFICEADDRESS1_REQUIRED'
+        },
+        TYPE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Type of charity is Required',
+            type : 'TYPE_OF_CHARITY_REQUIRED'
+        },
+        DESCRIPTION_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Description is Required',
+            type : 'DESCRIPTION_REQUIRED'
+        },
+        KEYWORD_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Keyword is Required',
+            type : 'DESCRIPTION_REQUIRED'
         },
         TAXID_REQUIRED: {
             statusCode:400,

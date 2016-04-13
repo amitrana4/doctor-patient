@@ -227,121 +227,131 @@ var createCharityOwner = function (payloadData, callback) {
 
 
 
-var CharityOwnerProfileStep1 = function (payloadData, callback) {
+var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
+    console.log(CharityData, '===============')
     var charityOwnerProfileData = null;
+    var profileDataToUpdateStep1 = {};
     var dataToSave = payloadData;
 
-    if (payloadData.logoFileId && payloadData.logoFileId.filename) {
+   /* if (payloadData.logoFileId && payloadData.logoFileId.filename) {
         dataToSave.logoFileId = {
             original: null,
             thumbnail: null
         }
-    }
+    }*/
 
     async.series([
+
         function (cb) {
             //Validate phone No
-            if (!dataToSave.country) {
+            if (!dataToSave.officeAddress1) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.OFFICEADDRESS1_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            //Validate phone No
+            if (!dataToSave.officeCity) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CITY_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            //Validate phone No
+            if (!dataToSave.officeState) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.STATE_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            //Validate phone No
+            if (!dataToSave.officeCountry) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.COUNTRY_REQUIRED);
             } else {
                 cb();
             }
-        },function (cb) {
+        },
+        function (cb) {
             //Validate phone No
-            if (!dataToSave.taxId) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TAXID_REQUIRED);
+            if (!dataToSave.foundationDate) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.FOUNDATIONDATE_REQUIRED);
             } else {
                 cb();
             }
         },function (cb) {
             //Validate phone No
-            if (!dataToSave.taxDeductionCode) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TAXDEDUCTIONCODE_REQUIRED);
+            if (!dataToSave.type) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            //Validate phone No
+            if (!dataToSave.description) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DESCRIPTION_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            //Validate phone No
+            if (!dataToSave.keyWord) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.KEYWORD_REQUIRED);
             } else {
                 cb();
             }
         },
+        function (cb) {
 
-        function (cb) {
-            //Validate phone No
-            if (dataToSave.phoneNumber && dataToSave.phoneNumber.split('')[0] == 0) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_PHONE_NO_FORMAT);
-            } else {
-                cb();
-            }
-        },
-        function (cb) {
+            /* officeAddress1: Joi.string().required().trim(),
+             officeAddress2: Joi.string().optional().trim(),
+             officeCity: Joi.string().required().trim(),
+             officeState: Joi.string().required().trim(),
+             officeCountry: Joi.string().required().trim(),
+             pictures: Joi.array().required()
+             .meta({swaggerType: 'file'})
+             .description('image files'),
+             videos: Joi.any().required()
+             .meta({swaggerType: 'file'})
+             .description('Video file')*/
 
             //Insert Into DB
             var finalDataToSave = {};
-            finalDataToSave.createdOn = new Date().toISOString();
-            finalDataToSave.loggedInOn = new Date().toISOString();
-            finalDataToSave.emailId = dataToSave.emailId;
-            finalDataToSave.phoneNumber = dataToSave.phoneNumber;
-            if (dataToSave.facebookId != 'undefined' && dataToSave.facebookId) {
-                finalDataToSave.facebookId = dataToSave.facebookId;
-            }else{
-                finalDataToSave.passwordHash = dataToSave.password;
-            }
-            Service.CharityService.createCharityOwnerId(finalDataToSave, function (err, charityDataFromDB) {
+            finalDataToSave.foundationDate = dataToSave.foundationDate;
+            finalDataToSave.type = dataToSave.type;
+            finalDataToSave.description = dataToSave.description;
+            finalDataToSave.keyWord = dataToSave.keyWord;
+            finalDataToSave.officeAddress1 = dataToSave.officeAddress1;
+            finalDataToSave.officeAddress2 = dataToSave.officeAddress2;
+            finalDataToSave.officeCity = dataToSave.officeCity;
+            finalDataToSave.officeState = dataToSave.officeState;
+            finalDataToSave.officeCountry = dataToSave.officeCountry;
+
+            var criteria = {charityOwnerId: CharityData._id};
+            var datatoSet  = {$addToSet:finalDataToSave};
+            var options = {lean: true};
+
+
+            Service.CharityService.updateCharityOwner(criteria, datatoSet, options,function (err, charityDataFromDB) {
                 if (err) {
-                    if (err.code == 11000 && err.message.indexOf('customers.$phoneNumber_1') > -1){
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
-
-                    } else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1){
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
-
-                    }else {
-                        cb(err)
-                    }
                     cb(err)
                 } else {
-                    charityOwnerData = charityDataFromDB;
+                    charityOwnerProfileData = charityDataFromDB;
                     cb();
                 }
-            })
-        },
-        function (cb) {
-
-            if (charityOwnerData && charityOwnerData._id) {
-                //Insert Into DB
-                var finalDataToSave = {};
-                finalDataToSave.createdOn = new Date().toISOString();
-                finalDataToSave.name = dataToSave.name;
-                finalDataToSave.charityOwnerId = charityOwnerData._id;
-                finalDataToSave.emailId = dataToSave.emailId;
-                finalDataToSave.phoneNumber = dataToSave.phoneNumber;
-                finalDataToSave.country = dataToSave.country;
-                finalDataToSave.taxId = dataToSave.taxId;
-                finalDataToSave.taxDeductionCode = dataToSave.taxDeductionCode;
-                Service.CharityService.createCharityOwner(finalDataToSave, function (err, charityDataFromDB) {
-                    if (err) {
-                        if (err.code == 11000 && err.message.indexOf('customers.$phoneNumber_1') > -1) {
-                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
-
-                        } else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1) {
-                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
-
-                        } else {
-                            cb(err)
-                        }
-                        cb(err)
-                    } else {
-                        charityData = charityDataFromDB;
-                        cb();
-                    }
-                })
-            }
+            });
         },
         function(cb){
-            if (charityData && charityData._id && dataToSave.registrationProofFileId) {
+            if (charityOwnerProfileData && charityOwnerProfileData._id && dataToSave.logoFileId) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
-                UploadManager.uploadFile(dataToSave.registrationProofFileId, charityData._id, document, function (err, uploadedInfo) {
+                UploadManager.uploadFile(dataToSave.logoFileId, charityOwnerProfileData._id, document, function (err, uploadedInfo) {
                     if (err) {
                         cb(err)
                     }
-                    var registrationProofFileId = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
-                    dataToUpdate.registrationProofFileId = registrationProofFileId;
+                    var logoFile = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
+                    profileDataToUpdateStep1.logoFileId = logoFile;
                     return  cb();
                 });
             }else{
@@ -349,58 +359,20 @@ var CharityOwnerProfileStep1 = function (payloadData, callback) {
             }
         },
         function(cb){
-            if (charityData && charityData._id && dataToSave.supportingDocumentFileId) {
-                var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
-                UploadManager.uploadFile(dataToSave.supportingDocumentFileId, charityData._id, document, function (err, uploadedInfo) {
-                    if (err) {
-                        cb(err)
-                    }
-                    var supportingDocumentFileId = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
-                    dataToUpdate.supportingDocumentFileId = supportingDocumentFileId;
-                    return  cb();
-                });
-            }else{
-                cb();
-            }
-        },
-        function(cb){
-            var criteria ={_id:charityData._id};
+            var criteria ={_id:charityOwnerProfileData._id};
             var options = {}; //{multi: true};
-            DAO.findOneAndUpdateData(Models.charity,criteria, dataToUpdate, {new: true},function(err, data){
+            DAO.findOneAndUpdateData(Models.charity,criteria, profileDataToUpdateStep1, {new: true},function(err, data){
                 if (err) {
                     return    cb(err)
                 }
-                charityData=data;
                 return  cb();
             });
-        },
-        function (cb) {
-            if (charityOwnerData) {
-                var tokenData = {
-                    id: charityOwnerData._id,
-                    type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER
-                };
-                TokenManager.setToken(tokenData, function (err, output) {
-                    if (err) {
-                        cb(err);
-                    } else {
-                        accessToken = output && output.accessToken || null;
-                        cb();
-                    }
-                });
-            } else {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
-            }
         }
-    ], function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, {
-                accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryUserData(charityData.toObject())
-            });
+    ],function(err,result){
+        if(err){
+            return  callback(err);
         }
+        callback();
     });
 };
 
