@@ -199,10 +199,25 @@ var STATUS_MSG = {
             customMessage : 'Country is Required',
             type : 'COUNTRY_REQUIRED'
         },
+        REGISTRATIONNUMBER_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Charity Registration Number is Required',
+            type : 'REGISTRATIONNUMBER_REQUIRED'
+        },
         STATE_REQUIRED: {
             statusCode:400,
             customMessage : 'State is Required',
             type : 'STATE_REQUIRED'
+        },
+        NAME_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Name is Required',
+            type : 'NAME_REQUIRED'
+        },
+        LOCATION_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Location is Required',
+            type : 'LOCATION_REQUIRED'
         },
         CITY_REQUIRED: {
             statusCode:400,
@@ -214,20 +229,55 @@ var STATUS_MSG = {
             customMessage : 'Foundation date is Required',
             type : 'FOUNDATION_DATE_REQUIRED'
         },
+        UNITNAME_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Unit Name is Required',
+            type : 'UNITNAME_REQUIRED'
+        },
         OFFICEADDRESS1_REQUIRED: {
             statusCode:400,
             customMessage : 'Office Address1 is Required',
             type : 'OFFICEADDRESS1_REQUIRED'
+        },
+        BANKACCOUNTHOLDERNAME_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Bank Account Holder Name is Required',
+            type : 'BANKACCOUNTHOLDERNAME_REQUIRED'
+        },
+        BANKACCOUNTHOLDERPHONE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Bank Account Holder Phone Number is Required',
+            type : 'BANKACCOUNTHOLDERPHONE_REQUIRED'
+        },
+        BANKACCOUNTHOLDERACCNUMBER_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Bank Account Holder Account Number is Required',
+            type : 'BANKACCOUNTHOLDERACCNUMBER_REQUIRED'
         },
         TYPE_REQUIRED: {
             statusCode:400,
             customMessage : 'Type of charity is Required',
             type : 'TYPE_OF_CHARITY_REQUIRED'
         },
+        COSTPERUNIT_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Cost per unit is Required',
+            type : 'COSTPERUNIT_REQUIRED'
+        },
         DESCRIPTION_REQUIRED: {
             statusCode:400,
             customMessage : 'Description is Required',
             type : 'DESCRIPTION_REQUIRED'
+        },
+        TARGETUNITCOUNT_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Target for unit count is Required',
+            type : 'TARGETUNITCOUNT_REQUIRED'
+        },
+        CAMPAIGNENDDATE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Campaign end date is Required',
+            type : 'CAMPAIGNENDDATE_REQUIRED'
         },
         KEYWORD_REQUIRED: {
             statusCode:400,
@@ -279,6 +329,11 @@ var STATUS_MSG = {
             customMessage : 'Incorrect Password',
             type : 'INCORRECT_PASSWORD'
         },
+        VALUE_EXIST: {
+            statusCode:401,
+            customMessage : 'Value Exist',
+            type : 'VALUE_EXIST'
+        },
         EMPTY_VALUE: {
             statusCode:400,
             customMessage : 'Empty String Not Allowed',
@@ -303,6 +358,11 @@ var STATUS_MSG = {
             statusCode:400,
             customMessage : 'Email Address Already Exists',
             type : 'EMAIL_ALREADY_EXIST'
+        },
+        CHARITYREGNO_ALREADY_EXIST: {
+            statusCode:400,
+            customMessage : 'charityRegistrationNo Already Exists',
+            type : 'CHARITYREGNO_ALREADY_EXIST'
         },
         ERROR_PROFILE_PIC_UPLOAD: {
             statusCode:400,

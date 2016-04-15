@@ -11,6 +11,7 @@ var charityOwnerSchema = new Schema({
         required: true
     },
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
+    charityRegistrationNo: {type: String, trim: true, unique: true, required: true},
     phoneNumber: {
         type: String,
         trim: true,
@@ -31,6 +32,7 @@ var charityOwnerSchema = new Schema({
         trim: true,
         required: true
     },*/
+    pictures: [{type: Schema.ObjectId, ref: 'charityImages'}],
     loggedInOn: {
         type: Date,
         required: true

@@ -7,6 +7,7 @@ module.exports = {
     campaignkeyWord : require('./campaignkeyWord'),
     charity : require('./charity'),
     charityCampaign : require('./charityCampaign'),
+    charityImages : require('./charityImages'),
     charitykeyWord : require('./charitykeyWord'),
     charityOwner : require('./charityOwner'),
     donation : require('./donation'),

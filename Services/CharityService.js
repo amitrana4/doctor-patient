@@ -24,10 +24,22 @@ var createCharityOwnerId = function (objToSave, callback) {
     new Models.charityOwner(objToSave).save(callback)
 };
 
+//Insert User in DB
+var createCharityCampaign = function (objToSave, callback) {
+    new Models.charityCampaign(objToSave).save(callback)
+};
+
 
 //Insert User in DB
+/*
 var createCharityOwnerKeyWord = function (objToSave, callback) {
     new Models.charitykeyWord(objToSave).save(callback)
+};
+*/
+
+//Insert User in DB
+var createCharityImages = function (objToSave, callback) {
+    new Models.charityImages(objToSave).save(callback)
 };
 
 //Update User in DB
@@ -37,6 +49,10 @@ var updateCharityOwner = function (criteria, dataToSet, options, callback) {
 
 var updateCharityOwnerId = function (criteria, dataToSet, options, callback) {
     Models.charityOwner.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
+    Models.charityCampaign.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
 /*//Delete User in DB
@@ -50,10 +66,13 @@ var addAddress = function (objToSave, callback) {
 
 module.exports = {
     createCharityOwner: createCharityOwner,
+    createCharityImages: createCharityImages,
+    createCharityCampaign: createCharityCampaign,
     updateCharityOwner: updateCharityOwner,
     createCharityOwnerId: createCharityOwnerId,
     updateCharityOwnerId: updateCharityOwnerId,
-    createCharityOwnerKeyWord: createCharityOwnerKeyWord,
+    updateCharityCampaign: updateCharityCampaign,
+    /*createCharityOwnerKeyWord: createCharityOwnerKeyWord,*/
     getCharityOwnerId: getCharityOwnerId,
     getCharityOwner: getCharityOwner
 };

@@ -235,10 +235,11 @@ var getFileNameWithUserId = function (thumbFlag, fullFileName, userId) {
     if (thumbFlag) {
         prefix = CONFIG.APP_CONSTANTS.DATABASE.PROFILE_PIC_PREFIX.THUMB;
     }
-    return prefix + userId + ext;
+    var rand = generateRandomString();
+    return prefix + userId + rand + ext;
 };
 
-var getFileNameWithUserIdWithCustomPrefix = function (thumbFlag, fullFileName,type, userId) {
+var getFileNameWithUserIdWithCustomPrefix = function (thumbFlag, fullFileName,type, userId) { console.log("userId241",userId);
     var prefix = '';
     if (type == CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.LOGO){
         prefix = CONFIG.APP_CONSTANTS.DATABASE.LOGO_PREFIX.ORIGINAL;
@@ -249,7 +250,8 @@ var getFileNameWithUserIdWithCustomPrefix = function (thumbFlag, fullFileName,ty
     if (thumbFlag && type == CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.LOGO) {
         prefix = CONFIG.APP_CONSTANTS.DATABASE.LOGO_PREFIX.THUMB;
     }
-    return prefix + userId + ext;
+    var rand = generateRandomString();
+    return prefix + userId + rand +ext;
 };
 
 var getDistanceBetweenPoints = function (origin, destination) {
