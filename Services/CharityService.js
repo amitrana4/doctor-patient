@@ -55,6 +55,16 @@ var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
     Models.charityCampaign.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+
+var getCharityPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.charity.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
 /*//Delete User in DB
 var deleteCustomer = function (criteria, callback) {
     Models.Customers.findOneAndRemove(criteria, callback);
@@ -72,6 +82,7 @@ module.exports = {
     createCharityOwnerId: createCharityOwnerId,
     updateCharityOwnerId: updateCharityOwnerId,
     updateCharityCampaign: updateCharityCampaign,
+    getCharityPopulate: getCharityPopulate,
     /*createCharityOwnerKeyWord: createCharityOwnerKeyWord,*/
     getCharityOwnerId: getCharityOwnerId,
     getCharityOwner: getCharityOwner

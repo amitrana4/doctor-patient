@@ -3,9 +3,10 @@
  */
 'use strict';
 var CharityRoute = require('./CharityRoute');
+var DonorRoute = require('./DonorRoute');
 var AdminRoute = require('./AdminRoute');
 
-var all = [].concat(CharityRoute, AdminRoute);
+var all = [].concat(CharityRoute, AdminRoute, DonorRoute);
 
 module.exports = all;
 

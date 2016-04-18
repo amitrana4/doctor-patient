@@ -4,68 +4,23 @@ var Config = require('../Config');
 
 var donorSchema = new Schema({
     //**************************Required Fields**********************************//
-    firstName: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    emailId: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    phoneNumber: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    country: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    passwordHash: {
-        //Use bcrypt only
-        type: String,
-        required: true
-    },
-    accountState: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    loggedInOn: {
-        type: Number,
-        required: true
-    },
-    idProvider: {
-        type: String,
-        trim: true,
-        required: true
-    },
-    failedLogInAttempts: {
-        type: Number,
-        required: true
-    },
+    firstName: {type: String, trim: true, required: true},
+    emailId: {type: String, unique: true, trim: true, required: true},
+    passwordHash: {type: String, required: false},
+    accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
+    //accountState: {type: String, trim: true, required: true},
+    donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
+    //idProvider: {type: String, trim: true, required: true},
     //**************************Optional**********************************//
-    lastName: {
-        type: String,
-        trim: true,
-        required: false
-    },
-    passwordChangedOn: {
-        type: Number,
-        required: false
-    },
+    lastName: {type: String, trim: true, required: false},
+    phoneNumber: {type: String, trim: true, required: false},
+    facebookId: {type: String, required: false},
+    country: {type: String, trim: true, required: false},
+    loggedInOn: {type: Date, required: false},
+    passwordChangedOn: {type: Number, required: false},
+    failedLogInAttempts: {type: Number, required: false},
     //**************************Must for all Schemas**********************************//
-    createdOn: {
-        type: Number,
-        required: true
-    },
-    updatedOn: {
-        default: Date.now,
-        type: Number,
-        required: true
-    }
+    createdOn: {type: Date, required: true},
+    updatedOn: {default: Date.now, type: Number, required: true}
 });
 module.exports = mongoose.model('donorSchema', donorSchema);

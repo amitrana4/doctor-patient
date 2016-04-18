@@ -23,6 +23,7 @@ var charitySchema = new Schema({
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},
     appVersion: {type: String, trim: true, required: true},
+    pictures: [{type: Schema.ObjectId, ref: 'charityImagesSchema'}],
 
     //**************************Optional**********************************//
     keyWord: {type: String, required: false},

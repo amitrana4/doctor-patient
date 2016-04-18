@@ -3,6 +3,8 @@
  */
 module.exports = {
     CharityService : require('./CharityService'),
+    DonorService : require('./DonorService'),
+    CampaignService : require('./CampaignService'),
     AdminService : require('./AdminService'),
     AppVersionService : require('./AppVersionService')
 };

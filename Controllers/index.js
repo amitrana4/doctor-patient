@@ -3,5 +3,6 @@
  */
 module.exports  = {
     CharityController : require('./CharityController'),
+    DonorController : require('./DonorController'),
     AdminController : require('./AdminController')
 };

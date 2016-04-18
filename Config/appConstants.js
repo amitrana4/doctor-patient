@@ -32,7 +32,8 @@ var DATABASE = {
         ADMIN: 'ADMIN',
         CUSTOMER: 'CUSTOMER',
         DRIVER: 'DRIVER',
-        CHARITYOWNER : 'CHARITYOWNER'
+        CHARITYOWNER : 'CHARITYOWNER',
+        DONOR : 'DONOR'
     },
     FILE_TYPES: {
         LOGO: 'LOGO',
@@ -445,6 +446,11 @@ var SCREEN_TO_SHOW = {
     FEEDBACK : 'FEEDBACK'
 };
 
+var CAMPAIGN_TYPE = {
+    COMPLETE : 'COMPLETE',
+    PENDING : 'PENDING'
+};
+
 var notificationMessages = {
     verificationCodeMsg: 'Your 4 digit verification code for Seed Project is {{four_digit_verification_code}}',
     registrationEmail: {
@@ -476,6 +482,7 @@ var APP_CONSTANTS = {
     SERVER: SERVER,
     DATABASE: DATABASE,
     SCREEN_TO_SHOW : SCREEN_TO_SHOW,
+    CAMPAIGN_TYPE : CAMPAIGN_TYPE,
     STATUS_MSG: STATUS_MSG,
     notificationMessages: notificationMessages,
     languageSpecificMessages: languageSpecificMessages,

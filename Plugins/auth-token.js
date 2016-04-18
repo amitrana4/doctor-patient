@@ -41,6 +41,22 @@ exports.register = function(server, options, next){
 
             }
         });
+        server.auth.strategy('DonorAuth', 'bearer-access-token', {
+            allowQueryToken: false,
+            allowMultipleHeaders: true,
+            accessTokenName: 'accessToken',
+            validateFunc: function (token, callback) {
+                console.log(token,'======')
+                TokenManager.verifyDonorToken(token, function (err,response) {
+                    if (err || !response || !response.userData){
+                        callback(null, false, {token: token, userData: null})
+                    }else {
+                        callback(null, true, {token: token, userData: response.userData})
+                    }
+                });
+
+            }
+        });
         /*server.auth.strategy('AdminAuth', 'bearer-access-token', {
             allowQueryToken: false,
             allowMultipleHeaders: true,

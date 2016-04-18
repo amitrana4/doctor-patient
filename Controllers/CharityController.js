@@ -83,15 +83,6 @@ var createCharityOwner = function (payloadData, callback) {
                 cb();
             }
         },
-
-        /*function (cb) {
-            //Validate phone No
-            if (dataToSave.phoneNumber && dataToSave.phoneNumber.split('')[0] == 0) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_PHONE_NO_FORMAT);
-            } else {
-                cb();
-            }
-        },*/
         function (cb) {
 
             //Insert Into DB
@@ -361,7 +352,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                                         image.images.original = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
                                         image.images.thumbnail = uploadedInfo && uploadedInfo.thumbnail && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.thumbnail || null;
                                         //mImage.push(image);
-                                        image.charityOwnerId = CharityData._id;
+                                        image.charityId = charityOwnerProfileData._id;
                                         image.createdOn = new Date().toISOString();
                                         Service.CharityService.createCharityImages(image, function (err, result) {
 
@@ -388,12 +379,12 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             var imgagesToSave = {};
             imgagesToSave.pictures = imagesids;
 
-            var criteria = {_id: CharityData._id};
+            var criteria = {_id: charityOwnerProfileData._id};
             var datatoSet = {$addToSet: imgagesToSave};
             var options = {lean: true};
 
 
-            Service.CharityService.updateCharityOwnerId(criteria, datatoSet, options, function (err, imagesResult) {
+            Service.CharityService.updateCharityOwner(criteria, imgagesToSave, options, function (err, imagesResult) {
                 if (err) {
                     cb(err)
                 } else {
@@ -588,7 +579,7 @@ var loginCharityOwner = function (payloadData, callback) {
     ], function (err, data) {
         if (err) {
             callback(err);
-        } else { //console.log("else 178  ",updatedUserDetails);
+        } else {
             callback(null, {accessToken: accessToken,
                 userDetails: UniversalFunctions.deleteUnnecessaryCharityData(updatedUserDetails[0])});
         }
@@ -668,7 +659,6 @@ var createCampaign = function (payloadData, CharityData, callback) {
     var campaignMainImageFileId = {};
     var campaignPictures = [];
     var dataToSave = payloadData;
-    console.log(payloadData, '==============fgdf')
 
     async.series([
 
@@ -682,7 +672,14 @@ var createCampaign = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Validate phone No
-            if (!dataToSave.location) {
+            if (!dataToSave.lat) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.LOCATION_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            //Validate phone No
+            if (!dataToSave.long) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.LOCATION_REQUIRED);
             } else {
                 cb();
@@ -739,7 +736,8 @@ var createCampaign = function (payloadData, CharityData, callback) {
             var campDataToSave = {};
             campDataToSave.charityOwnerId = CharityData._id;
             campDataToSave.name = dataToSave.name;
-            campDataToSave.location = dataToSave.location;
+            campDataToSave.lat = dataToSave.lat;
+            campDataToSave.long = dataToSave.long;
             campDataToSave.address = dataToSave.address;
             campDataToSave.description = dataToSave.description;
             campDataToSave.hasKeyWords = dataToSave.hasKeyWords;
@@ -776,6 +774,7 @@ var createCampaign = function (payloadData, CharityData, callback) {
                 cb();
             }
         },
+
         function (cb) {
             var criteria = {_id: campaignData._id};
             var options = {}; //{multi: true};
@@ -785,6 +784,18 @@ var createCampaign = function (payloadData, CharityData, callback) {
                 }
                 return cb();
             });
+        },
+        function (cb) {
+                var criteria    = {_id:CharityData._id};
+                var dataCampaign  = {campaignId:campaignData._id};
+                var datatoSet1  = {$addToSet:dataCampaign};
+                var options     = {multi: true};
+                Service.CharityService.updateCharityOwnerId(criteria, datatoSet1, options,function (err, result) {
+                    if (err) {
+                        return  cb(err)
+                    }
+                    return  cb();
+                });
         },
         function (cb) {
             if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
@@ -800,7 +811,6 @@ var createCampaign = function (payloadData, CharityData, callback) {
                                         cb(err)
                                     }
                                     var mainImageFile = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
-                                    console.log(mainImageFile, '=======================mainImageFile==============')
 
                                     if (err) return embeddedCB(err);
                                     campaignPictures.push(mainImageFile);
@@ -821,10 +831,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
         function (cb) {
             //Insert Into DB
             var imgagesToSave = {};
-            console.log(campaignPictures, '=========campaignPictures================')
             imgagesToSave.pictures = campaignPictures;
 
-            var criteria = {charityOwnerId: CharityData._id};
+            var criteria = {_id: campaignData._id};
             var datatoSet = {$addToSet: imgagesToSave};
             var options = {lean: true};
 
@@ -846,11 +855,209 @@ var createCampaign = function (payloadData, CharityData, callback) {
 };
 
 
+
+
+
+var campaignList = function (payloadData, CharityData, callback) {
+    var campaignData = null;
+    var dataToSave = payloadData;
+
+    /* var criteria      = { complete:false},*/
+
+    var criteria  = {};
+    if(dataToSave.type) {
+        if(dataToSave.type == 'COMPLETE'){
+
+            var query = {
+                $and:[
+                    {$or:[
+                        {complete:true},
+                        {'endDate':{$gte:new Date()}}
+
+                    ]},
+                    {'charityOwnerId':CharityData._id}
+                ]
+            };
+        }
+        if(dataToSave.type == 'PENDING'){
+
+            var query = {
+                $and:[
+                    {complete:false},
+                    {'endDate':{$gte:new Date()}},
+                    {'charityOwnerId':CharityData._id}
+                ]
+            };
+        }
+    }
+
+
+    var _date = new Date();
+    var options = {lean: true},
+        projection = {createdOn:0};
+
+    Service.CampaignService.getCampaign(query, projection, options, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+
+var getCharityProfileInfo = function (CharityData,callbackRoute) {
+
+
+
+    var populateVariable = {
+        path: "pictures",
+        match: {isDelete:false},
+        select: 'images'
+    };
+
+    var criteria      = { charityOwnerId:CharityData._id},
+        options = {lean: true},
+        projection ={logoFileId:1,type:1,description:1,keyWord:1,foundationDate:1,officeAddress1:1,officeAddress2:1,
+            officeCity:1,officeState:1,officeCountry:1,pictures:1,videos:1};
+
+
+
+
+    Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
+        if (err) {
+            callbackRoute(err)
+        } else {
+            callbackRoute(null,res);
+        }
+    });
+};
+
+
+
+var updateCampaign = function (payloadData, CharityData, callback) {
+    console.log('here')
+    var campaignData = null;
+    var campaignMainImageFileId = {};
+    var dataToSave = payloadData;
+    var campDataToSave = {};
+
+    async.series([
+
+        function (cb) {
+            if (dataToSave.name) {
+                campDataToSave.name = dataToSave.name;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.lat) {
+                campDataToSave.lat = dataToSave.lat;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.long) {
+                campDataToSave.long = dataToSave.long;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.address) {
+                campDataToSave.address = dataToSave.address;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.description) {
+                campDataToSave.description = dataToSave.description;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.hasKeyWords) {
+                campDataToSave.hasKeyWords = dataToSave.hasKeyWords;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.unitName) {
+                campDataToSave.unitName = dataToSave.unitName;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.costPerUnit) {
+                campDataToSave.costPerUnit = dataToSave.costPerUnit;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.targetUnitCount) {
+                campDataToSave.targetUnitCount = dataToSave.targetUnitCount;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.endDate) {
+                campDataToSave.endDate = dataToSave.endDate;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.videoLink) {
+                campDataToSave.videoLink = dataToSave.videoLink;
+                cb();
+            }
+        },function (cb) {
+            if (dataToSave.complete) {
+                campDataToSave.complete = dataToSave.complete;
+                cb();
+            }
+        },
+        function (cb) {
+            if (dataToSave.mainImageFileId) {
+                var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
+                UploadManager.uploadFile(dataToSave.mainImageFileId, dataToSave.id, document, function (err, uploadedInfo) {
+                    if (err) {
+                        cb(err)
+                    }
+                    var mainImageFile = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
+                    campDataToSave.mainImageFileId = mainImageFile;
+                    return cb();
+                });
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            //Insert Into DB
+
+            console.log(dataToSave.id,'================', campDataToSave)
+            var criteria = {
+                $and:[
+                    {_id: dataToSave.id},
+                    {'charityOwnerId':CharityData._id}
+                ]
+            };
+
+            var datatoSet = {$addToSet: campDataToSave};
+            var options = {lean: true};
+            Service.CharityService.updateCharityCampaign(criteria, datatoSet, options, function (err, charityDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    campaignData = charityDataFromDB;
+                    cb();
+                }
+            });
+        }
+    ], function (err, result) {
+        if (err) {
+            return callback(err);
+        }
+        callback();
+    });
+};
+
 module.exports = {
     createCharityOwner: createCharityOwner,
     CharityOwnerBankDetails: CharityOwnerBankDetails,
+    getCharityProfileInfo: getCharityProfileInfo,
+    updateCampaign: updateCampaign,
     createCampaign: createCampaign,
     changePassword: changePassword,
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
+    campaignList: campaignList,
     loginCharityOwner: loginCharityOwner
 };

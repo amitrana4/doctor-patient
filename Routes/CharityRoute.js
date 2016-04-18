@@ -171,11 +171,11 @@ module.exports = [
                     officeCity: Joi.string().required().trim(),
                     officeState: Joi.string().required().trim(),
                     officeCountry: Joi.string().required().trim(),
-                    pictures: Joi.array().optional(),
+                    pictures: Joi.array().optional().description('images in array [{image1}{image2}]'),
                     videos: Joi.any()
                         .meta({swaggerType: 'file'})
                         .optional()
-                        .description('image file')
+                        .description('video file')
 
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
@@ -253,7 +253,8 @@ module.exports = [
                 payload: {
 
                     name: Joi.string().required().trim(),
-                    location: Joi.string().required(),
+                    lat: Joi.string().required(),
+                    long: Joi.string().required(),
                     address: Joi.string().required().trim(),
                     description: Joi.string().required().trim(),
                     hasKeyWords: Joi.string().required().trim(),
@@ -275,6 +276,128 @@ module.exports = [
             plugins: {
                 'hapi-swagger': {
                     //payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/charity/getCharityProfileInfo',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            //console.log("CCasd",userData);//reply(userData);
+            if (userData && userData.id) {
+
+                Controller.CharityController.getCharityProfileInfo(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Charity Owner Profile Info',
+            auth: 'CharityAuth',
+            tags: ['api', 'charity'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/charity/campaignList',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            Controller.CharityController.campaignList(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                }
+            });
+        },
+        config: {
+            description: 'Create campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                payload: {
+                    type: Joi.string().optional().trim().description('COMPLETE, PENDING')
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/charity/editCampaign',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.updateCampaign(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED))
+                }
+            });
+        },
+        config: {
+            description: 'Edit campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            payload: {
+                output: 'file',
+                parse: true,
+                allow: 'multipart/form-data',
+                maxBytes: 20485760
+            },
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    id: Joi.string().required().trim(),
+                    name: Joi.string().optional().trim(),
+                    lat: Joi.string().optional(),
+                    long: Joi.string().optional(),
+                    address: Joi.string().optional().trim(),
+                    description: Joi.string().optional().trim(),
+                    hasKeyWords: Joi.string().optional().trim(),
+                    mainImageFileId: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .optional()
+                        .description('image file'),
+                    unitName: Joi.string().optional(),
+                    costPerUnit: Joi.number().optional(),
+                    targetUnitCount: Joi.string().regex(/^[0-9 ]+$/).optional(),
+                    endDate: Joi.string().optional().trim(),
+                   // pictures: Joi.array().optional(),
+                    videoLink: Joi.string().optional().trim(),
+                    complete: Joi.string().optional().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }

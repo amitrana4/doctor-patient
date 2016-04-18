@@ -133,6 +133,21 @@ var setTokenInDB = function (userId,userType, tokenToSave, callback) {
                 });
 
             }
+             else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR){
+                 Service.DonorService.updateDonor(criteria,setQuery,{new:true}, function (err, dataAry) {
+                     if (err){
+                         cb(err)
+                     }else {
+                         if (dataAry && dataAry._id){
+                             cb();
+                         }else {
+                             cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                         }
+                     }
+
+                 });
+
+             }
             else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.ADMIN){
                 Service.AdminService.updateAdmin(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
@@ -252,6 +267,19 @@ var verifyCharityToken = function (token, callback) {
     });
 };
 
+var verifyDonorToken = function (token, callback) {
+    var response = {
+        valid: false
+    };
+    Jwt.verify(token, Config.APP_CONSTANTS.SERVER.JWT_SECRET_KEY, function (err, decoded) {
+        if (err) {
+            callback(err)
+        } else {
+            getDonorTokenFromDB(decoded.id, decoded.type,token, callback);
+        }
+    });
+};
+
 var getCharityTokenFromDB = function (userId, userType,token, callback) {
     var userData = null;
     var criteria = {
@@ -262,6 +290,47 @@ var getCharityTokenFromDB = function (userId, userType,token, callback) {
         function (cb) {
             if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER){
                 Service.CharityService.getCharityOwnerId(criteria,{},{lean:true}, function (err, dataAry) {
+                    if (err){
+                        cb(err)
+                    }else {
+                        if (dataAry && dataAry.length > 0){
+                            userData = dataAry[0];
+                            cb();
+                        }else {
+                            cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_TOKEN)
+                        }
+                    }
+
+                });
+
+            }else {
+                cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+            }
+        }
+    ], function (err, result) {
+        if (err){
+            callback(err)
+        }else {
+            if (userData && userData._id){
+                userData.id = userData._id;
+                userData.type = userType;
+            }
+            callback(null,{userData: userData})
+        }
+
+    });
+};
+
+var getDonorTokenFromDB = function (userId, userType,token, callback) {
+    var userData = null;
+    var criteria = {
+        _id: userId,
+        accessToken : token
+    };
+    async.series([
+        function (cb) {
+            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR){
+                Service.DonorService.getDonor(criteria,{},{lean:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
                     }else {
@@ -330,6 +399,7 @@ var decodeToken = function (token, callback) {
 module.exports = {
     expireToken: expireToken,
     setToken: setToken,
+    verifyDonorToken: verifyDonorToken,
     verifyToken: verifyToken,
     verifyCharityToken: verifyCharityToken,
     decodeToken: decodeToken

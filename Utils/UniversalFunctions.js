@@ -296,7 +296,16 @@ var deleteUnnecessaryCharityData = function (supplierObj) {
     delete supplierObj['createdOn'];
     delete supplierObj['loggedInOn'];
     delete supplierObj['updatedOn'];
-    delete supplierObj['accessToken'];
+    return supplierObj;
+};
+
+var deleteUnnecessaryDonorData = function (supplierObj) {
+    //console.log('deleting>>',supplierObj)
+    delete supplierObj['__v'];
+    delete supplierObj['passwordHash'];
+    delete supplierObj['createdOn'];
+    delete supplierObj['loggedInOn'];
+    delete supplierObj['updatedOn'];
     return supplierObj;
 };
 
@@ -316,6 +325,7 @@ module.exports = {
     sanitizeName: sanitizeName,
     deleteUnnecessaryUserData: deleteUnnecessaryUserData,
     deleteUnnecessaryCharityData: deleteUnnecessaryCharityData,
+    deleteUnnecessaryDonorData: deleteUnnecessaryDonorData,
     getDistanceBetweenPoints: getDistanceBetweenPoints,
     validateLatLongValues: validateLatLongValues,
     filterArray: filterArray,

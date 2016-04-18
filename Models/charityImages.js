@@ -8,7 +8,7 @@ var charityImagesSchema = new Schema({
         thumbnail: {type: String, default: null}
     },
     isDelete:  {type: Boolean, default: false, required: true},
-    charityOwnerId: {type: Schema.ObjectId,required: true, ref: 'charityOwner'},
+    charityId: {type: Schema.ObjectId,required: true, ref: 'charitySchema'},
     createdOn: {
         type: Date,
         required: true
