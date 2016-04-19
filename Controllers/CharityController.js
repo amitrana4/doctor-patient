@@ -99,14 +99,14 @@ var createCharityOwner = function (payloadData, callback) {
             }
             Service.CharityService.createCharityOwnerId(finalDataToSave, function (err, charityDataFromDB) {
                 if (err) {
-                    if (err.code == 11000 && err.message.indexOf('customers.$phoneNumber_1') > -1){
+                    if (err.code == 11000 && err.message.indexOf('charityownerschemas.$phoneNumber_1') > -1){
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
 
-                    } else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1){
+                    } else if (err.code == 11000 && err.message.indexOf('charityownerschemas.$emailId_1') > -1){
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
 
                     }
-                    else if (err.code == 11000 && err.message.indexOf('customers.$charityRegistrationNo_1') > -1) {
+                    else if (err.code == 11000 && err.message.indexOf('charityownerschemas.$charityRegistrationNo_1') > -1) {
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CHARITYREGNO_ALREADY_EXIST);
 
                     }else {
@@ -145,11 +145,11 @@ var createCharityOwner = function (payloadData, callback) {
                 }
                 Service.CharityService.createCharityOwner(charityFinalDataToSave, function (err, charityDataFromDB) {
                     if (err) {
-                        if (err.code == 11000 && err.message.indexOf('customers.$phoneNumber_1') > -1) {
+                        if (err.code == 11000 && err.message.indexOf('charityownerschemas.$phoneNumber_1') > -1) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
 
                         }
-                        else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1) {
+                        else if (err.code == 11000 && err.message.indexOf('charityownerschemas.$emailId_1') > -1) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
                         }
                         else {
