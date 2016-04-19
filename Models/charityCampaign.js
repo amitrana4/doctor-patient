@@ -16,6 +16,7 @@ var charityCampaignSchema = new Schema({
     unitName: {type: String, trim: true, required: true},
     costPerUnit: {type: Number, required: true},
     targetUnitCount: {type: Number, required: true},
+    unitRaised: {type: Number, default: 0, required: true},
     endDate: {type: Date, required: true},
     complete: {default: false, type: String, required: true},
     videoLink: {type: String, trim: true, required: false},

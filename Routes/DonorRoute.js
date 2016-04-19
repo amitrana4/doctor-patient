@@ -143,4 +143,40 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/donation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.Donation(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                }
+            });
+        },
+        config: {
+            description: 'Register as Donor',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    campaignId: Joi.string().required().trim(),
+                    donatedAmount: Joi.string().required().trim(),
+                    donatedUnit: Joi.number().required(),
+                    donatedCurrency: Joi.string().required().trim(),
+                    paymentGatewayTransactionId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }]

@@ -7,6 +7,7 @@ var donationSchema = new Schema({
     campaignId: {type: String, trim: true, required: true},
     //donorId: {type: String, trim: true, required: true},
     donatedAmount: {type: String, trim: true, required: true},
+    donatedUnit: {type: String, trim: true, required: true},
     donatedCurrency: {type: String, trim: true, required: true},
     paymentGatewayTransactionId: {type: String, trim: true, required: true},
     donor: [{type: Schema.ObjectId, ref: 'donorSchema'}],

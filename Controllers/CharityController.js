@@ -10,7 +10,7 @@ var NotificationManager = require('../Lib/NotificationManager');
 var CodeGenerator = require('../Lib/CodeGenerator');
 var DAO = require('../DAO/DAO');
 var Models = require('../Models');
-
+var ERROR_MESSAGE = UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR;
 
 var createCharityOwner = function (payloadData, callback) {
     var accessToken = null;
@@ -533,24 +533,20 @@ var loginCharityOwner = function (payloadData, callback) {
                 lean: true
             };
             Service.CharityService.getCharityOwnerId(criteria, projection, option, function (err, result) {
-                if (err) {
-                    cb(err)
-                } else {
-                    userFound = result && result[0] || null;
-                    updatedUserDetails= result;
-                    cb();
-
-                }
+                if (err) return cb(err)
+                if(result.length==0) return cb("asdsadsdasdas");
+                userFound = result && result[0] || null;
+                updatedUserDetails= result;
+                return cb();
             });
-
         },
         function (cb) {
 
             if (!userFound) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
+                cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
             } else {
                 if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
-                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INCORRECT_PASSWORD);
+                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
                 } else {
                     successLogin = true;
                     cb();

@@ -240,9 +240,12 @@ var getCampaign = function (queryData, callback) {
     });
 };
 
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
     getCampaign: getCampaign,
+    //Donation: Donation,
     UpdateDonor: UpdateDonor
 };
