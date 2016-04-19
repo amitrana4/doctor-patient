@@ -38,6 +38,7 @@ module.exports = [
                     contactPerson: Joi.string().required().trim(),
                     emailId: Joi.string().email().required(),
                     phoneNumber: Joi.number().required(),
+                    countryCode: Joi.string().required().trim(),
                     country: Joi.string().required().trim(),
                     salesRepCode: Joi.string().optional().trim(),
                     facebookId: Joi.string().optional().trim(),

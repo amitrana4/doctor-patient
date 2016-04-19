@@ -7,11 +7,12 @@ var Config = require('../Config');
 var charitySchema = new Schema({
     //**************************Required Fields**********************************//
     charityOwnerId: {type: String, trim: true, required: true},
-    profileComplete: {type: Boolean, default: false, required: true},
+    profileComplete: {type: String, default: 0, required: true},
     name: {type: String, trim: true, required: true},
     website: {type: String, trim: true, required: true},
     contactPerson: {type: String, trim: true, required: true},
     emailId: {type: String, trim: true, unique: true, required: true},
+    countryCode: {type: String, required: true, unique: true},
     phoneNumber: {type: Number, required: true, unique: true},
     country: {type: String, trim: true, required: true},
     salesRepCode: {type: String, trim: true, required: false},

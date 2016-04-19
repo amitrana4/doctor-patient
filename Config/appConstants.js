@@ -215,6 +215,11 @@ var STATUS_MSG = {
             customMessage : 'Name is Required',
             type : 'NAME_REQUIRED'
         },
+        PROFILE_INCOMPLETE: {
+            statusCode:400,
+            customMessage : 'Please complete your profile',
+            type : 'PROFILE_INCOMPLETE'
+        },
         LOCATION_REQUIRED: {
             statusCode:400,
             customMessage : 'Location is Required',

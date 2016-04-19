@@ -124,31 +124,33 @@ var createCharityOwner = function (payloadData, callback) {
             if (charityOwnerData && charityOwnerData._id) {
                 //Insert Into DB
 
-                var finalDataToSave = {};
-                finalDataToSave.createdOn = new Date().toISOString();
-                finalDataToSave.name = dataToSave.name;
-                finalDataToSave.website = dataToSave.website;
-                finalDataToSave.contactPerson = dataToSave.contactPerson;
-                finalDataToSave.charityOwnerId = charityOwnerData._id;
-                finalDataToSave.emailId = dataToSave.emailId;
-                finalDataToSave.phoneNumber = dataToSave.phoneNumber;
-                finalDataToSave.country = dataToSave.country;
-                finalDataToSave.taxId = dataToSave.taxId;
-                finalDataToSave.deviceType = dataToSave.deviceType;
-                finalDataToSave.deviceToken = dataToSave.deviceToken;
-                finalDataToSave.appVersion = dataToSave.appVersion;
-                finalDataToSave.taxDeductionCode = dataToSave.taxDeductionCode;
+                var charityFinalDataToSave = {};
+                charityFinalDataToSave.createdOn = new Date().toISOString();
+                charityFinalDataToSave.name = dataToSave.name;
+                charityFinalDataToSave.website = dataToSave.website;
+                charityFinalDataToSave.contactPerson = dataToSave.contactPerson;
+                charityFinalDataToSave.charityOwnerId = charityOwnerData._id;
+                charityFinalDataToSave.emailId = dataToSave.emailId;
+                charityFinalDataToSave.phoneNumber = dataToSave.phoneNumber;
+                charityFinalDataToSave.countryCode = dataToSave.countryCode;
+                charityFinalDataToSave.country = dataToSave.country;
+                charityFinalDataToSave.taxId = dataToSave.taxId;
+                charityFinalDataToSave.deviceType = dataToSave.deviceType;
+                charityFinalDataToSave.deviceToken = dataToSave.deviceToken;
+                charityFinalDataToSave.appVersion = dataToSave.appVersion;
+                charityFinalDataToSave.taxDeductionCode = dataToSave.taxDeductionCode;
+                charityFinalDataToSave.profileComplete = 0;
                 if(dataToSave.salesRepCode){
                     finalDataToSave.salesRepCode = dataToSave.salesRepCode;
                 }
-                Service.CharityService.createCharityOwner(finalDataToSave, function (err, charityDataFromDB) {
+                Service.CharityService.createCharityOwner(charityFinalDataToSave, function (err, charityDataFromDB) {
                     if (err) {
                         if (err.code == 11000 && err.message.indexOf('customers.$phoneNumber_1') > -1) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
 
-                        } else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1) {
+                        }
+                        else if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
-
                         }
                         else {
                             cb(err)
@@ -319,6 +321,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             finalDataToSave.officeCity = dataToSave.officeCity;
             finalDataToSave.officeState = dataToSave.officeState;
             finalDataToSave.officeCountry = dataToSave.officeCountry;
+            finalDataToSave.profileComplete = 1;
 
             var criteria = {charityOwnerId: CharityData._id};
             var datatoSet = {$addToSet: finalDataToSave};
@@ -473,6 +476,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
         function (cb) {
             //Insert Into DB
 
+            payloadData.profileComplete = 2;
             var criteria = {charityOwnerId: CharityData._id,
                 "bankAccountNumber" : { $exists : true, $ne : null }};
             var options = {lean: true};
@@ -655,6 +659,7 @@ var changePassword = function (queryData,userData, callback) {
 
 var createCampaign = function (payloadData, CharityData, callback) {
     var campaignData = null;
+    var completeStatus = null;
     var campaignToUpdate = {};
     var campaignMainImageFileId = {};
     var campaignPictures = [];
@@ -663,6 +668,28 @@ var createCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
+            var criteria = {
+                charityOwnerId: CharityData._id
+            };
+            var projection = {profileComplete:1};
+            var option = {
+                lean: true
+            };
+            Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
+                if (err) {
+                    cb(err)
+                } else {
+                    completeStatus = result && result[0] || null;
+                    if(completeStatus.profileComplete != 2){
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PROFILE_INCOMPLETE);
+                    }
+                    else{
+                        cb();
+                    }
+
+                }
+            });
+        },function (cb) {
             //Validate phone No
             if (!dataToSave.name) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NAME_REQUIRED);
@@ -947,65 +974,44 @@ var updateCampaign = function (payloadData, CharityData, callback) {
         function (cb) {
             if (dataToSave.name) {
                 campDataToSave.name = dataToSave.name;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.lat) {
                 campDataToSave.lat = dataToSave.lat;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.long) {
                 campDataToSave.long = dataToSave.long;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.address) {
                 campDataToSave.address = dataToSave.address;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.description) {
                 campDataToSave.description = dataToSave.description;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.hasKeyWords) {
                 campDataToSave.hasKeyWords = dataToSave.hasKeyWords;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.unitName) {
                 campDataToSave.unitName = dataToSave.unitName;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.costPerUnit) {
                 campDataToSave.costPerUnit = dataToSave.costPerUnit;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.targetUnitCount) {
                 campDataToSave.targetUnitCount = dataToSave.targetUnitCount;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.endDate) {
                 campDataToSave.endDate = dataToSave.endDate;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.videoLink) {
                 campDataToSave.videoLink = dataToSave.videoLink;
-                cb();
             }
-        },function (cb) {
             if (dataToSave.complete) {
                 campDataToSave.complete = dataToSave.complete;
-                cb();
             }
+            cb();
         },
         function (cb) {
+            console.log(dataToSave.id,'================', campDataToSave)
             if (dataToSave.mainImageFileId) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.mainImageFileId, dataToSave.id, document, function (err, uploadedInfo) {
@@ -1033,7 +1039,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
 
             var datatoSet = {$addToSet: campDataToSave};
             var options = {lean: true};
-            Service.CharityService.updateCharityCampaign(criteria, datatoSet, options, function (err, charityDataFromDB) {
+            Service.CharityService.updateCharityCampaign(criteria, campDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
                     cb(err)
                 } else {
