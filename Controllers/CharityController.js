@@ -141,7 +141,7 @@ var createCharityOwner = function (payloadData, callback) {
                 charityFinalDataToSave.taxDeductionCode = dataToSave.taxDeductionCode;
                 charityFinalDataToSave.profileComplete = 0;
                 if(dataToSave.salesRepCode){
-                    finalDataToSave.salesRepCode = dataToSave.salesRepCode;
+                    charityFinalDataToSave.salesRepCode = dataToSave.salesRepCode;
                 }
                 Service.CharityService.createCharityOwner(charityFinalDataToSave, function (err, charityDataFromDB) {
                     if (err) {
