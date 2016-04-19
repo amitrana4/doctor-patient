@@ -12,7 +12,7 @@ var charitySchema = new Schema({
     website: {type: String, trim: true, required: true},
     contactPerson: {type: String, trim: true, required: true},
     emailId: {type: String, trim: true, unique: true, required: true},
-    countryCode: {type: String, required: true, unique: true},
+    countryCode: {type: String, required: true},
     phoneNumber: {type: Number, required: true, unique: true},
     country: {type: String, trim: true, required: true},
     salesRepCode: {type: String, trim: true, required: false},
