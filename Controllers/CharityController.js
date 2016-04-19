@@ -534,7 +534,7 @@ var loginCharityOwner = function (payloadData, callback) {
             };
             Service.CharityService.getCharityOwnerId(criteria, projection, option, function (err, result) {
                 if (err) return cb(err)
-                if(result.length==0) return cb("asdsadsdasdas");
+                if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.EMAIL_NOT_FOUND);
                 userFound = result && result[0] || null;
                 updatedUserDetails= result;
                 return cb();
