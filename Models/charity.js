@@ -29,7 +29,7 @@ var charitySchema = new Schema({
     //**************************Optional**********************************//
     keyWord: {type: String, required: false},
     logoFileId: {type: String, trim: true, required: false},
-    foundationDate: {type: Number, required: false},
+    foundationDate: {type: Date, required: false},
     type: {type: String, trim: true, required: false},
     description: {type: String, trim: true, required: false},
     officeAddress1: {type: String, trim: true, required: false},
