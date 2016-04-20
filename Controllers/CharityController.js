@@ -768,10 +768,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
             }
 
             Service.CharityService.createCharityCampaign(campDataToSave, function (err, charityDataFromDB) {
-                console.log(err, '==========-===========-==========')
                 if (err) {
                     if (err.code == 11000 && err.message.indexOf('charitycampaignschemas.$campaignName_1') > -1) {
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_EXIST);
                     }
                     else {
                         cb(err)

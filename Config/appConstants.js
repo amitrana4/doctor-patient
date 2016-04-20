@@ -385,6 +385,11 @@ var STATUS_MSG = {
             customMessage : 'Phone No. Already Exists',
             type : 'PHONE_ALREADY_EXIST'
         },
+        CAMPAIGN_EXIST: {
+            statusCode:400,
+            customMessage : 'Campaign name already exist.',
+            type : 'CAMPAIGN_EXIST'
+        },
         EMAIL_NOT_FOUND: {
             statusCode:400,
             customMessage : 'Email Not Found',
