@@ -252,7 +252,7 @@ module.exports = [
             validate: {
                 payload: {
 
-                    name: Joi.string().required().trim(),
+                    campaignName: Joi.string().required().trim(),
                     lat: Joi.string().required(),
                     long: Joi.string().required(),
                     address: Joi.string().required().trim(),
@@ -375,7 +375,7 @@ module.exports = [
                 headers: UniversalFunctions.authorizationHeaderObj,
                 payload: {
                     id: Joi.string().required().trim(),
-                    name: Joi.string().optional().trim(),
+                    campaignName: Joi.string().optional().trim(),
                     lat: Joi.string().optional(),
                     long: Joi.string().optional(),
                     address: Joi.string().optional().trim(),

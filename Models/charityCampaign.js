@@ -5,8 +5,8 @@ var Config = require('../Config');
 var charityCampaignSchema = new Schema({
     //**************************Required Fields**********************************//
     /*charityOwnerId: {type: String, required: true},*/
-    charityOwnerId: {type: Schema.ObjectId, ref: 'charityOwner'},
-    name: {type: String, trim: true, required: true},
+    charityId: {type: Schema.ObjectId, ref: 'charitySchema'},
+    campaignName: {type: String, trim: true, required: true},
     lat: {type: String, trim: true, required: true},
     long: {type: String, trim: true, required: true},
     address: {type: String, trim: true, required: true},
@@ -26,5 +26,5 @@ var charityCampaignSchema = new Schema({
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}
 });
-charityCampaignSchema.index({name: 1}, {unique: true});
+charityCampaignSchema.index({campaignName: 1}, {unique: true});
 module.exports = mongoose.model('charityCampaignSchema', charityCampaignSchema);

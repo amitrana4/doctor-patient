@@ -5,7 +5,6 @@ var Config = require('../Config');
 var charityOwnerSchema = new Schema({
     //**************************Required Fields**********************************//
     emailId: {type: String, unique: true, trim: true, required: true},
-    campaignId: {type: Schema.ObjectId, ref: 'charityCampaign'},
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
     charityRegistrationNo: {type: String, trim: true, unique: true, required: true},
     phoneNumber: {type: String, trim: true, unique: true, required: true},

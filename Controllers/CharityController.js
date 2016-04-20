@@ -681,7 +681,7 @@ var createCampaign = function (payloadData, CharityData, callback) {
             });
         },function (cb) {
             //Validate phone No
-            if (!dataToSave.name) {
+            if (!dataToSave.campaignName) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NAME_REQUIRED);
             } else {
                 cb();
@@ -751,8 +751,8 @@ var createCampaign = function (payloadData, CharityData, callback) {
             //Insert Into DB
 
             var campDataToSave = {};
-            campDataToSave.charityOwnerId = CharityData._id;
-            campDataToSave.name = dataToSave.name;
+            campDataToSave.charityId = completeStatus._id;
+            campDataToSave.campaignName = dataToSave.campaignName;
             campDataToSave.lat = dataToSave.lat;
             campDataToSave.long = dataToSave.long;
             campDataToSave.address = dataToSave.address;
@@ -768,8 +768,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
             }
 
             Service.CharityService.createCharityCampaign(campDataToSave, function (err, charityDataFromDB) {
+                console.log(err, '==========-===========-==========')
                 if (err) {
-                    if (err.code == 11000 && err.message.indexOf('charitycampaignschemas.$charityOwnerId_1_name_1') > -1) {
+                    if (err.code == 11000 && err.message.indexOf('charitycampaignschemas.$campaignName_1') > -1) {
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
                     }
                     else {
@@ -809,16 +810,18 @@ var createCampaign = function (payloadData, CharityData, callback) {
             });
         },
         function (cb) {
-                var criteria    = {_id:CharityData._id};
-                var dataCampaign  = {campaignId:campaignData._id};
-                var datatoSet1  = {$addToSet:dataCampaign};
-                var options     = {multi: true};
-                Service.CharityService.updateCharityOwnerId(criteria, datatoSet1, options,function (err, result) {
-                    if (err) {
-                        return  cb(err)
-                    }
-                    return  cb();
-                });
+
+
+            var criteria    = {_id:completeStatus._id};
+            var dataCampaign  = {campaignId:campaignData._id};
+            var datatoSet1  = {$addToSet:dataCampaign};
+            var options     = {multi: true};
+            Service.CharityService.updateCharityOwner(criteria, datatoSet1, options,function (err, result) {
+                if (err) {
+                    return  cb(err)
+                }
+                return  cb();
+            });
         },
         function (cb) {
             if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
@@ -967,8 +970,8 @@ var updateCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
-            if (dataToSave.name) {
-                campDataToSave.name = dataToSave.name;
+            if (dataToSave.campaignName) {
+                campDataToSave.campaignName = dataToSave.campaignName;
             }
             if (dataToSave.lat) {
                 campDataToSave.lat = dataToSave.lat;
