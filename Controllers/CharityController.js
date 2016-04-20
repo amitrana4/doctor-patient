@@ -48,14 +48,7 @@ var createCharityOwner = function (payloadData, callback) {
             }
         },
         function (cb) {
-            //Validate for facebookId and password
-            if (dataToSave.facebookId != 'undefined' && dataToSave.facebookId) {
-                if (dataToSave.password) {
-                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.FACEBOOK_ID_PASSWORD_ERROR);
-                } else {
-                    cb();
-                }
-            } else if (!dataToSave.password) {
+            if (!dataToSave.password) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PASSWORD_REQUIRED);
             } else {
                 cb();

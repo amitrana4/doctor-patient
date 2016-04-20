@@ -41,11 +41,10 @@ module.exports = [
                     countryCode: Joi.string().required().trim(),
                     country: Joi.string().required().trim(),
                     salesRepCode: Joi.string().optional().trim(),
-                    facebookId: Joi.string().optional().trim(),
                     deviceType: Joi.string().required().trim(),
                     deviceToken: Joi.string().required().trim(),
                     appVersion: Joi.string().required().trim(),
-                    password: Joi.string().optional().min(5).trim(),
+                    password: Joi.string().required().min(5).trim(),
                     taxId: Joi.string().required().trim(),
                     taxDeductionCode: Joi.string().required().trim(),
                     registrationProofFileId: Joi.any()
