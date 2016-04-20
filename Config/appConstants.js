@@ -280,6 +280,11 @@ var STATUS_MSG = {
             customMessage : 'Target for unit count is Required',
             type : 'TARGETUNITCOUNT_REQUIRED'
         },
+        RECORD_NOT_FOUND: {
+            statusCode:400,
+            customMessage : 'Records not found.',
+            type : 'RECORD_NOT_FOUND'
+        },
         CAMPAIGNENDDATE_REQUIRED: {
             statusCode:400,
             customMessage : 'Campaign end date is Required',

@@ -293,6 +293,7 @@ var deleteUnnecessaryCharityData = function (supplierObj) {
     //console.log('deleting>>',supplierObj)
     delete supplierObj['__v'];
     delete supplierObj['passwordHash'];
+    delete supplierObj['accessToken'];
     delete supplierObj['createdOn'];
     delete supplierObj['loggedInOn'];
     delete supplierObj['updatedOn'];
@@ -302,6 +303,7 @@ var deleteUnnecessaryCharityData = function (supplierObj) {
 var deleteUnnecessaryDonorData = function (supplierObj) {
     //console.log('deleting>>',supplierObj)
     delete supplierObj['__v'];
+    delete supplierObj['accessToken'];
     delete supplierObj['passwordHash'];
     delete supplierObj['createdOn'];
     delete supplierObj['loggedInOn'];

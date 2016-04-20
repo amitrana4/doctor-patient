@@ -402,5 +402,37 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'PUT',
+        path: '/api/charity/deleteProfilePictures',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.deleteProfilePictures(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED))
+                }
+            });
+        },
+        config: {
+            description: 'Edit campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    imageIndex: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }
 ]

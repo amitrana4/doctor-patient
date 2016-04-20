@@ -29,6 +29,7 @@ var createCharityOwner = function (payloadData, callback) {
         }
     }
 
+    dataToSave.emailId =dataToSave.emailId.toLowerCase();
 
     async.series([
         function (cb) {
@@ -1000,7 +1001,6 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             cb();
         },
         function (cb) {
-            console.log(dataToSave.id,'================', campDataToSave)
             if (dataToSave.mainImageFileId) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.mainImageFileId, dataToSave.id, document, function (err, uploadedInfo) {
@@ -1018,7 +1018,6 @@ var updateCampaign = function (payloadData, CharityData, callback) {
         function (cb) {
             //Insert Into DB
 
-            console.log(dataToSave.id,'================', campDataToSave)
             var criteria = {
                 $and:[
                     {_id: dataToSave.id},
@@ -1045,6 +1044,67 @@ var updateCampaign = function (payloadData, CharityData, callback) {
     });
 };
 
+
+
+var deleteProfilePictures = function (payloadData, CharityData, callback) {
+    //console.log(payloadData);
+    var operatorObj = null,newAircraftImages;
+    if (!payloadData) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        async.series([
+            function (cb) {
+                //Get User
+                var criteria = {
+                    charityOwnerId: CharityData._id
+                };
+                Service.CharityService.getCharityOwner(criteria, {}, {lean: true}, function (err, userData) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (!userData || userData.length == 0) {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
+                        } else {
+                            operatorObj = userData && userData[0] || null;
+                            if(typeof operatorObj.pictures[payloadData.imageIndex] === 'undefined') {
+                                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
+                            }
+                            else {
+                                console.log("before",operatorObj.pictures);
+                                operatorObj.pictures.splice(payloadData.imageIndex,1);
+                                console.log("after",operatorObj.pictures);
+                                cb()
+                            }
+
+                        }
+                    }
+                })
+            },
+            function (cb) {
+                if (operatorObj) {
+                    var criteria = {
+                        charityOwnerId: CharityData._id
+                    };
+                    var setQuery = {
+                        "$set" : {"pictures" : operatorObj.pictures}
+                    };
+                    Service.CharityService.updateCharityOwner(criteria, setQuery, {}, function (err, userData) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            cb();
+                        }
+                    })
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                }
+            }
+        ], function (err, result) {
+            callback(err, operatorObj.pictures);
+        })
+    }
+};
+
 module.exports = {
     createCharityOwner: createCharityOwner,
     CharityOwnerBankDetails: CharityOwnerBankDetails,
@@ -1054,5 +1114,6 @@ module.exports = {
     changePassword: changePassword,
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
     campaignList: campaignList,
-    loginCharityOwner: loginCharityOwner
+    loginCharityOwner: loginCharityOwner,
+    deleteProfilePictures: deleteProfilePictures
 };
