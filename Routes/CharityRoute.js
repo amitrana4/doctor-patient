@@ -434,5 +434,60 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'PUT',
+        path: '/api/charity/editProfile',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.updateProfile(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED))
+                }
+            });
+        },
+        config: {
+            description: 'Edit Profile',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            payload: {
+                output: 'file',
+                parse: true,
+                allow: 'multipart/form-data',
+                maxBytes: 20485760
+            },
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    logoFileId: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .optional()
+                        .description('image file'),
+                    foundationDate: Joi.string().optional(),
+                    type: Joi.string().optional().trim(),
+                    description: Joi.string().optional().trim(),
+                    keyWord: Joi.string().optional().trim(),
+                    officeAddress1: Joi.string().optional().trim(),
+                    officeAddress2: Joi.string().optional().trim(),
+                    officeCity: Joi.string().optional().trim(),
+                    officeState: Joi.string().optional().trim(),
+                    officeCountry: Joi.string().optional().trim(),
+                    pictures: Joi.array().optional().description('images in array [{image1}{image2}]'),
+                    videos: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .optional()
+                        .description('video file')
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }
 ]
