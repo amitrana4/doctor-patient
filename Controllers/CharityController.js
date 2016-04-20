@@ -769,6 +769,12 @@ var createCampaign = function (payloadData, CharityData, callback) {
 
             Service.CharityService.createCharityCampaign(campDataToSave, function (err, charityDataFromDB) {
                 if (err) {
+                    if (err.code == 11000 && err.message.indexOf('charitycampaignschemas.$charityOwnerId_1_name_1') > -1) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
+                    }
+                    else {
+                        cb(err)
+                    }
                     cb(err)
                 } else {
                     campaignData = charityDataFromDB;
@@ -1144,6 +1150,7 @@ var updateProfile = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             if (dataToSave.logoFileId) {
+                console.log(dataToSave, '=============================datatosave ============')
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.logoFileId, CharityData._id, document, function (err, uploadedInfo) {
                     if (err) {
@@ -1174,7 +1181,7 @@ var updateProfile = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB
-
+console.log(campDataToSave, '===================campDataToSave============')
             var criteria = {'charityOwnerId':CharityData._id};
             var options = {lean: true};
             Service.CharityService.updateCharityOwner(criteria, campDataToSave, options, function (err, charityDataFromDB) {

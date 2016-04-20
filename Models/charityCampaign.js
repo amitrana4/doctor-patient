@@ -26,5 +26,5 @@ var charityCampaignSchema = new Schema({
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}
 });
-charityCampaignSchema.index({charityOwnerId: 1, name: 1}, {unique: true});
+charityCampaignSchema.index({name: 1}, {unique: true});
 module.exports = mongoose.model('charityCampaignSchema', charityCampaignSchema);
