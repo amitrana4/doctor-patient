@@ -196,15 +196,17 @@ module.exports = [
         method: 'POST',
         path: '/api/charity/loginViaAccessToken',
         handler: function (request, reply) {
-            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
             //reply(request.payload.materialImages);
-            Controller.CharityController.CharityOwnerProfileStep1(request.payload,CharityData, function (err, data) {
-                if (err) {
-                    reply(UniversalFunctions.sendError(err));
-                } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
-                }
-            });
+            if (userData && userData.id) {
+                Controller.CharityController.loginViaAccessToken(request.payload, userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            }
         },
         config: {
             description: 'Add Profile of Charity Owner',
@@ -212,10 +214,8 @@ module.exports = [
             auth: 'CharityAuth',
             validate: {
                 payload: {
-                    accessToken: Joi.string().email().required(),
                     deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
-                    deviceToken: Joi.string().required().min(1).trim(),
-                    appVersion: Joi.string().required().trim()
+                    deviceToken: Joi.string().required().min(1).trim()
 
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,

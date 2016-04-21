@@ -628,46 +628,34 @@ var loginCharityOwner = function (payloadData, callback) {
 
 
 
-var LoginViaAccessToken = function (payloadData, callback) {
-    var userFound = false;
-    var accessToken = null;
-    var successLogin = false;
-    var updatedUserDetails = null;
-    payloadData.email =payloadData.email.toLowerCase();
+var loginViaAccessToken = function (payloadData, userData, callback) {
+    if (!userData || !userData.id) {
+        return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    }
+
+    var accessToken = {};
+    var customerDataArray ={};
     async.series([
-        function (cb) {
-            var criteria = {
-                emailId: payloadData.email
+        function(cb)
+        {
+            var criteria = {charityOwnerId: userData.id};
+            var dataToSet = {
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType
             };
-            var projection = {};
-            var option = {
-                lean: true
-            };
-            Service.CharityService.getCharityOwnerId(criteria, projection, option, function (err, result) {
-                if (err) return cb(err)
-                if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
-                userFound = result && result[0] || null;
-               // updatedUserDetails= result;
-                return cb();
+            Service.CharityService.updateCharityOwner(criteria, dataToSet,{lean: true}, function(err,customerData){
+                if (err) {
+                    return cb(err);
+                }
+                    customerDataArray = customerData;
+                    cb();
+
             });
         },
-        function (cb) {
-
-            if (!userFound) {
-                cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
-            } else {
-                if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
-                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
-                } else {
-                    successLogin = true;
-                    cb();
-                }
-            }
-        },
         function (cb) { //console.log("userFound 153  ",userFound);
-            if (successLogin) {
+            if (customerDataArray) {
                 var tokenData = {
-                    id: userFound._id,
+                    id: userData.id,
                     type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER
                 };
                 TokenManager.setToken(tokenData, function (err, output) {
@@ -687,29 +675,13 @@ var LoginViaAccessToken = function (payloadData, callback) {
             }
 
         },
-        function (cb) {
-            var criteria = {
-                charityOwnerId: userFound._id
-            };
-            var setQuery = {
-                appVersion: payloadData.appVersion,
-                deviceToken: payloadData.deviceToken,
-                deviceType: payloadData.deviceType,
-                onceLogin:true
-            };
-            Service.CharityService.updateCharityOwner(criteria, setQuery, {lean: true}, function (err, data) {
-                updatedUserDetails = data;
-                cb(err, data);
-            });
+    ], function (err) {
+        if(err) return callback(err);
+        return callback(null, {
 
-        },
-    ], function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, {accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryCharityData(updatedUserDetails)});
-        }
+            accessToken: accessToken,
+            userDetails: UniversalFunctions.deleteUnnecessaryCharityData(customerDataArray)
+        });
     });
 };
 
@@ -1574,6 +1546,7 @@ module.exports = {
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
     campaignList: campaignList,
     loginCharityOwner: loginCharityOwner,
+    loginViaAccessToken: loginViaAccessToken,
     deleteProfilePictures: deleteProfilePictures,
     deleteCampaignPictures: deleteCampaignPictures
 };
