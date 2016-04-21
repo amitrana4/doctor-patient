@@ -397,7 +397,7 @@ module.exports = [
             },
             plugins: {
                 'hapi-swagger': {
-                    payloadType: 'form',
+                    //payloadType: 'form',
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }
