@@ -24,6 +24,7 @@ var charitySchema = new Schema({
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},
     appVersion: {type: String, trim: true, required: true},
+    onceLogin: {type: String, trim: true, required: true, default:false},
     pictures: [{type: Schema.ObjectId, ref: 'charityImagesSchema'}],
     campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
 

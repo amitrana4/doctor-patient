@@ -560,7 +560,7 @@ var loginCharityOwner = function (payloadData, callback) {
                 if (err) return cb(err)
                 if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
                 userFound = result && result[0] || null;
-                updatedUserDetails= result;
+               // updatedUserDetails= result;
                 return cb();
             });
         },
@@ -599,13 +599,116 @@ var loginCharityOwner = function (payloadData, callback) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
             }
 
-        }
+        },
+        function (cb) {
+            var criteria = {
+                charityOwnerId: userFound._id
+            };
+            var setQuery = {
+                appVersion: payloadData.appVersion,
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType,
+                onceLogin:true
+            };
+            Service.CharityService.updateCharityOwner(criteria, setQuery, {lean: true}, function (err, data) {
+                updatedUserDetails = data;
+                cb(err, data);
+            });
+
+        },
     ], function (err, data) {
         if (err) {
             callback(err);
         } else {
             callback(null, {accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryCharityData(updatedUserDetails[0])});
+                userDetails: UniversalFunctions.deleteUnnecessaryCharityData(updatedUserDetails)});
+        }
+    });
+};
+
+
+
+var LoginViaAccessToken = function (payloadData, callback) {
+    var userFound = false;
+    var accessToken = null;
+    var successLogin = false;
+    var updatedUserDetails = null;
+    payloadData.email =payloadData.email.toLowerCase();
+    async.series([
+        function (cb) {
+            var criteria = {
+                emailId: payloadData.email
+            };
+            var projection = {};
+            var option = {
+                lean: true
+            };
+            Service.CharityService.getCharityOwnerId(criteria, projection, option, function (err, result) {
+                if (err) return cb(err)
+                if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
+                userFound = result && result[0] || null;
+               // updatedUserDetails= result;
+                return cb();
+            });
+        },
+        function (cb) {
+
+            if (!userFound) {
+                cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
+            } else {
+                if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
+                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
+                } else {
+                    successLogin = true;
+                    cb();
+                }
+            }
+        },
+        function (cb) { //console.log("userFound 153  ",userFound);
+            if (successLogin) {
+                var tokenData = {
+                    id: userFound._id,
+                    type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER
+                };
+                TokenManager.setToken(tokenData, function (err, output) {
+                    if (err) {
+                        cb(err);
+                    } else {
+                        if (output && output.accessToken){
+                            accessToken = output && output.accessToken;
+                            cb();
+                        }else {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+                        }
+                    }
+                })
+            } else {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+            }
+
+        },
+        function (cb) {
+            var criteria = {
+                charityOwnerId: userFound._id
+            };
+            var setQuery = {
+                appVersion: payloadData.appVersion,
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType,
+                onceLogin:true
+            };
+            Service.CharityService.updateCharityOwner(criteria, setQuery, {lean: true}, function (err, data) {
+                updatedUserDetails = data;
+                cb(err, data);
+            });
+
+        },
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, {accessToken: accessToken,
+                userDetails: UniversalFunctions.deleteUnnecessaryCharityData(updatedUserDetails)});
         }
     });
 };

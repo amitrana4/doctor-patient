@@ -297,6 +297,18 @@ var deleteUnnecessaryCharityData = function (supplierObj) {
     delete supplierObj['createdOn'];
     delete supplierObj['loggedInOn'];
     delete supplierObj['updatedOn'];
+    delete supplierObj['_id'];
+    delete supplierObj['createdOn'];
+    delete supplierObj['charityOwnerId'];
+    delete supplierObj['__v'];
+    delete supplierObj['foundationDate'];
+    delete supplierObj['bankAccountNumber'];
+    delete supplierObj['bankAccountHolderPhoneNumber'];
+    delete supplierObj['bankAccountHolderName'];
+    delete supplierObj['campaignId'];
+    delete supplierObj['deviceType'];
+    delete supplierObj['deviceToken'];
+    delete supplierObj['appVersion'];
     return supplierObj;
 };
 

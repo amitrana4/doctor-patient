@@ -28,7 +28,7 @@ module.exports = [
                 output: 'file',
                 parse: true,
                 allow: 'multipart/form-data',
-                maxBytes: 20485760
+                maxBytes: 40485760
             },
             validate: {
                 payload: {
@@ -41,8 +41,8 @@ module.exports = [
                     countryCode: Joi.string().required().trim(),
                     country: Joi.string().required().trim(),
                     salesRepCode: Joi.string().optional().trim(),
-                    deviceType: Joi.string().required().trim(),
-                    deviceToken: Joi.string().required().trim(),
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim(),
                     appVersion: Joi.string().required().trim(),
                     password: Joi.string().required().min(5).trim(),
                     taxId: Joi.string().required().trim(),
@@ -87,7 +87,10 @@ module.exports = [
             validate: {
                 payload: {
                     email: Joi.string().email().required(),
-                    password: Joi.string().required().min(5).trim()
+                    password: Joi.string().required().min(5).trim(),
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim(),
+                    appVersion: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },
@@ -154,7 +157,7 @@ module.exports = [
                 output: 'file',
                 parse: true,
                 allow: 'multipart/form-data',
-                maxBytes: 20485760
+                maxBytes: 40485760
             },
             validate: {
                 payload: {
@@ -184,6 +187,43 @@ module.exports = [
             plugins: {
                 'hapi-swagger': {
                     //payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/charity/loginViaAccessToken',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            Controller.CharityController.CharityOwnerProfileStep1(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                }
+            });
+        },
+        config: {
+            description: 'Add Profile of Charity Owner',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                payload: {
+                    accessToken: Joi.string().email().required(),
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim(),
+                    appVersion: Joi.string().required().trim()
+
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }
@@ -247,7 +287,7 @@ module.exports = [
                 output: 'file',
                 parse: true,
                 allow: 'multipart/form-data',
-                maxBytes: 20485760
+                maxBytes: 40485760
             },
             validate: {
                 payload: {
@@ -369,7 +409,7 @@ module.exports = [
                 output: 'file',
                 parse: true,
                 allow: 'multipart/form-data',
-                maxBytes: 20485760
+                maxBytes: 40485760
             },
             validate: {
                 headers: UniversalFunctions.authorizationHeaderObj,
@@ -489,7 +529,7 @@ module.exports = [
                 output: 'file',
                 parse: true,
                 allow: 'multipart/form-data',
-                maxBytes: 20485760
+                maxBytes: 40485760
             },
             validate: {
                 headers: UniversalFunctions.authorizationHeaderObj,
