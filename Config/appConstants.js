@@ -395,6 +395,26 @@ var STATUS_MSG = {
             customMessage : 'Email Not Found',
             type : 'EMAIL_NOT_FOUND'
         },
+        PROFILE_EXIST: {
+            statusCode:400,
+            customMessage : 'Profile Exist, Please use edit profile to edit or change profile data.',
+            type : 'PROFILE_EXIST'
+        },
+        BANK_DETAILS_EXIST: {
+            statusCode:400,
+            customMessage : 'Bank Details Exist, Please use edit Bank details to change data.',
+            type : 'BANK_DETAILS_EXIST'
+        },
+        IMAGE_LENGTH_EXCEEDED: {
+            statusCode:400,
+            customMessage : 'Max 5 images allowed, Remove old images or choose less then 5 images',
+            type : 'IMAGE_LENGTH_EXCEEDED'
+        },
+        PICTURE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Please select pictures',
+            type : 'PICTURE_REQUIRED'
+        },
         FACEBOOK_ID_NOT_FOUND: {
             statusCode:400,
             customMessage : 'Facebook Id Not Found',

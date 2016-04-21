@@ -5,7 +5,7 @@ var Config = require('../Config');
 var charityCampaignSchema = new Schema({
     //**************************Required Fields**********************************//
     /*charityOwnerId: {type: String, required: true},*/
-    charityId: {type: Schema.ObjectId, ref: 'charitySchema'},
+    charityId: {type: Schema.ObjectId,required: true, ref: 'charitySchema'},
     campaignName: {type: String, trim: true, required: true},
     lat: {type: String, trim: true, required: true},
     long: {type: String, trim: true, required: true},
@@ -20,7 +20,7 @@ var charityCampaignSchema = new Schema({
     endDate: {type: Date, required: true},
     complete: {default: false, type: String, required: true},
     videoLink: {type: String, trim: true, required: false},
-    pictures: {type: String, trim: true, required: false},
+    pictures: {type: Object, trim: true, required: false},
     donation: {type: Schema.ObjectId, ref: 'donationSchema'},
 
     createdOn: {type: Date, required: true},

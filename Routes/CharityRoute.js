@@ -162,7 +162,7 @@ module.exports = [
                         .meta({swaggerType: 'file'})
                         .required()
                         .description('image file'),
-                    foundationDate: Joi.string().required(),
+                    foundationDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').required(),
                     type: Joi.string().required().trim(),
                     description: Joi.string().required().trim(),
                     keyWord: Joi.string().required().trim(),
@@ -171,7 +171,7 @@ module.exports = [
                     officeCity: Joi.string().required().trim(),
                     officeState: Joi.string().required().trim(),
                     officeCountry: Joi.string().required().trim(),
-                    pictures: Joi.array().optional().description('images in array [{image1}{image2}]'),
+                    pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
                     videos: Joi.any()
                         .meta({swaggerType: 'file'})
                         .optional()
@@ -265,8 +265,8 @@ module.exports = [
                     unitName: Joi.string().required(),
                     costPerUnit: Joi.number().required(),
                     targetUnitCount: Joi.string().regex(/^[0-9 ]+$/).required(),
-                    endDate: Joi.string().required().trim(),
-                    pictures: Joi.array().optional(),
+                    endDate: Joi.date().min('now').format('YYYY-MM-DDTHH:mm:ss.SSSZ').required(),
+                    pictures: Joi.array().optional().max(5),
                     videoLink: Joi.string().required().trim()
 
                 },
@@ -388,8 +388,8 @@ module.exports = [
                     unitName: Joi.string().optional(),
                     costPerUnit: Joi.number().optional(),
                     targetUnitCount: Joi.string().regex(/^[0-9 ]+$/).optional(),
-                    endDate: Joi.string().optional().trim(),
-                   // pictures: Joi.array().optional(),
+                    endDate: Joi.date().min('now').format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
+                    pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
                     videoLink: Joi.string().optional().trim(),
                     complete: Joi.string().optional().trim()
                 },
@@ -437,6 +437,39 @@ module.exports = [
     },
     {
         method: 'PUT',
+        path: '/api/charity/deleteCampaignPictures',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.deleteCampaignPictures(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED))
+                }
+            });
+        },
+        config: {
+            description: 'Edit campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    id: Joi.string().required().trim(),
+                    imageIndex: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
         path: '/api/charity/editProfile',
         handler: function (request, reply) {
             var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
@@ -465,7 +498,7 @@ module.exports = [
                         .meta({swaggerType: 'file'})
                         .optional()
                         .description('image file'),
-                    foundationDate: Joi.string().optional(),
+                    foundationDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
                     type: Joi.string().optional().trim(),
                     description: Joi.string().optional().trim(),
                     keyWord: Joi.string().optional().trim(),
@@ -474,7 +507,7 @@ module.exports = [
                     officeCity: Joi.string().optional().trim(),
                     officeState: Joi.string().optional().trim(),
                     officeCountry: Joi.string().optional().trim(),
-                    pictures: Joi.array().optional().description('images in array [{image1}{image2}]'),
+                    pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
                     videos: Joi.any()
                         .meta({swaggerType: 'file'})
                         .optional()

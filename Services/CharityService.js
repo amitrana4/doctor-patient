@@ -12,7 +12,10 @@ var getCharityOwnerId = function (criteria, projection, options, callback) {
     Models.charityOwner.find(criteria, projection, options, callback);
 };
 
-
+//Get Users from DB
+var getCharityCampaign = function (criteria, projection, options, callback) {
+    Models.charityCampaign.find(criteria, projection, options, callback);
+};
 
 //Insert User in DB
 var createCharityOwner = function (objToSave, callback) {
@@ -83,6 +86,7 @@ module.exports = {
     updateCharityOwnerId: updateCharityOwnerId,
     updateCharityCampaign: updateCharityCampaign,
     getCharityPopulate: getCharityPopulate,
+    getCharityCampaign: getCharityCampaign,
     /*createCharityOwnerKeyWord: createCharityOwnerKeyWord,*/
     getCharityOwnerId: getCharityOwnerId,
     getCharityOwner: getCharityOwner

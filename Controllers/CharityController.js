@@ -241,6 +241,25 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
 
 
     async.series([
+        function (cb) {
+
+            if(dataToSave.pictures.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+            return cb();
+        },
+        function (cb) {
+            var criteria = {
+                charityOwnerId: CharityData._id
+            };
+            var projection = {profileComplete : 1};
+            var option = {
+                lean: true
+            };
+            Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
+                if (err) return cb(err)
+                if(result[0].profileComplete != 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PROFILE_EXIST);
+                return cb();
+            });
+        },
 
         function (cb) {
             //Validate phone No
@@ -372,16 +391,14 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             }
         },
         function (cb) {
-            //Insert Into DB
-            var imgagesToSave = {};
-            imgagesToSave.pictures = imagesids;
+            //Insert Into DB;
 
+            var datatoSet = { pictures: imagesids };
             var criteria = {_id: charityOwnerProfileData._id};
-            var datatoSet = {$addToSet: imgagesToSave};
             var options = {lean: true};
 
 
-            Service.CharityService.updateCharityOwner(criteria, imgagesToSave, options, function (err, imagesResult) {
+            Service.CharityService.updateCharityOwner(criteria, datatoSet, options, function (err, imagesResult) {
                 if (err) {
                     cb(err)
                 } else {
@@ -442,7 +459,20 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
     var charityOwnerProfileData = null;
 
     async.series([
-
+        function (cb) {
+            var criteria = {
+                charityOwnerId: CharityData._id
+            };
+            var projection = {profileComplete : 1};
+            var option = {
+                lean: true
+            };
+            Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
+                if (err) return cb(err)
+                if(result.profileComplete == 2 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
+                return cb();
+            });
+        },
         function (cb) {
             //Validate phone No
             if (!payloadData.bankAccountHolderName) {
@@ -658,6 +688,11 @@ var createCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
+            if(typeof dataToSave.pictures == 'undefined')return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PICTURE_REQUIRED);
+            if(dataToSave.pictures.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+            cb();
+        },
+        function (cb) {
             var criteria = {
                 charityOwnerId: CharityData._id
             };
@@ -855,11 +890,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB
-            var imgagesToSave = {};
-            imgagesToSave.pictures = campaignPictures;
+            var datatoSet = { $push: { pictures: { $each: campaignPictures } } };
 
             var criteria = {_id: campaignData._id};
-            var datatoSet = {$addToSet: imgagesToSave};
             var options = {lean: true};
 
 
@@ -893,35 +926,45 @@ var campaignList = function (payloadData, CharityData, callback) {
     if(dataToSave.type) {
         if(dataToSave.type == 'COMPLETE'){
 
-            var query = {
-                $and:[
-                    {$or:[
-                        {complete:true},
-                        {'endDate':{$gte:new Date()}}
+            var populateVariable = {
+                path: "campaignId",
+                match: {
+                    $and:[
+                        {$or:[
+                            {complete:true},
+                            {'endDate':{$lt:new Date()}}
 
-                    ]},
-                    {'charityOwnerId':CharityData._id}
-                ]
+
+                        ]}
+                    ]
+                },
+                select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
             };
         }
         if(dataToSave.type == 'PENDING'){
 
-            var query = {
-                $and:[
-                    {complete:false},
-                    {'endDate':{$gte:new Date()}},
-                    {'charityOwnerId':CharityData._id}
-                ]
+            var populateVariable = {
+                path: "campaignId",
+                match: {
+                    $and:[
+                        {complete:false},
+                        {'endDate':{$gte:new Date()}}
+                    ]
+                },
+                select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
             };
         }
     }
 
 
-    var _date = new Date();
-    var options = {lean: true},
-        projection = {createdOn:0};
 
-    Service.CampaignService.getCampaign(query, projection, options, function (err, res) {
+
+
+    var criteria      = { charityOwnerId:CharityData._id},
+        options = {lean: true},
+        projection ={type:1,campaignId:1};
+
+    Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
@@ -965,9 +1008,33 @@ var updateCampaign = function (payloadData, CharityData, callback) {
     var campaignMainImageFileId = {};
     var dataToSave = payloadData;
     var campDataToSave = {};
+    var imagesids = [];
 
     async.series([
 
+        function (cb) {
+
+            var criteria = {
+                _id: dataToSave.id
+            };
+            var projection = {pictures:1};
+            var option = {
+                lean: true
+            };
+            Service.CharityService.getCharityCampaign(criteria, projection, option, function (err, result) {
+                if (err) {
+                    cb(err)
+                } else {
+                    var totalResult = result && result[0] || null;
+                    var totalLength = Number(dataToSave.pictures.length + totalResult.pictures.length);
+                    if(totalLength > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+                    else{
+                        cb();
+                    }
+
+                }
+            });
+        },
         function (cb) {
             if (dataToSave.campaignName) {
                 campDataToSave.campaignName = dataToSave.campaignName;
@@ -1025,14 +1092,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
         function (cb) {
             //Insert Into DB
 
-            var criteria = {
-                $and:[
-                    {_id: dataToSave.id},
-                    {'charityOwnerId':CharityData._id}
-                ]
-            };
-
-            var datatoSet = {$addToSet: campDataToSave};
+            var criteria = {_id: dataToSave.id};
             var options = {lean: true};
             Service.CharityService.updateCharityCampaign(criteria, campDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
@@ -1042,7 +1102,59 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                     cb();
                 }
             });
-        }
+        },
+        function (cb) {
+            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+                var taskInParallel = [];
+                for (var key in dataToSave.pictures) {
+                    (function (key) {
+                        taskInParallel.push((function (key) {
+                            return function (embeddedCB) {//TODO
+                                var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
+                                UploadManager.uploadFile(dataToSave.pictures[key], dataToSave.id, document, function (err, uploadedInfo) {
+
+                                    if (err) {
+                                        cb(err)
+                                    }
+                                    var mainImageFile = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
+
+                                    if (err) return embeddedCB(err);
+                                    imagesids.push(mainImageFile);
+                                    return embeddedCB();
+
+                                })
+                            }
+                        })(key))
+                    }(key));
+                }
+                async.parallel(taskInParallel, function (err, result) {
+                    cb();
+                });
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+                //Insert Into DB
+
+                if(imagesids.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+                var datatoSet = { $addToSet: { pictures: { $each: imagesids } } };
+                var criteria = {_id: campaignData._id};
+                var options = {lean: true};
+
+                Service.CharityService.updateCharityCampaign(criteria, datatoSet, options, function (err, imagesResult) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        cb();
+                    }
+                });
+            }
+            else{
+                cb();
+            }
+        },
     ], function (err, result) {
         if (err) {
             return callback(err);
@@ -1110,6 +1222,63 @@ var deleteProfilePictures = function (payloadData, CharityData, callback) {
 };
 
 
+var deleteCampaignPictures = function (payloadData, CharityData, callback) {
+    var operatorObj = null,newAircraftImages;
+    if (!payloadData) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        async.series([
+            function (cb) {
+                //Get User
+                var criteria = {
+                    _id: payloadData.id
+                };
+                Service.CharityService.getCharityCampaign(criteria, {}, {lean: true}, function (err, userData) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (!userData || userData.length == 0) {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
+                        } else {
+                            operatorObj = userData && userData[0] || null;
+                            if(typeof operatorObj.pictures[payloadData.imageIndex] === 'undefined') {
+                                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
+                            }
+                            else {
+                                operatorObj.pictures.splice(payloadData.imageIndex,1);
+                                cb()
+                            }
+
+                        }
+                    }
+                })
+            },
+            function (cb) {
+                if (operatorObj) {
+                    var criteria = {
+                        _id: payloadData.id
+                    };
+                    var setQuery = {
+                        "$set" : {"pictures" : operatorObj.pictures}
+                    };
+                    Service.CharityService.updateCharityCampaign(criteria, setQuery, {}, function (err, userData) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            cb();
+                        }
+                    })
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                }
+            }
+        ], function (err, result) {
+            callback(err, operatorObj.pictures);
+        })
+    }
+};
+
+
 var updateProfile = function (payloadData, CharityData, callback) {
     var charityData = null;
     var image = {};
@@ -1120,6 +1289,34 @@ var updateProfile = function (payloadData, CharityData, callback) {
 
     async.series([
 
+        function (cb) {
+
+            if(typeof dataToSave.pictures != 'undefined' && dataToSave.pictures) {
+                var criteria = {
+                    charityOwnerId: CharityData._id
+                };
+                var projection = {pictures: 1};
+                var option = {
+                    lean: true
+                };
+                Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        var totalResult = result && result[0] || null;
+                        var totalLength = Number(dataToSave.pictures.length + totalResult.pictures.length);
+                        if (totalLength > 5) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+                        else {
+                            cb();
+                        }
+
+                    }
+                });
+            }
+            else{
+                cb();
+            }
+        },
         function (cb) {
             if (dataToSave.foundationDate) {
                 campDataToSave.foundationDate = dataToSave.foundationDate;
@@ -1152,7 +1349,6 @@ var updateProfile = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             if (dataToSave.logoFileId) {
-                console.log(dataToSave, '=============================datatosave ============')
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.logoFileId, CharityData._id, document, function (err, uploadedInfo) {
                     if (err) {
@@ -1183,7 +1379,6 @@ var updateProfile = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB
-console.log(campDataToSave, '===================campDataToSave============')
             var criteria = {'charityOwnerId':CharityData._id};
             var options = {lean: true};
             Service.CharityService.updateCharityOwner(criteria, campDataToSave, options, function (err, charityDataFromDB) {
@@ -1239,6 +1434,7 @@ console.log(campDataToSave, '===================campDataToSave============')
             if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
                 //Insert Into DB
 
+                if(imagesids.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
                 var datatoSet = { $addToSet: { pictures: { $each: imagesids } } };
                 var criteria = {_id: charityData._id};
                 var options = {lean: true};
@@ -1275,5 +1471,6 @@ module.exports = {
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
     campaignList: campaignList,
     loginCharityOwner: loginCharityOwner,
-    deleteProfilePictures: deleteProfilePictures
+    deleteProfilePictures: deleteProfilePictures,
+    deleteCampaignPictures: deleteCampaignPictures
 };
