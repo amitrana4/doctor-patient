@@ -5,9 +5,9 @@ var user1;
 var pass1;
 
 if (process.env.NODE_ENV == 'test') {
-    mongoURL = "mongodb://givapp_dev:cNUaaaF3f2HclDY@localhost/givapp_dev";
-    user1 = 'givapp_dev';
-    pass1 = 'cNUaaaF3f2HclDY';
+    mongoURL = "mongodb://"+process.env.MONGO_USER_DEV+":"+process.env.MONGO_PASS_DEV+"@"+process.env.DB_IP+"/"+process.env.DB_NAME_DEV;
+    user1 = process.env.MONGO_USER_DEV;
+    pass1 = process.env.MONGO_PASS_DEV;
 } else if (process.env.NODE_ENV == 'dev') {
     mongoURL = "mongodb://givapp_dev:cNUaaaF3f2HclDY@localhost/givapp_dev";
     user1 = 'givapp_dev';

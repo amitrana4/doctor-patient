@@ -11,7 +11,7 @@ var s3BucketCredentials = {
     "bucket": "s3-givapp",
     "accessKeyId": "AKIAIECH4IN2B5PUL7JQ",
     "secretAccessKey": "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",
-    "s3URL": "https://s3.amazonaws.com/givapp/",
+    "s3URL": "https://s3.amazonaws.com/",
     "folder": {
         "profilePicture": "profilePicture",
         "thumb": "thumb"
