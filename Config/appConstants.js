@@ -1,9 +1,22 @@
 'use strict';
 
+
+
+var PORT;
+
+if (process.env.NODE_ENV == 'test') {
+    PORT = 8001;
+} else if (process.env.NODE_ENV == 'dev') {
+    PORT = 8002;
+} else {
+    PORT = 8000;
+}
+
+
 var SERVER = {
     APP_NAME: 'Your App Name',
     PORTS: {
-        HAPI: 8000
+        HAPI: PORT
     },
     TOKEN_EXPIRATION_IN_MINUTES: 600,
     JWT_SECRET_KEY: 'sUPerSeCuREKeY&^$^&$^%$^%7782348723t4872t34Ends',
