@@ -321,6 +321,21 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             } else {
                 cb();
             }
+        },function (cb) {
+            //Validate phone No
+            if (!dataToSave.videos) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.VIDEO_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            //Validate phone No
+            if (!dataToSave.logoFileId) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.LOGO_FILE_REQUIRED);
+            } else {
+                cb();
+            }
         },
         function (cb) {
             //Insert Into DB
@@ -392,7 +407,6 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB;
-
             var datatoSet = { pictures: imagesids };
             var criteria = {_id: charityOwnerProfileData._id};
             var options = {lean: true};
@@ -1049,6 +1063,43 @@ var campaignList = function (payloadData, CharityData, callback) {
 };
 
 
+
+var getCampaignById = function (payloadData, CharityData, callback) {
+
+    /*var criteria  = {};
+
+            var populateVariable = {
+                path: "campaignId",
+                match: {
+                    $and:[
+                        {$or:[
+                            {complete:true},
+                            {'endDate':{$lt:new Date()}}
+
+
+                        ]}
+                    ]
+                },
+                select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
+            };
+*/
+
+
+
+    var criteria      = { _id:payloadData.campaignId},
+        options = {lean: true},
+        projection ={charityId:0};
+
+    Service.CharityService.getCharityCampaign(criteria, projection, options, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+
 var getCharityProfileInfo = function (CharityData,callbackRoute) {
 
 
@@ -1545,6 +1596,7 @@ module.exports = {
     changePassword: changePassword,
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
     campaignList: campaignList,
+    getCampaignById: getCampaignById,
     loginCharityOwner: loginCharityOwner,
     loginViaAccessToken: loginViaAccessToken,
     deleteProfilePictures: deleteProfilePictures,

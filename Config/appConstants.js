@@ -308,6 +308,16 @@ var STATUS_MSG = {
             customMessage : 'Keyword is Required',
             type : 'DESCRIPTION_REQUIRED'
         },
+        VIDEO_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Video is Required',
+            type : 'VIDEO_REQUIRED'
+        },
+        LOGO_FILE_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Logo is Required',
+            type : 'LOGO_FILE_REQUIRED'
+        },
         TAXID_REQUIRED: {
             statusCode:400,
             customMessage : 'TAX id Required',

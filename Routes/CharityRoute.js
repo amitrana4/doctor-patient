@@ -365,7 +365,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(data)).code(201)
                 }
             });
         },
@@ -376,6 +376,39 @@ module.exports = [
             validate: {
                 payload: {
                     type: Joi.string().optional().trim().description('COMPLETE, PENDING')
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/charity/getCampaignById',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            Controller.CharityController.getCampaignById(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(data)).code(201)
+                }
+            });
+        },
+        config: {
+            description: 'Create campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                payload: {
+                    campaignId: Joi.string().optional().trim()
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
