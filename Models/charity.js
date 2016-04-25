@@ -43,7 +43,7 @@ var charitySchema = new Schema({
     bankAccountHolderName: {type: String, trim: true, required: false},
     bankAccountHolderPhoneNumber: {type: Number, trim: true, required: false},
     bankAccountNumber: {type: String, trim: true, required: false},
-    passwordChangedOn: {type: Number, required: false},
+    passwordChangedOn: {type: Date, required: false},
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Date, required: true}

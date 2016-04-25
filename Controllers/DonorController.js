@@ -42,7 +42,7 @@ var createDonor = function (payloadData, callback) {
         },
         function (cb) {
             //Validate for facebookId and password
-            if (dataToSave.facebookId != 'undefined' && dataToSave.facebookId) {
+            if (typeof dataToSave.facebookId != 'undefined' && dataToSave.facebookId) {
                 if (dataToSave.password) {
                     cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.FACEBOOK_ID_PASSWORD_ERROR);
                 } else {
@@ -62,6 +62,9 @@ var createDonor = function (payloadData, callback) {
             finalDataToSave.loggedInOn = new Date().toISOString();
             finalDataToSave.emailId = dataToSave.emailId;
             finalDataToSave.firstName = dataToSave.firstName;
+            finalDataToSave.deviceType = dataToSave.deviceType;
+            finalDataToSave.deviceToken = dataToSave.deviceToken;
+            finalDataToSave.appVersion = dataToSave.appVersion;
             if (dataToSave.lastName != 'undefined' && dataToSave.lastName) {
                 finalDataToSave.lastName = dataToSave.lastName;
             }
@@ -219,19 +222,25 @@ var changePassword = function (queryData,userData, callback) {
 };
 
 
-var getCampaign = function (queryData, callback) {
+var getCampaign = function (callback) {
 
 
    /* var criteria      = { complete:false},*/
     var _date = new Date();
         var criteria = {
-            "$and":[{complete:false},
-                {'endDate':{$gte:new Date()}},
-            ]},
+                $and:[
+                    {complete:false},
+                    {'endDate':{$gte:new Date()}}
+                ]},
         options = {lean: true},
         projection = {createdOn:0};
 
-    Service.CampaignService.getCampaign(criteria, projection, options, function (err, res) {
+    var populateVariable = {
+        path: "charityId",
+        select: 'name'
+    };
+
+    Service.DonorService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
@@ -241,11 +250,113 @@ var getCampaign = function (queryData, callback) {
 };
 
 
+var getCampaignById = function (payloadData, callback) {
+
+    var criteria      = { _id:payloadData.campaignId},
+        options = {lean: true},
+        projection ={charityId:0};
+
+    Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+var loginDonor = function (payloadData, callback) {
+    var userFound = false;
+    var accessToken = null;
+    var successLogin = false;
+    var updatedUserDetails = null;
+    payloadData.email =payloadData.email.toLowerCase();
+    async.series([
+        function (cb) {
+            var criteria = {
+                emailId: payloadData.email
+            };
+            var projection = {};
+            var option = {
+                lean: true
+            };
+            Service.DonorService.getDonor(criteria, projection, option, function (err, result) {
+                if (err) return cb(err)
+                if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
+                userFound = result && result[0] || null;
+                // updatedUserDetails= result;
+                return cb();
+            });
+        },
+        function (cb) {
+
+            if (!userFound) {
+                cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
+            } else {
+                if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
+                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
+                } else {
+                    successLogin = true;
+                    cb();
+                }
+            }
+        },
+        function (cb) { //console.log("userFound 153  ",userFound);
+            if (successLogin) {
+                var tokenData = {
+                    id: userFound._id,
+                    type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR
+                };
+                TokenManager.setToken(tokenData, function (err, output) {
+                    if (err) {
+                        cb(err);
+                    } else {
+                        if (output && output.accessToken){
+                            accessToken = output && output.accessToken;
+                            cb();
+                        }else {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+                        }
+                    }
+                })
+            } else {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+            }
+
+        },
+        function (cb) {
+            var criteria = {
+                _id: userFound._id
+            };
+            var setQuery = {
+                appVersion: payloadData.appVersion,
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType,
+                onceLogin:true
+            };
+            Service.DonorService.updateDonor(criteria, setQuery, {lean: true}, function (err, data) {
+                updatedUserDetails = data;
+                cb(err, data);
+            });
+
+        },
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, {accessToken: accessToken,
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails)});
+        }
+    });
+};
+
 
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
     getCampaign: getCampaign,
+    getCampaignById: getCampaignById,
+    loginDonor: loginDonor,
     //Donation: Donation,
     UpdateDonor: UpdateDonor
 };

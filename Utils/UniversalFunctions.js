@@ -320,6 +320,11 @@ var deleteUnnecessaryDonorData = function (supplierObj) {
     delete supplierObj['createdOn'];
     delete supplierObj['loggedInOn'];
     delete supplierObj['updatedOn'];
+    delete supplierObj['donation'];
+    delete supplierObj['onceLogin'];
+    delete supplierObj['deviceType'];
+    delete supplierObj['deviceToken'];
+    delete supplierObj['appVersion'];
     return supplierObj;
 };
 

@@ -709,8 +709,8 @@ var changePassword = function (queryData,userData, callback) {
     }
     async.series([
         function (cb) {
-            var criteria = {_id : userData.id  };
-            var projection = {passwordHash:1};
+            var criteria = {_id: userData.id};
+            var projection = {passwordHash: 1};
             var options = {
                 lean: true
             };
@@ -719,7 +719,7 @@ var changePassword = function (queryData,userData, callback) {
                     return cb(err);
                 }
 
-                if (data.length==0) {
+                if (data.length == 0) {
                     return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND)
                 }
                 userFound = data[0];
@@ -728,12 +728,12 @@ var changePassword = function (queryData,userData, callback) {
         },
         function (cb) {
 
-            if (userFound.passwordHash != UniversalFunctions.CryptData(queryData.oldPassword)){
+            if (userFound.passwordHash != UniversalFunctions.CryptData(queryData.oldPassword)) {
                 return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INCORRECT_OLD_PASS)
-            }else if (userFound.passwordHash == UniversalFunctions.CryptData(queryData.newPassword)){
+            } else if (userFound.passwordHash == UniversalFunctions.CryptData(queryData.newPassword)) {
                 return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.SAME_PASSWORD)
             }
-            return  cb();
+            return cb();
         },
         function (cb) {
             var criteria = {_id: userFound._id};
@@ -743,9 +743,23 @@ var changePassword = function (queryData,userData, callback) {
                 }
             };
             var options = {lean: true};
-            Service.CharityService.updateCharityOwnerId(criteria, setQuery, options, function(err,suceess){
-                if(err)
-                {
+            Service.CharityService.updateCharityOwnerId(criteria, setQuery, options, function (err, suceess) {
+                if (err) {
+                    return cb(err);
+                }
+                cb();
+            });
+        },
+        function (cb) {
+            var criteria = {charityOwnerId: userFound._id};
+            var setQuery = {
+                $set: {
+                    passwordChangedOn: new Date()
+                }
+            };
+            var options = {lean: true};
+            Service.CharityService.updateCharityOwner(criteria, setQuery, options, function (err, suceess) {
+                if (err) {
                     return cb(err);
                 }
                 cb();
@@ -753,8 +767,7 @@ var changePassword = function (queryData,userData, callback) {
         }
 
     ], function (err, result) {
-        if(err)
-        {
+        if (err) {
             return callback(err);
         }
         return callback();

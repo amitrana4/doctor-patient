@@ -11,6 +11,11 @@ var donorSchema = new Schema({
     //accountState: {type: String, trim: true, required: true},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
     //idProvider: {type: String, trim: true, required: true},
+    deviceType: {type: String, trim: true, required: true},
+    deviceToken: {type: String, trim: true, required: true},
+    appVersion: {type: String, trim: true, required: true},
+    facebookId: {type: String, trim: true, required: true},
+    onceLogin: {type: String, trim: true, required: true, default:false},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},
     phoneNumber: {type: String, trim: true, required: false},
