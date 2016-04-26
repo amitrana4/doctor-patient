@@ -35,10 +35,10 @@ var createCharityCampaign = function (objToSave, callback) {
 
 //Insert User in DB
 /*
-var createCharityOwnerKeyWord = function (objToSave, callback) {
-    new Models.charitykeyWord(objToSave).save(callback)
-};
-*/
+ var createCharityOwnerKeyWord = function (objToSave, callback) {
+ new Models.charitykeyWord(objToSave).save(callback)
+ };
+ */
 
 //Insert User in DB
 var createCharityImages = function (objToSave, callback) {
@@ -69,13 +69,13 @@ var getCharityPopulate = function (criteria, project, options,populateModel, cal
     });
 };
 /*//Delete User in DB
-var deleteCustomer = function (criteria, callback) {
-    Models.Customers.findOneAndRemove(criteria, callback);
-};
+ var deleteCustomer = function (criteria, callback) {
+ Models.Customers.findOneAndRemove(criteria, callback);
+ };
 
-var addAddress = function (objToSave, callback) {
-    new Models.CustomerAddresses(objToSave).save(callback)
-};*/
+ var addAddress = function (objToSave, callback) {
+ new Models.CustomerAddresses(objToSave).save(callback)
+ };*/
 
 module.exports = {
     createCharityOwner: createCharityOwner,
@@ -91,4 +91,3 @@ module.exports = {
     getCharityOwnerId: getCharityOwnerId,
     getCharityOwner: getCharityOwner
 };
-

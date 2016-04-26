@@ -29,7 +29,11 @@ module.exports = [
                     firstName: Joi.string().required().trim(),
                     lastName: Joi.string().optional().trim(),
                     emailId: Joi.string().email().required().trim(),
-                    password: Joi.string().required().min(6)
+                    password: Joi.string().optional().min(6),
+                    facebookId: Joi.string().optional().trim(),
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim(),
+                    appVersion: Joi.string().required().trim()
 
                 },
                 failAction: UniversalFunctions.failActionFunction
@@ -114,27 +118,19 @@ module.exports = [
         method: 'GET',
         path: '/api/donor/getCampaign',
         handler: function (request, reply) {
-            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
-            //console.log("CCasd",userData);//reply(userData);
-            if (userData && userData.id) {
 
-                Controller.DonorController.getCampaign(userData, function (err, data) {
-                    if (err) {
-                        reply(UniversalFunctions.sendError(err));
-                    } else {
-                        reply(UniversalFunctions.sendSuccess(null, data))
-                    }
-                });
-            } else {
-                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
-            }
+            Controller.DonorController.getCampaign(function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                }
+            });
         },
         config: {
             description: 'Get all campaign data',
-            auth: 'DonorAuth',
             tags: ['api', 'Donor'],
             validate: {
-                headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
             },
             plugins: {
@@ -169,6 +165,70 @@ module.exports = [
                     donatedUnit: Joi.number().required(),
                     donatedCurrency: Joi.string().required().trim(),
                     paymentGatewayTransactionId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/getCampaignById',
+        handler: function (request, reply) {
+            Controller.DonorController.getCampaignById(request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                }
+            });
+        },
+        config: {
+            description: 'Create donor',
+            tags: ['api', 'donor'],
+            validate: {
+                payload: {
+                    campaignId: Joi.string().optional().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/login',
+        handler: function (request, reply) {
+            var payloadData = request.payload;
+            Controller.DonorController.loginDonor(payloadData, function (err, data) {
+                if (err) {
+                    //console.log();
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Login Via Email & Password For Donor',
+            tags: ['api', 'donor'],
+            validate: {
+                payload: {
+                    email: Joi.string().email().required(),
+                    password: Joi.string().required().min(5).trim(),
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim(),
+                    appVersion: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },
