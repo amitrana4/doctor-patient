@@ -8,6 +8,7 @@ var charityOwnerSchema = new Schema({
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
     charityRegistrationNo: {type: String, trim: true, unique: true, required: true},
     phoneNumber: {type: String, trim: true, unique: true, required: true},
+    passwordResetToken: {type: String, trim: true, required: false},
     passwordHash: {type: String, required: false},
     facebookId: {type: String, required: false},
     /*accountState: {

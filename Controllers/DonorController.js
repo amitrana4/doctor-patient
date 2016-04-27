@@ -23,6 +23,7 @@ var createDonor = function (payloadData, callback) {
     var dataToUpdate = {};
 
 
+    dataToSave.emailId =dataToSave.emailId.toLowerCase();
     async.series([
         function (cb) {
             //Validate phone No
@@ -75,7 +76,7 @@ var createDonor = function (payloadData, callback) {
             }
             Service.DonorService.createDonor(finalDataToSave, function (err, donorDataFromDB) {
                 if (err) {
-                    if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1){
+                    if (err.code == 11000 && err.message.indexOf('donorschemas.$emailId_1') > -1){
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
                     }
                     else {
@@ -120,7 +121,7 @@ var createDonor = function (payloadData, callback) {
 
 
 
-var UpdateDonor = function (payloadData, CharityData, callback) {
+var UpdateDonor = function (payloadData, DonorData, callback) {
     var donorProfileData = null;
     var dataToSave = payloadData;
 
@@ -142,12 +143,18 @@ var UpdateDonor = function (payloadData, CharityData, callback) {
                 finalDataToSave.country = dataToSave.country;
             }
 
-            var criteria = {_id: CharityData._id};
+            var criteria = {_id: DonorData._id};
             var options = {lean: true};
 
 
             Service.DonorService.updateDonor(criteria, finalDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
+                    if (err.code == 11000 && err.message.indexOf('donorschemas.$phoneNumber_1') > -1) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
+                    }
+                    else {
+                        cb(err)
+                    }
                     cb(err)
                 } else {
                     cb();

@@ -375,7 +375,7 @@ module.exports = [
             auth: 'CharityAuth',
             validate: {
                 payload: {
-                    type: Joi.string().optional().trim().description('COMPLETE, PENDING')
+                    type: Joi.string().required().valid(['COMPLETE', 'PENDING'])
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
@@ -591,6 +591,34 @@ module.exports = [
             plugins: {
                 'hapi-swagger': {
                     //payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/charity/forgotPassword',
+        handler: function (request, reply) {
+            Controller.CharityController.getResetPasswordToken(request.query, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Sends Reset Password Token To Charity',
+            tags: ['api', 'charity'],
+            validate: {
+                query: {
+                    email: Joi.string().email().optional()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }

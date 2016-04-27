@@ -14,7 +14,7 @@ var donorSchema = new Schema({
     //idProvider: {type: String, trim: true, required: true},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},
-    phoneNumber: {type: String, trim: true, required: false},
+    phoneNumber: {type: String, unique: true, trim: true, required: false},
     facebookId: {type: String, required: false},
     country: {type: String, trim: true, required: false},
     loggedInOn: {type: Date, required: false},
