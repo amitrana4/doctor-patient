@@ -10,6 +10,7 @@ var donorSchema = new Schema({
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
     //accountState: {type: String, trim: true, required: true},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
+    cards: [{type: Schema.ObjectId, ref: 'donorCardsSchema'}],
     //idProvider: {type: String, trim: true, required: true},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},

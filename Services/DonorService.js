@@ -12,6 +12,11 @@ var createDonor = function (objToSave, callback) {
     new Models.donor(objToSave).save(callback)
 };
 
+// /Insert Card in DB
+var createCard = function (objToSave, callback) {
+    new Models.donorCards(objToSave).save(callback)
+};
+
 //Update User in DB
 var updateDonor = function (criteria, dataToSet, options, callback) {
     Models.donor.findOneAndUpdate(criteria, dataToSet, options, callback);
@@ -35,6 +40,7 @@ var getCampaignPopulate = function (criteria, project, options,populateModel, ca
 module.exports = {
     getDonor: getDonor,
     createDonor: createDonor,
+    createCard: createCard,
     updateDonor: updateDonor,
     getCharityCampaign: getCharityCampaign,
     getCampaignPopulate: getCampaignPopulate

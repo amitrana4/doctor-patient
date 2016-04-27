@@ -188,6 +188,16 @@ var STATUS_MSG = {
             customMessage : 'Invalid Email Address',
             type : 'INVALID_EMAIL'
         },
+        CARD_DIGIT_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Card last 3 digit required',
+            type : 'CARD_DIGIT_REQUIRED'
+        },
+        PAYPALID_REQUIRED: {
+            statusCode:400,
+            customMessage : 'PAypal Id required',
+            type : 'PAYPALID_REQUIRED'
+        },
         PASSWORD_REQUIRED: {
             statusCode:400,
             customMessage : 'Password is required',

@@ -12,6 +12,7 @@ module.exports = {
     charityOwner : require('./charityOwner'),
     donation : require('./donation'),
     donor : require('./donor'),
+    donorCards : require('./donorCards'),
     favouriteCampaign : require('./favouriteCampaign'),
     Admins : require('./Admins')
 };
