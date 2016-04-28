@@ -119,13 +119,13 @@ module.exports = [
         path: '/api/donor/getCampaign',
         handler: function (request, reply) {
 
-                Controller.DonorController.getCampaign(function (err, data) {
-                    if (err) {
-                        reply(UniversalFunctions.sendError(err));
-                    } else {
-                        reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
-                    }
-                });
+            Controller.DonorController.getCampaign(function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                }
+            });
         },
         config: {
             description: 'Get all campaign data',
@@ -230,6 +230,71 @@ module.exports = [
                     deviceToken: Joi.string().required().min(1).trim(),
                     appVersion: Joi.string().required().trim()
                 },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/addCard',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.addCard(request.payload,donorData, function (err, data) {
+                if (err) {
+                    reply(err);
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Add Card Data',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload: {
+                    Digit:Joi.string().required().trim(),
+                    payPalId:Joi.string().required()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/donor/setDefaultCard',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.setDefaultCard(request.payload,donorData, function (err, data) {
+                if (err) {
+                    reply(err);
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Set Default Card',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload:{
+                    cardID:Joi.string().length(24).required()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
             },
             plugins: {

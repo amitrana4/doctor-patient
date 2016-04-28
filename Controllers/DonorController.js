@@ -23,6 +23,7 @@ var createDonor = function (payloadData, callback) {
     var dataToUpdate = {};
 
 
+    dataToSave.emailId =dataToSave.emailId.toLowerCase();
     async.series([
         function (cb) {
             //Validate phone No
@@ -75,7 +76,7 @@ var createDonor = function (payloadData, callback) {
             }
             Service.DonorService.createDonor(finalDataToSave, function (err, donorDataFromDB) {
                 if (err) {
-                    if (err.code == 11000 && err.message.indexOf('customers.$emailId_1') > -1){
+                    if (err.code == 11000 && err.message.indexOf('donorschemas.$emailId_1') > -1){
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
                     }
                     else {
@@ -120,7 +121,7 @@ var createDonor = function (payloadData, callback) {
 
 
 
-var UpdateDonor = function (payloadData, CharityData, callback) {
+var UpdateDonor = function (payloadData, DonorData, callback) {
     var donorProfileData = null;
     var dataToSave = payloadData;
 
@@ -142,12 +143,18 @@ var UpdateDonor = function (payloadData, CharityData, callback) {
                 finalDataToSave.country = dataToSave.country;
             }
 
-            var criteria = {_id: CharityData._id};
+            var criteria = {_id: DonorData._id};
             var options = {lean: true};
 
 
             Service.DonorService.updateDonor(criteria, finalDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
+                    if (err.code == 11000 && err.message.indexOf('donorschemas.$phoneNumber_1') > -1) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PHONE_ALREADY_EXIST);
+                    }
+                    else {
+                        cb(err)
+                    }
                     cb(err)
                 } else {
                     cb();
@@ -225,13 +232,13 @@ var changePassword = function (queryData,userData, callback) {
 var getCampaign = function (callback) {
 
 
-   /* var criteria      = { complete:false},*/
+    /* var criteria      = { complete:false},*/
     var _date = new Date();
-        var criteria = {
-                $and:[
-                    {complete:false},
-                    {'endDate':{$gte:new Date()}}
-                ]},
+    var criteria = {
+            $and:[
+                {complete:false},
+                {'endDate':{$gte:new Date()}}
+            ]},
         options = {lean: true},
         projection = {createdOn:0};
 
@@ -351,12 +358,102 @@ var loginDonor = function (payloadData, callback) {
 };
 
 
+var addCard = function (payloadData, userData, callback) {
+
+    var cardData = {};
+    var dataToSave = payloadData;
+    async.series([
+        function (cb) {
+            if (!dataToSave.Digit) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CARD_DIGIT_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            if (!dataToSave.payPalId) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },
+        function (cb) {
+            dataToSave.createdOn = new Date();
+            Service.DonorService.createCard(dataToSave, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    cardData = donorDataFromDB;
+                    cb();
+                }
+            })
+        },function (cb) {
+            var criteria    = {_id:userData._id};
+            var dataCard  = {cards:cardData._id};
+            var datatoSet1  = {$addToSet:dataCard};
+            var options     = {multi: true};
+            Service.DonorService.updateDonor(criteria, datatoSet1, options,function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    cb();
+                }
+            })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null);
+        }
+    });
+};
+
+var setDefaultCard = function(payloadData,userID,callbackRoute){
+    async.auto({
+        checkCard:function(callback){
+            var query = {
+                _id:userID._id,
+                'Cards._id':payloadData.cardID
+            }
+            var options = {lean:true};
+            var projections = {_id:1};
+            Service.DonorService.getDonor(query,projections,options,function(err,result){
+                if(err) return callback(err);
+                if(result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        setDefaultCard:function(callback){
+            var query = {
+                _id:userID._id,
+            }
+            var options = {lean:true};
+            var dataToSet = {
+                defaultCard:payloadData.cardID
+            }
+            Service.DonorService.updateDonor(query,dataToSet,options,function(err,result){
+                if(err) return callback(err);
+                if(result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    },function(err,result){
+        if(err) return callbackRoute(err);
+        callbackRoute();
+    })
+}
+
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
     getCampaign: getCampaign,
     getCampaignById: getCampaignById,
     loginDonor: loginDonor,
+    addCard: addCard,
     //Donation: Donation,
     UpdateDonor: UpdateDonor
 };
+

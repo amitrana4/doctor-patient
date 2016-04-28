@@ -73,6 +73,10 @@ var sendEmailToUser = function (emailType ,emailVariables, emailId, callback) {
                     mailOptions.subject = Config.APP_CONSTANTS.notificationMessages.contactBusinessForm.emailSubject;
                     mailOptions.html = renderMessageFromTemplateAndVariables(Config.APP_CONSTANTS.notificationMessages.contactBusinessForm.emailMessage, emailVariables) ;
                     break;
+                case 'CHARITY_FORGOT_PASSWORD' :
+                    mailOptions.subject = Config.APP_CONSTANTS.notificationMessages.charityForgotPassword.emailSubject;
+                    mailOptions.html = renderMessageFromTemplateAndVariables(Config.APP_CONSTANTS.notificationMessages.charityForgotPassword.emailMessage, emailVariables) ;
+                    break;
             }
             cb();
 

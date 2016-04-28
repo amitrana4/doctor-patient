@@ -21,6 +21,7 @@ var charitySchema = new Schema({
     registrationProofFileId: {type: String, default: null},
     supportingDocumentFileId: {type: String, default: null},
     hasKeyWords: {type: Boolean, required: true, default: false},
+    adminApproval: {type: Boolean, required: true, default: true},
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},
     appVersion: {type: String, trim: true, required: true},
@@ -43,7 +44,6 @@ var charitySchema = new Schema({
     bankAccountHolderName: {type: String, trim: true, required: false},
     bankAccountHolderPhoneNumber: {type: Number, trim: true, required: false},
     bankAccountNumber: {type: String, trim: true, required: false},
-    passwordChangedOn: {type: Date, required: false},
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Date, required: true}

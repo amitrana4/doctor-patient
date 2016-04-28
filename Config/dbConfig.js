@@ -5,7 +5,6 @@ var user1;
 var pass1;
 
 if (process.env.NODE_ENV == 'test') {
-    /*mongoURL = "mongodb://"+process.env.MONGO_USER_DEV+":"+process.env.MONGO_PASS_DEV+"@"+process.env.DB_IP+"/"+process.env.DB_NAME_DEV;*/
     mongoURL = "mongodb://"+process.env.MONGO_USER_DEV+":"+process.env.MONGO_PASS_DEV+"@"+process.env.DB_IP+"/givapp_test";
     user1 = process.env.MONGO_USER_DEV;
     pass1 = process.env.MONGO_PASS_DEV;

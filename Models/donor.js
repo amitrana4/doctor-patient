@@ -10,6 +10,7 @@ var donorSchema = new Schema({
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
     //accountState: {type: String, trim: true, required: true},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
+    cards: [{type: Schema.ObjectId, ref: 'donorCardsSchema'}],
     //idProvider: {type: String, trim: true, required: true},
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},
@@ -18,7 +19,7 @@ var donorSchema = new Schema({
     onceLogin: {type: String, trim: true, required: true, default:false},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},
-    phoneNumber: {type: String, trim: true, required: false},
+    phoneNumber: {type: String, unique: true, trim: true, required: false},
     facebookId: {type: String, required: false},
     country: {type: String, trim: true, required: false},
     loggedInOn: {type: Date, required: false},

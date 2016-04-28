@@ -13,6 +13,7 @@ if (process.env.NODE_ENV == 'test') {
 }
 
 
+var DOMAIN_NAME_MAIL = 'http://52.91.44.245:'+PORT;
 var SERVER = {
     APP_NAME: 'Your App Name',
     PORTS: {
@@ -187,6 +188,16 @@ var STATUS_MSG = {
             statusCode:400,
             customMessage : 'Invalid Email Address',
             type : 'INVALID_EMAIL'
+        },
+        CARD_DIGIT_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Card last 3 digit required',
+            type : 'CARD_DIGIT_REQUIRED'
+        },
+        PAYPALID_REQUIRED: {
+            statusCode:400,
+            customMessage : 'PAypal Id required',
+            type : 'PAYPALID_REQUIRED'
         },
         PASSWORD_REQUIRED: {
             statusCode:400,
@@ -526,6 +537,11 @@ var notificationMessages = {
     forgotPassword: {
         emailMessage : "Dear {{user_name}}, <br><br>  Your reset password token is <strong>{{password_reset_token}}</strong> , <a href='{{password_reset_link}}'> Click Here </a> To Reset Your Password",
         emailSubject: "Password Reset Notification For Seed Project"
+    },
+    charityForgotPassword: {
+        //emailMessage : "Dear {{user_name}}, <br><br>  Your reset password token is <strong>{{password_reset_token}}</strong> , <a href='{{password_reset_link}}'> Click Here </a> To Reset Your Password",
+        emailMessage : "Dear {{user_name}}, <br><br>Please fill password to following link to reset your password. ,<br> <br> {{password_reset_link}}  ",
+        emailSubject: "Password Reset Notification For GiveApp"
     }
 };
 
@@ -541,6 +557,7 @@ var APP_CONSTANTS = {
     DATABASE: DATABASE,
     SCREEN_TO_SHOW : SCREEN_TO_SHOW,
     CAMPAIGN_TYPE : CAMPAIGN_TYPE,
+    DOMAIN_NAME_MAIL: DOMAIN_NAME_MAIL,
     STATUS_MSG: STATUS_MSG,
     notificationMessages: notificationMessages,
     languageSpecificMessages: languageSpecificMessages,
