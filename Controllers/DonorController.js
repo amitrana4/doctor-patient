@@ -298,10 +298,10 @@ var loginDonor = function (payloadData, callback) {
         function (cb) {
 
             if (!userFound) {
-                cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
             } else {
                 if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
-                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INCORRECT_PASSWORD);
                 } else {
                     successLogin = true;
                     cb();
