@@ -1154,7 +1154,6 @@ var updateCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
-            console.log(dataToSave.id, '==============================')
 
             var criteria = {
                 _id: dataToSave.id
