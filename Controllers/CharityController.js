@@ -1154,6 +1154,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
+            console.log(dataToSave.id, '==============================')
 
             var criteria = {
                 _id: dataToSave.id
@@ -1163,20 +1164,22 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                 lean: true
             };
             Service.CharityService.getCharityCampaign(criteria, projection, option, function (err, result) {
+                console.log(err, result)
                 if (err) {
-                    cb(err)
+                    return cb(err)
                 } else {
+                    if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                     var totalResult = result && result[0] || null;
 
                     if (dataToSave.pictures) {
                         var totalLength = Number(dataToSave.pictures.length + totalResult.pictures.length);
                         if (totalLength > 5) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
                         else {
-                            cb();
+                            return cb();
                         }
                     }
                     else{
-                        cb()
+                        return cb()
                     }
 
                 }
