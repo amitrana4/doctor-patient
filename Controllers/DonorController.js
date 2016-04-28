@@ -410,16 +410,19 @@ var addCard = function (payloadData, userData, callback) {
 };
 
 var setDefaultCard = function(payloadData,userID,callbackRoute){
-    async.auto({
+    async.series({
         checkCard:function(callback){
             var query = {
-                _id:userID._id,
-                'Cards._id':payloadData.cardID
+                $and:[
+                    {_id:userID._id},
+                    {'cards': { $in : [payloadData.cardID]}}
+                ]
             }
             var options = {lean:true};
             var projections = {_id:1};
             Service.DonorService.getDonor(query,projections,options,function(err,result){
                 if(err) return callback(err);
+                if(result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if(result) return callback();
                 callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             })
@@ -430,7 +433,7 @@ var setDefaultCard = function(payloadData,userID,callbackRoute){
             }
             var options = {lean:true};
             var dataToSet = {
-                defaultCard:payloadData.cardID
+                isDefault:payloadData.cardID
             }
             Service.DonorService.updateDonor(query,dataToSet,options,function(err,result){
                 if(err) return callback(err);
@@ -445,6 +448,29 @@ var setDefaultCard = function(payloadData,userID,callbackRoute){
 }
 
 
+var listCards = function (payloadData, userID, callback) {
+
+    var criteria = {
+                _id:userID._id
+            },
+        options = {lean: true},
+        projection = {cards:1, isDefault:1};
+
+    var populateVariable = {
+        path: "cards",
+        select: 'Digit'
+    };
+
+    Service.DonorService.getDonorCardPopulate(criteria, projection, options, populateVariable, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+
 
 module.exports = {
     createDonor: createDonor,
@@ -453,6 +479,8 @@ module.exports = {
     getCampaignById: getCampaignById,
     loginDonor: loginDonor,
     addCard: addCard,
+    setDefaultCard: setDefaultCard,
+    listCards: listCards,
     //Donation: Donation,
     UpdateDonor: UpdateDonor
 };

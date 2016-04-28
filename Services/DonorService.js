@@ -22,6 +22,12 @@ var updateDonor = function (criteria, dataToSet, options, callback) {
     Models.donor.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+
+//Update User in DB
+var updateDonorCards = function (criteria, dataToSet, options, callback) {
+    Models.donorCards.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
 //Get Users from DB
 var getCharityCampaign = function (criteria, projection, options, callback) {
     Models.charityCampaign.find(criteria, projection, options, callback);
@@ -37,11 +43,23 @@ var getCampaignPopulate = function (criteria, project, options,populateModel, ca
     });
 };
 
+var getDonorCardPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.donor.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
 module.exports = {
     getDonor: getDonor,
     createDonor: createDonor,
     createCard: createCard,
     updateDonor: updateDonor,
+    updateDonorCards: updateDonorCards,
     getCharityCampaign: getCharityCampaign,
+    getDonorCardPopulate: getDonorCardPopulate,
     getCampaignPopulate: getCampaignPopulate
 };

@@ -15,8 +15,8 @@ var donorSchema = new Schema({
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},
     appVersion: {type: String, trim: true, required: true},
-    facebookId: {type: String, trim: true, required: true},
     onceLogin: {type: String, trim: true, required: true, default:false},
+    isDefault:{type: String, required: false},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},
     phoneNumber: {type: String, unique: true, trim: true, required: false},
