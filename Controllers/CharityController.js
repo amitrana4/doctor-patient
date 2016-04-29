@@ -160,6 +160,18 @@ var createCharityOwner = function (payloadData, callback) {
             }
         },
         function(cb){
+            var criteria = {_id: charityOwnerData._id};
+            var setQuery = {
+                $set: {
+                    charityId: charityData._id
+                }
+            };
+            Service.CharityService.updateCharityOwnerId(criteria, setQuery, {new: true},function(err, data){
+                if (err) return cb(err);
+                return  cb();
+            });
+        },
+        function(cb){
             if (charityData && charityData._id && dataToSave.registrationProofFileId) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.registrationProofFileId, charityData._id, document, function (err, uploadedInfo) {
@@ -1033,16 +1045,13 @@ var campaignList = function (payloadData, CharityData, callback) {
             var populateVariable = {
                 path: "campaignId",
                 match: {
-                    $and:[
-                        {$or:[
+                        $or:[
                             {complete:true},
                             {'endDate':{$lt:new Date()}}
 
-
-                        ]}
-                    ]
+                        ]
                 },
-                select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
+                select: 'campa1ignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
             };
         }
         if(dataToSave.type == 'PENDING'){
@@ -1145,6 +1154,7 @@ var getCharityProfileInfo = function (CharityData,callbackRoute) {
 
 
 var updateCampaign = function (payloadData, CharityData, callback) {
+    console.log(payloadData, CharityData, '===============')
     var campaignData = null;
     var campaignMainImageFileId = {};
     var dataToSave = payloadData;
@@ -1156,14 +1166,17 @@ var updateCampaign = function (payloadData, CharityData, callback) {
         function (cb) {
 
             var criteria = {
-                _id: dataToSave.id
+                $and:[
+                    {charityId: CharityData.charityId},
+                    {_id: dataToSave.id}
+                ]
             };
             var projection = {pictures:1};
             var option = {
                 lean: true
             };
             Service.CharityService.getCharityCampaign(criteria, projection, option, function (err, result) {
-                console.log(err, result)
+                console.log(err, result, '===============')
                 if (err) {
                     return cb(err)
                 } else {

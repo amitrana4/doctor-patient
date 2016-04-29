@@ -250,7 +250,7 @@ module.exports = [
             validate: {
                 payload: {
                     bankAccountHolderName: Joi.string().required().trim(),
-                    bankAccountHolderPhoneNumber: Joi.string().required().trim(),
+                    bankAccountHolderPhoneNumber: Joi.number().required(),
                     bankAccountNumber: Joi.string().required().trim()
 
                 },

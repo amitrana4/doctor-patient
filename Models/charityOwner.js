@@ -11,6 +11,7 @@ var charityOwnerSchema = new Schema({
     passwordResetToken: {type: String, trim: true, required: false},
     passwordHash: {type: String, required: false},
     facebookId: {type: String, required: false},
+    charityId: {type: String, required: false},
     /*accountState: {
      type: String,
      trim: true,
