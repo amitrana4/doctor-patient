@@ -671,7 +671,14 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
                 deviceToken: payloadData.deviceToken,
                 deviceType: payloadData.deviceType
             };
-            Service.CharityService.updateCharityOwner(criteria, dataToSet,{lean: true}, function(err,customerData){
+
+            var populateVariable = {
+                path: "pictures",
+                select: 'images'
+            };
+
+
+            Service.CharityService.updateCharityOwnerPopulate(criteria, dataToSet,{lean: true}, populateVariable, function(err,customerData){
                 if (err) {
                     return cb(err);
                 }
