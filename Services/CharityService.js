@@ -7,6 +7,7 @@ var getCharityOwner = function (criteria, projection, options, callback) {
     Models.charity.find(criteria, projection, options, callback);
 };
 
+
 //Get Users from DB
 var getCharityOwnerId = function (criteria, projection, options, callback) {
     Models.charityOwner.find(criteria, projection, options, callback);
@@ -50,6 +51,18 @@ var updateCharityOwner = function (criteria, dataToSet, options, callback) {
     Models.charity.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+//Update User in DB
+var updateCharityOwnerPopulate = function (criteria, dataToSet, options, populateModel, callback) {
+    Models.charity.findOneAndUpdate(criteria, dataToSet, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
+
 var updateCharityOwnerId = function (criteria, dataToSet, options, callback) {
     Models.charityOwner.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
@@ -89,5 +102,6 @@ module.exports = {
     getCharityCampaign: getCharityCampaign,
     /*createCharityOwnerKeyWord: createCharityOwnerKeyWord,*/
     getCharityOwnerId: getCharityOwnerId,
-    getCharityOwner: getCharityOwner
+    getCharityOwner: getCharityOwner,
+    updateCharityOwnerPopulate: updateCharityOwnerPopulate
 };

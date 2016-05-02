@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ef9eb50d-8827-42da-9061-623b8986cb83" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+<<<<<<< HEAD
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Config/dbConfig.js" afterPath="$PROJECT_DIR$/Config/dbConfig.js" />
+=======
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Controllers/CharityController.js" afterPath="$PROJECT_DIR$/Controllers/CharityController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Services/CharityService.js" afterPath="$PROJECT_DIR$/Services/CharityService.js" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
     </list>
     <ignored path="givapp-nodejs.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,8 +32,23 @@
       <file leaf-file-name="CharityController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Controllers/CharityController.js">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="17340">
               <caret line="1156" column="40" selection-start-line="1156" selection-start-column="40" selection-end-line="1156" selection-end-column="40" />
+=======
+            <state relative-caret-position="259">
+              <caret line="680" column="113" selection-start-line="680" selection-start-column="113" selection-end-line="680" selection-end-column="113" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="charity.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Models/charity.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="400">
+              <caret line="28" column="12" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="12" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
               <folding />
             </state>
           </provider>
@@ -54,11 +74,19 @@
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file leaf-file-name="awsS3Config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Config/awsS3Config.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="285">
               <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+=======
+      <file leaf-file-name="appConstants.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Config/appConstants.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
               <folding />
             </state>
           </provider>
@@ -67,8 +95,8 @@
       <file leaf-file-name="CharityService.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Services/CharityService.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="4" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+            <state relative-caret-position="194">
+              <caret line="55" column="88" selection-start-line="55" selection-start-column="88" selection-end-line="55" selection-end-column="88" />
               <folding />
             </state>
           </provider>
@@ -77,8 +105,13 @@
       <file leaf-file-name="DonorController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Controllers/DonorController.js">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="6270">
               <caret line="418" column="17" selection-start-line="415" selection-start-column="16" selection-end-line="418" selection-end-column="17" />
+=======
+            <state relative-caret-position="546">
+              <caret line="421" column="32" selection-start-line="421" selection-start-column="32" selection-end-line="421" selection-end-column="32" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
               <folding />
             </state>
           </provider>
@@ -87,8 +120,13 @@
       <file leaf-file-name="CharityRoute.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Routes/CharityRoute.js">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="3780">
               <caret line="252" column="73" selection-start-line="252" selection-start-column="73" selection-end-line="252" selection-end-column="73" />
+=======
+            <state relative-caret-position="455">
+              <caret line="312" column="67" selection-start-line="312" selection-start-column="67" selection-end-line="312" selection-end-column="67" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
               <folding />
             </state>
           </provider>
@@ -109,7 +147,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Services/CharityService.js" />
         <option value="$PROJECT_DIR$/Models/index.js" />
         <option value="$PROJECT_DIR$/Models/donation.js" />
         <option value="$PROJECT_DIR$/Config/appConstants.js" />
@@ -122,9 +159,13 @@
         <option value="$PROJECT_DIR$/Controllers/DonorController.js" />
         <option value="$PROJECT_DIR$/Routes/DonorRoute.js" />
         <option value="$PROJECT_DIR$/Models/charityOwner.js" />
-        <option value="$PROJECT_DIR$/Controllers/CharityController.js" />
         <option value="$PROJECT_DIR$/Routes/CharityRoute.js" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/Config/awsS3Config.js" />
+=======
+        <option value="$PROJECT_DIR$/Controllers/CharityController.js" />
+        <option value="$PROJECT_DIR$/Services/CharityService.js" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
         <option value="$PROJECT_DIR$/Config/dbConfig.js" />
       </list>
     </option>
@@ -137,7 +178,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="981" />
+    <option name="height" value="977" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -164,8 +205,11 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
       <pane id="Scope" />
       <pane id="Scratches" />
+=======
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -256,6 +300,11 @@
           </PATH>
         </subPane>
       </pane>
+<<<<<<< HEAD
+=======
+      <pane id="Scope" />
+      <pane id="Scratches" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -360,25 +409,40 @@
       <workItem from="1461836133644" duration="4239000" />
       <workItem from="1461842037260" duration="2270000" />
       <workItem from="1461846709297" duration="1209000" />
+<<<<<<< HEAD
       <workItem from="1461905320581" duration="3954000" />
       <workItem from="1462168215815" duration="1690000" />
+=======
+      <workItem from="1461905320581" duration="10196000" />
+      <workItem from="1462163810561" duration="3259000" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="38332000" />
+=======
+    <option name="totallyTimeSpent" value="46143000" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1920" height="981" extended-state="6" />
+    <frame x="0" y="23" width="1920" height="977" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24960506" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32871974" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+<<<<<<< HEAD
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28901735" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3283237" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+=======
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28754365" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3282887" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -638,13 +702,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Config/appConstants.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7575">
-          <caret line="505" column="40" selection-start-line="505" selection-start-column="40" selection-end-line="505" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Lib/NotificationManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -656,13 +713,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="17" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Models/charity.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="15" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="15" />
         </state>
       </provider>
     </entry>
@@ -685,6 +735,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+<<<<<<< HEAD
         </state>
       </provider>
     </entry>
@@ -693,6 +744,8 @@
         <state relative-caret-position="225">
           <caret line="15" column="4" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
           <folding />
+=======
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
         </state>
       </provider>
     </entry>
@@ -722,14 +775,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="523">
           <caret line="46" column="16" selection-start-line="46" selection-start-column="16" selection-end-line="46" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Controllers/DonorController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6270">
-          <caret line="418" column="17" selection-start-line="415" selection-start-column="16" selection-end-line="418" selection-end-column="17" />
-          <folding />
+<<<<<<< HEAD
+=======
         </state>
       </provider>
     </entry>
@@ -741,18 +788,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Controllers/CharityController.js">
+    <entry file="file://$PROJECT_DIR$/Config/appConstants.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17340">
-          <caret line="1156" column="40" selection-start-line="1156" selection-start-column="40" selection-end-line="1156" selection-end-column="40" />
+        <state relative-caret-position="165">
+          <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Routes/CharityRoute.js">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="455">
+          <caret line="312" column="67" selection-start-line="312" selection-start-column="67" selection-end-line="312" selection-end-column="67" />
+          <folding />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Controllers/DonorController.js">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="6270">
+          <caret line="418" column="17" selection-start-line="415" selection-start-column="16" selection-end-line="418" selection-end-column="17" />
+=======
+        <state relative-caret-position="546">
+          <caret line="421" column="32" selection-start-line="421" selection-start-column="32" selection-end-line="421" selection-end-column="32" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Models/charity.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="28" column="12" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Controllers/CharityController.js">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="17340">
+          <caret line="1156" column="40" selection-start-line="1156" selection-start-column="40" selection-end-line="1156" selection-end-column="40" />
+=======
+        <state relative-caret-position="259">
+          <caret line="680" column="113" selection-start-line="680" selection-start-column="113" selection-end-line="680" selection-end-column="113" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Services/CharityService.js">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="3780">
           <caret line="252" column="73" selection-start-line="252" selection-start-column="73" selection-end-line="252" selection-end-column="73" />
+=======
+        <state relative-caret-position="194">
+          <caret line="55" column="88" selection-start-line="55" selection-start-column="88" selection-end-line="55" selection-end-column="88" />
+>>>>>>> 040867bb06b24ad52acba9c7803d46d99fbe8b04
           <folding />
         </state>
       </provider>
