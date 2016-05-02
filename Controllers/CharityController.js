@@ -638,7 +638,12 @@ var loginCharityOwner = function (payloadData, callback) {
                 deviceType: payloadData.deviceType,
                 onceLogin:true
             };
-            Service.CharityService.updateCharityOwner(criteria, setQuery, {lean: true}, function (err, data) {
+
+            var populateVariable = {
+                path: "pictures",
+                select: 'images'
+            };
+            Service.CharityService.updateCharityOwnerPopulate(criteria, setQuery, {lean: true}, populateVariable, function (err, data) {
                 updatedUserDetails = data;
                 cb(err, data);
             });
@@ -1161,7 +1166,6 @@ var getCharityProfileInfo = function (CharityData,callbackRoute) {
 
 
 var updateCampaign = function (payloadData, CharityData, callback) {
-    console.log(payloadData, CharityData, '===============')
     var campaignData = null;
     var campaignMainImageFileId = {};
     var dataToSave = payloadData;
@@ -1183,7 +1187,6 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                 lean: true
             };
             Service.CharityService.getCharityCampaign(criteria, projection, option, function (err, result) {
-                console.log(err, result, '===============')
                 if (err) {
                     return cb(err)
                 } else {
