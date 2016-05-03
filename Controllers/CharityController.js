@@ -548,7 +548,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
                         });
                     }
                     else{
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.VALUE_EXIST);
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
                     }
                 }
             });
@@ -811,6 +811,7 @@ var createCampaign = function (payloadData, CharityData, callback) {
     var campaignToUpdate = {};
     var campaignMainImageFileId = {};
     var campaignPictures = [];
+    payloadData.campaignName =payloadData.campaignName.toLowerCase();
     var dataToSave = payloadData;
 
     async.series([

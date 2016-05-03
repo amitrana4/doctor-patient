@@ -380,7 +380,7 @@ var STATUS_MSG = {
             type : 'INCORRECT_PASSWORD'
         },
         VALUE_EXIST: {
-            statusCode:401,
+            statusCode:400,
             customMessage : 'Value Exist',
             type : 'VALUE_EXIST'
         },
