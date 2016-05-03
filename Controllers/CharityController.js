@@ -598,7 +598,7 @@ var loginCharityOwner = function (payloadData, callback) {
                 cb(ERROR_MESSAGE.EMAIL_NOT_FOUND);
             } else {
                 if (userFound && userFound.passwordHash != UniversalFunctions.CryptData(payloadData.password)) {
-                    cb(ERROR_MESSAGE.INCORRECT_PASSWORD);
+                    return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INCORRECT_PASSWORD);
                 } else {
                     successLogin = true;
                     cb();

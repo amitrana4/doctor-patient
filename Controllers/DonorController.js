@@ -352,7 +352,7 @@ var loginDonor = function (payloadData, callback) {
             callback(err);
         } else {
             callback(null, {accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails.toObject())});
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails)});
         }
     });
 };
