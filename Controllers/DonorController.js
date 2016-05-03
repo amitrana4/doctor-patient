@@ -26,7 +26,7 @@ var createDonor = function (payloadData, callback) {
     dataToSave.emailId =dataToSave.emailId.toLowerCase();
     async.series([
         function (cb) {
-            //Validate phone No
+            //Validate firstname
             if (!dataToSave.firstName) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NAME_REQUIRED);
             } else {
@@ -34,7 +34,7 @@ var createDonor = function (payloadData, callback) {
             }
         },
         function (cb) {
-            //verify email address
+            //verify email 
             if (!UniversalFunctions.verifyEmailFormat(dataToSave.emailId)) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_EMAIL);
             } else {

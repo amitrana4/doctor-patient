@@ -5,7 +5,7 @@ var Config = require('../Config');
 var donorSchema = new Schema({
     //**************************Required Fields**********************************//
     firstName: {type: String, trim: true, required: true},
-    emailId: {type: String, unique: true, trim: true, required: true},
+    emailId: {type: String, trim: true, index: true, unique: true, required: true},
     passwordHash: {type: String, required: false},
     accessToken: {type: String, trim: true, index: true, unique: true, sparse: true},
     //accountState: {type: String, trim: true, required: true},
@@ -19,7 +19,7 @@ var donorSchema = new Schema({
     isDefault:{type: String, required: false},
     //**************************Optional**********************************//
     lastName: {type: String, trim: true, required: false},
-    phoneNumber: {type: String, unique: true, trim: true, required: false},
+    phoneNumber: {type: String, unique: true, trim: true, sparse: true},
     facebookId: {type: String, required: false},
     country: {type: String, trim: true, required: false},
     loggedInOn: {type: Date, required: false},
