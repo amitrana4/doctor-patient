@@ -6,7 +6,7 @@ var donorCardsSchema = new Schema({
     //**************************Required Fields**********************************//
 
     Digit : {type : String, required:true},
-    payPalId : {type : String, required:true},
+    payPalId : {type: String, unique: true, trim: true, required: true},
     
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},

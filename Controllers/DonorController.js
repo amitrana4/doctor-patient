@@ -352,7 +352,7 @@ var loginDonor = function (payloadData, callback) {
             callback(err);
         } else {
             callback(null, {accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails)});
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails.toObject())});
         }
     });
 };
@@ -381,10 +381,15 @@ var addCard = function (payloadData, userData, callback) {
             dataToSave.createdOn = new Date().toISOString();
             Service.DonorService.createCard(dataToSave, function (err, donorDataFromDB) {
                 if (err) {
-                    cb(err)
+                    if (err.code == 11000 && err.message.indexOf('donorcardsschemas.$payPalId_1') > -1) {
+                        return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CARD_EXIST);
+                    }
+                    else {
+                        cb(err)
+                    }
                 } else {
                     cardData = donorDataFromDB;
-                    cb();
+                    return cb();
                 }
             })
         },function (cb) {
@@ -549,12 +554,22 @@ var Donation = function (payloadData, userData, callback) {
             var query = {
                 _id: finalDonation.campaignId
             }
+
             var options = {lean: true};
             var finalDataToSave = {};
             finalDataToSave.donation = finalDonation._id;
-            var dataToSet = {
-                unitRaised: newCount,
-                $addToSet: finalDataToSave
+            if(campaignData.targetUnitCount == newCount){
+                var dataToSet = {
+                    unitRaised: newCount,
+                    complete: true,
+                    $addToSet: finalDataToSave
+                }
+            }
+            else {
+                var dataToSet = {
+                    unitRaised: newCount,
+                    $addToSet: finalDataToSave
+                }
             }
             Service.CharityService.updateCharityCampaign(query, dataToSet, options, function (err, result) {
                 if (err) return callback(err);
@@ -566,7 +581,7 @@ var Donation = function (payloadData, userData, callback) {
         if (err) {
             callback(err);
         } else {
-            callback(null);
+            callback(null, UniversalFunctions.deleteUnnecessaryDonorData(finalDonation.toObject()));
         }
     });
 };

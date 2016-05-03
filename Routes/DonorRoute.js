@@ -123,7 +123,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
@@ -149,7 +149,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
@@ -185,7 +185,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
@@ -261,7 +261,7 @@ module.exports = [
             validate: {
                 payload: {
                     Digit:Joi.string().required().trim(),
-                    payPalId:Joi.string().required()
+                    payPalId:Joi.string().required().trim()
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
@@ -315,7 +315,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },

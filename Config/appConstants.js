@@ -429,6 +429,11 @@ var STATUS_MSG = {
             customMessage : 'Campaign name already exist.',
             type : 'CAMPAIGN_EXIST'
         },
+        CARD_EXIST: {
+            statusCode:400,
+            customMessage : 'Card already exist.',
+            type : 'CARD_EXIST'
+        },
         CAMPAIGN_CLOSED: {
             statusCode:400,
             customMessage : 'Campaign date is end.',
