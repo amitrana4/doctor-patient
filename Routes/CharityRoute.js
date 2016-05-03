@@ -17,7 +17,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data))
                 }
             });
         },
@@ -74,7 +74,7 @@ module.exports = [
             var payloadData = request.payload;
             Controller.CharityController.loginCharityOwner(payloadData, function (err, data) {
                 if (err) {
-                    //console.log();
+                   console.log("XXX",err);
                     reply(UniversalFunctions.sendError(err));
                 } else {
                     reply(UniversalFunctions.sendSuccess(null, data))
@@ -145,7 +145,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data))
                 }
             });
         },
@@ -275,7 +275,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data))
                 }
             });
         },
@@ -365,7 +365,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
                 }
             });
         },
@@ -398,7 +398,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(data))
                 }
             });
         },

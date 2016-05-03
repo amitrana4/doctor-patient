@@ -375,7 +375,7 @@ var STATUS_MSG = {
             type : 'INVALID_RESET_PASSWORD_TOKEN'
         },
         INCORRECT_PASSWORD: {
-            statusCode:401,
+            statusCode:400,
             customMessage : 'Incorrect Password',
             type : 'INCORRECT_PASSWORD'
         },
