@@ -21,7 +21,7 @@ var charityCampaignSchema = new Schema({
     complete: {default: false, type: String, required: true},
     videoLink: {type: String, trim: true, required: false},
     pictures: {type: Object, trim: true, required: false},
-    donation: {type: Schema.ObjectId, ref: 'donationSchema'},
+    donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
 
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}

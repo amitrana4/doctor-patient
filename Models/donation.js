@@ -6,6 +6,7 @@ var donationSchema = new Schema({
     //**************************Required Fields**********************************//
 
     campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
+    charityId: {type: Schema.ObjectId, ref: 'charitySchema'},
     donorId: {type: Schema.ObjectId, ref: 'donorSchema'},
     cardId: {type: Schema.ObjectId, ref: 'donorCardsSchema'},
 
@@ -19,10 +20,12 @@ var donationSchema = new Schema({
     endDate: {type: Date, required: true},
 
     recurringDonation: {type: Boolean, required: true, default: false},
-    frequency: {type: String, trim: true, required: true},
+    frequency: {type: String, trim: true, required: false},
+    comment: {type: String, trim: true, required: false},
+    rating: {type: String, trim: true, required: false},
 
     //**************************Must for all Schemas**********************************//
-    createdOn: {type: Number, required: true},
+    createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}
 });
 

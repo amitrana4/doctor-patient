@@ -378,7 +378,7 @@ var addCard = function (payloadData, userData, callback) {
             }
         },
         function (cb) {
-            dataToSave.createdOn = new Date();
+            dataToSave.createdOn = new Date().toISOString();
             Service.DonorService.createCard(dataToSave, function (err, donorDataFromDB) {
                 if (err) {
                     cb(err)
@@ -472,6 +472,130 @@ var listCards = function (payloadData, userID, callback) {
 
 
 
+
+var Donation = function (payloadData, userData, callback) {
+
+    var finalDonation = {};
+    var dataToSave = payloadData;
+    var campaignData = {};
+    async.series([
+        function (callback) {
+            var criteria = {_id: dataToSave.campaignId},
+                options = {lean: true},
+                projection = {charityId: 0};
+
+            Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+                if (err) callback(err);
+                if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (new Date(res[0].endDate) < new Date() || res[0].complete == true) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                if (res[0].targetUnitCount < Number(res[0].unitRaised + dataToSave.donatedUnit)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_OVERFLOW);
+                if (Number(res[0].targetUnitCount) == Number(res[0].unitRaised)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                campaignData = res[0];
+                callback();
+            });
+        },
+        function (callback) {
+            var query = {
+                $and: [
+                    {_id: userData._id},
+                    {'cards': {$in: [dataToSave.cardId]}}
+                ]
+            }
+            var options = {lean: true};
+            var projections = {};
+            Service.DonorService.getDonor(query, projections, options, function (err, result) {
+                console.log(result)
+                if (err) return callback(err);
+                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (cb) {
+            dataToSave.charityId = campaignData.charityId;
+            dataToSave.costPerUnit = campaignData.costPerUnit;
+            dataToSave.donorId = userData._id;
+            dataToSave.cardId = campaignData.cardId;
+            dataToSave.endDate = campaignData.endDate;
+            dataToSave.createdOn = new Date().toISOString();
+
+            Service.DonorService.createDonation(dataToSave, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalDonation = donorDataFromDB;
+                    cb();
+                }
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.donorId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $addToSet: {
+                    donation: finalDonation._id
+                }
+            }
+            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var newCount = campaignData.unitRaised + dataToSave.donatedUnit
+            var query = {
+                _id: finalDonation.campaignId
+            }
+            var options = {lean: true};
+            var finalDataToSave = {};
+            finalDataToSave.donation = finalDonation._id;
+            var dataToSet = {
+                unitRaised: newCount,
+                $addToSet: finalDataToSave
+            }
+            Service.CharityService.updateCharityCampaign(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null);
+        }
+    });
+};
+
+
+var setRating = function (payloadData, userData, callback) {
+
+    var dataToSave = payloadData;
+            var query = {
+                _id: dataToSave.donationId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $set: {
+                    rating: dataToSave.rating,
+                    comment: dataToSave.comment
+                }
+            }
+            Service.DonorService.updateDonation(query, dataToSet, options, function (err, result) {
+                console.log(err, result)
+                if (err) return callback(err);
+                if (result == null) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (result.donorId.toString() != userData._id.toString()) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -480,8 +604,9 @@ module.exports = {
     loginDonor: loginDonor,
     addCard: addCard,
     setDefaultCard: setDefaultCard,
+    setRating: setRating,
     listCards: listCards,
-    //Donation: Donation,
+    Donation: Donation,
     UpdateDonor: UpdateDonor
 };
 

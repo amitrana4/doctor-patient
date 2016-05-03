@@ -96,8 +96,13 @@ var STATUS_MSG = {
         },
         INVALID_ID: {
             statusCode:400,
-            customMessage : 'Invalid Id Provided : ',
+            customMessage : 'Invalid Id Provided',
             type : 'INVALID_ID'
+        },
+        INVALID_CARDID: {
+            statusCode:400,
+            customMessage : 'Invalid Card Id',
+            type : 'INVALID_CARDID'
         },
         APP_ERROR: {
             statusCode:400,
@@ -423,6 +428,16 @@ var STATUS_MSG = {
             statusCode:400,
             customMessage : 'Campaign name already exist.',
             type : 'CAMPAIGN_EXIST'
+        },
+        CAMPAIGN_CLOSED: {
+            statusCode:400,
+            customMessage : 'Campaign date is end.',
+            type : 'CAMPAIGN_CLOSED'
+        },
+        CAMPAIGN_OVERFLOW: {
+            statusCode:400,
+            customMessage : 'Campaign is over flow, please select less units',
+            type : 'CAMPAIGN_OVERFLOW'
         },
         EMAIL_NOT_FOUND: {
             statusCode:400,

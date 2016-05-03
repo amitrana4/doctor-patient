@@ -149,7 +149,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.CREATED, data)).code(201)
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data)).code(201)
                 }
             });
         },
@@ -164,6 +164,7 @@ module.exports = [
                     donatedAmount: Joi.string().required().trim(),
                     donatedUnit: Joi.number().required(),
                     donatedCurrency: Joi.string().required().trim(),
+                    cardId: Joi.string().required().trim(),
                     paymentGatewayTransactionId: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
@@ -328,6 +329,40 @@ module.exports = [
             },
             plugins: {
                 'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/donor/rating',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.setRating(request.payload,donorData, function (err, data) {
+                if (err) {
+                    reply(err);
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Set Default Card',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload:{
+                    donationId:Joi.string().length(24).required(),
+                    rating:Joi.number().required(),
+                    comment:Joi.string().required().trim()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }
