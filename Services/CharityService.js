@@ -71,6 +71,24 @@ var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
     Models.charityCampaign.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+//Get Users from DB
+var getCharityCampaign = function (criteria, projection, options, callback) {
+    Models.charityCampaign.find(criteria, projection, options, callback);
+};
+
+
+var getCampaignPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.charityCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if ( err ) return callback(err, docs);
+        Models.donor.populate(docs[0].donation, {
+            path: 'donorId'
+            , select: 'emailId firstName lastName'
+        }, function(err, things){
+            if ( err ) return callback(err, docs);
+            callback(null, docs);
+        });
+    });
+};
 
 var getCharityPopulate = function (criteria, project, options,populateModel, callback) {
     Models.charity.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
@@ -102,6 +120,7 @@ module.exports = {
     getCharityCampaign: getCharityCampaign,
     /*createCharityOwnerKeyWord: createCharityOwnerKeyWord,*/
     getCharityOwnerId: getCharityOwnerId,
+    getCampaignPopulate: getCampaignPopulate,
     getCharityOwner: getCharityOwner,
     updateCharityOwnerPopulate: updateCharityOwnerPopulate
 };

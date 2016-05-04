@@ -409,6 +409,11 @@ var STATUS_MSG = {
             customMessage : 'Email Address Already Exists',
             type : 'EMAIL_ALREADY_EXIST'
         },
+        FACEBOOK_ID_EXIST: {
+            statusCode:400,
+            customMessage : 'Facebook ID Already Exists',
+            type : 'FACEBOOK_ID_EXIST'
+        },
         CHARITYREGNO_ALREADY_EXIST: {
             statusCode:400,
             customMessage : 'charityRegistrationNo Already Exists',

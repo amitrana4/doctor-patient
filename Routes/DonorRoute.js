@@ -248,7 +248,7 @@ module.exports = [
             var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
             Controller.DonorController.addCard(request.payload,donorData, function (err, data) {
                 if (err) {
-                    reply(err);
+                    reply(UniversalFunctions.sendError(err));
                 } else {
                     reply(UniversalFunctions.sendSuccess(null, data))
                 }
@@ -281,7 +281,7 @@ module.exports = [
             var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
             Controller.DonorController.setDefaultCard(request.payload,donorData, function (err, data) {
                 if (err) {
-                    reply(err);
+                    reply(UniversalFunctions.sendError(err));
                 } else {
                     reply(UniversalFunctions.sendSuccess(null, data))
                 }
@@ -341,7 +341,7 @@ module.exports = [
             var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
             Controller.DonorController.setRating(request.payload,donorData, function (err, data) {
                 if (err) {
-                    reply(err);
+                    reply(UniversalFunctions.sendError(err));
                 } else {
                     reply(UniversalFunctions.sendSuccess(null, data))
                 }

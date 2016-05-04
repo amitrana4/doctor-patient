@@ -408,7 +408,7 @@ module.exports = [
             auth: 'CharityAuth',
             validate: {
                 payload: {
-                    campaignId: Joi.string().optional().trim()
+                    campaignId: Joi.string().required().trim()
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction
@@ -448,6 +448,7 @@ module.exports = [
                 headers: UniversalFunctions.authorizationHeaderObj,
                 payload: {
                     id: Joi.string().required().trim(),
+                    action: Joi.string().required().valid(['COMPLETE', 'UPDATE']),
                     campaignName: Joi.string().optional().trim(),
                     lat: Joi.string().optional(),
                     long: Joi.string().optional(),
@@ -463,8 +464,7 @@ module.exports = [
                     targetUnitCount: Joi.string().regex(/^[0-9 ]+$/).optional(),
                     endDate: Joi.date().min('now').format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
                     pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
-                    videoLink: Joi.string().optional().trim(),
-                    complete: Joi.string().optional().trim()
+                    videoLink: Joi.string().optional().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },

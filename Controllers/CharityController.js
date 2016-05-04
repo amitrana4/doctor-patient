@@ -256,9 +256,10 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
 
     async.series([
         function (cb) {
-
-            if(dataToSave.pictures.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
-            return cb();
+            if(dataToSave.pictures) {
+                if (dataToSave.pictures.length > 5) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+                return cb();
+            }
         },
         function (cb) {
             var criteria = {
@@ -421,18 +422,20 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB;
-            var datatoSet = { pictures: imagesids };
-            var criteria = {_id: charityOwnerProfileData._id};
-            var options = {lean: true};
+            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+                var datatoSet = {pictures: imagesids};
+                var criteria = {_id: charityOwnerProfileData._id};
+                var options = {lean: true};
 
 
-            Service.CharityService.updateCharityOwner(criteria, datatoSet, options, function (err, imagesResult) {
-                if (err) {
-                    cb(err)
-                } else {
-                    cb();
-                }
-            });
+                Service.CharityService.updateCharityOwner(criteria, datatoSet, options, function (err, imagesResult) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        cb();
+                    }
+                });
+            }
         },
         function (cb) {
             if (charityOwnerProfileData && charityOwnerProfileData._id && dataToSave.logoFileId) {
@@ -1122,12 +1125,16 @@ var getCampaignById = function (payloadData, CharityData, callback) {
      */
 
 
+    var populateVariable = {
+        path: "donation",
+        select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId'
+    };
 
     var criteria      = { _id:payloadData.campaignId},
         options = {lean: true},
         projection ={charityId:0};
 
-    Service.CharityService.getCharityCampaign(criteria, projection, options, function (err, res) {
+    Service.CharityService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
@@ -1209,41 +1216,43 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             });
         },
         function (cb) {
-            if (dataToSave.campaignName) {
-                campDataToSave.campaignName = dataToSave.campaignName;
+            if(dataToSave.action == 'UPDATE') {
+                if (dataToSave.campaignName) {
+                    campDataToSave.campaignName = dataToSave.campaignName;
+                }
+                if (dataToSave.lat) {
+                    campDataToSave.lat = dataToSave.lat;
+                }
+                if (dataToSave.long) {
+                    campDataToSave.long = dataToSave.long;
+                }
+                if (dataToSave.address) {
+                    campDataToSave.address = dataToSave.address;
+                }
+                if (dataToSave.description) {
+                    campDataToSave.description = dataToSave.description;
+                }
+                if (dataToSave.hasKeyWords) {
+                    campDataToSave.hasKeyWords = dataToSave.hasKeyWords;
+                }
+                if (dataToSave.unitName) {
+                    campDataToSave.unitName = dataToSave.unitName;
+                }
+                if (dataToSave.costPerUnit) {
+                    campDataToSave.costPerUnit = dataToSave.costPerUnit;
+                }
+                if (dataToSave.targetUnitCount) {
+                    campDataToSave.targetUnitCount = dataToSave.targetUnitCount;
+                }
+                if (dataToSave.endDate) {
+                    campDataToSave.endDate = dataToSave.endDate;
+                }
+                if (dataToSave.videoLink) {
+                    campDataToSave.videoLink = dataToSave.videoLink;
+                }
             }
-            if (dataToSave.lat) {
-                campDataToSave.lat = dataToSave.lat;
-            }
-            if (dataToSave.long) {
-                campDataToSave.long = dataToSave.long;
-            }
-            if (dataToSave.address) {
-                campDataToSave.address = dataToSave.address;
-            }
-            if (dataToSave.description) {
-                campDataToSave.description = dataToSave.description;
-            }
-            if (dataToSave.hasKeyWords) {
-                campDataToSave.hasKeyWords = dataToSave.hasKeyWords;
-            }
-            if (dataToSave.unitName) {
-                campDataToSave.unitName = dataToSave.unitName;
-            }
-            if (dataToSave.costPerUnit) {
-                campDataToSave.costPerUnit = dataToSave.costPerUnit;
-            }
-            if (dataToSave.targetUnitCount) {
-                campDataToSave.targetUnitCount = dataToSave.targetUnitCount;
-            }
-            if (dataToSave.endDate) {
-                campDataToSave.endDate = dataToSave.endDate;
-            }
-            if (dataToSave.videoLink) {
-                campDataToSave.videoLink = dataToSave.videoLink;
-            }
-            if (dataToSave.complete) {
-                campDataToSave.complete = dataToSave.complete;
+            else if(dataToSave.action == 'COMPLETE') {
+                campDataToSave.complete = true;
             }
             cb();
         },

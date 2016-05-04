@@ -79,6 +79,9 @@ var createDonor = function (payloadData, callback) {
                     if (err.code == 11000 && err.message.indexOf('donorschemas.$emailId_1') > -1){
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_ALREADY_EXIST);
                     }
+                    else if (err.code == 11000 && err.message.indexOf('donorschemas.$facebookId_1') > -1){
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.FACEBOOK_ID_EXIST);
+                    }
                     else {
                         cb(err)
                     }
@@ -232,7 +235,6 @@ var changePassword = function (queryData,userData, callback) {
 var getCampaign = function (callback) {
 
 
-    /* var criteria      = { complete:false},*/
     var _date = new Date();
     var criteria = {
             $and:[
