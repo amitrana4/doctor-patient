@@ -422,6 +422,39 @@ module.exports = [
         }
     },
     {
+        method: 'POST',
+        path: '/api/charity/getCampaignDonors',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            Controller.CharityController.getCampaignDonors(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(data))
+                }
+            });
+        },
+        config: {
+            description: 'Create campaign',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                payload: {
+                    campaignId: Joi.string().required().trim()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'PUT',
         path: '/api/charity/editCampaign',
         handler: function (request, reply) {

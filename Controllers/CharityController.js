@@ -1106,27 +1106,9 @@ var campaignList = function (payloadData, CharityData, callback) {
 
 var getCampaignById = function (payloadData, CharityData, callback) {
 
-    /*var criteria  = {};
-
-     var populateVariable = {
-     path: "campaignId",
-     match: {
-     $and:[
-     {$or:[
-     {complete:true},
-     {'endDate':{$lt:new Date()}}
-
-
-     ]}
-     ]
-     },
-     select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
-     };
-     */
-
-
     var populateVariable = {
         path: "donation",
+        options: { sort: { 'createdOn': -1 }, limit: 3  },
         select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId'
     };
 
@@ -1134,7 +1116,7 @@ var getCampaignById = function (payloadData, CharityData, callback) {
         options = {lean: true},
         projection ={charityId:0};
 
-    Service.CharityService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
+    Service.CharityService.getCampaignDeepPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
@@ -1143,6 +1125,26 @@ var getCampaignById = function (payloadData, CharityData, callback) {
     });
 };
 
+
+var getCampaignDonors = function (payloadData, CharityData, callback) {
+
+    var populateVariable = {
+        path: "donorId",
+        select: 'emailId firstName lastName'
+    };
+
+    var criteria      = { campaignId:payloadData.campaignId},
+        options = {multi: true},
+        projection ={updatedOn:0};
+
+    Service.CharityService.getDonationPopulate(criteria, projection, options, populateVariable, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
 
 var getCharityProfileInfo = function (CharityData,callbackRoute) {
 
@@ -1739,6 +1741,7 @@ module.exports = {
     CharityOwnerProfileStep1: CharityOwnerProfileStep1,
     campaignList: campaignList,
     getCampaignById: getCampaignById,
+    getCampaignDonors: getCampaignDonors,
     loginCharityOwner: loginCharityOwner,
     loginViaAccessToken: loginViaAccessToken,
     deleteProfilePictures: deleteProfilePictures,
