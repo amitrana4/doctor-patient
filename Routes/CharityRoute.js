@@ -141,6 +141,7 @@ module.exports = [
         handler: function (request, reply) {
             var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
             //reply(request.payload.materialImages);
+            console.log(CharityData)
             Controller.CharityController.CharityOwnerProfileStep1(request.payload,CharityData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
@@ -441,7 +442,7 @@ module.exports = [
             auth: 'CharityAuth',
             validate: {
                 payload: {
-                    campaignId: Joi.string().required().trim()
+                    campaignId: Joi.string().optional().trim()
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction

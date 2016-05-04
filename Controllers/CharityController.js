@@ -270,6 +270,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                 lean: true
             };
             Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
+                console.log(err, result)
                 if (err) return cb(err)
                 if(result[0].profileComplete != 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PROFILE_EXIST);
                 return cb();
@@ -1133,8 +1134,10 @@ var getCampaignDonors = function (payloadData, CharityData, callback) {
         select: 'emailId firstName lastName'
     };
 
-    var criteria      = { campaignId:payloadData.campaignId},
-        options = {multi: true},
+    if(payloadData.campaignId){
+        var criteria      = { campaignId:payloadData.campaignId};
+    }
+    var options = {multi: true},
         projection ={updatedOn:0};
 
     Service.CharityService.getDonationPopulate(criteria, projection, options, populateVariable, function (err, res) {

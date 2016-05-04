@@ -498,7 +498,7 @@ var STATUS_MSG = {
     },
     SUCCESS: {
         CREATED: {
-            statusCode:201,
+            statusCode:200,
             customMessage : 'Created Successfully',
             type : 'CREATED'
         },
