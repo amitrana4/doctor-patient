@@ -398,7 +398,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(data))
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
@@ -431,7 +431,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(data))
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
