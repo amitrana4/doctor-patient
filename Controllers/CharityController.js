@@ -695,7 +695,7 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
 
             });
         },
-        function (cb) { //console.log("userFound 153  ",userFound);
+        /*function (cb) { //console.log("userFound 153  ",userFound);
             if (customerDataArray) {
                 var tokenData = {
                     id: userData.id,
@@ -717,7 +717,7 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
             }
 
-        },
+        },*/
     ], function (err) {
         if(err) return callback(err);
         return callback(null, {
