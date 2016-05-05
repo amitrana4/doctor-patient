@@ -422,49 +422,10 @@ var addCard = function (payloadData, userData, callback) {
         if (err) {
             callback(err);
         } else {
-            callback(null);
+            callback(null, cardData);
         }
     });
 };
-
-/*var setDefaultCard1 = function(payloadData,userID,callbackRoute){
-    async.series({
-        checkCard:function(callback){
-            var query = {
-                $and:[
-                    {_id:userID._id},
-                    {'cards': { $in : [payloadData.cardID]}}
-                ]
-            }
-            var options = {lean:true};
-            var projections = {_id:1};
-            Service.DonorService.getDonor(query,projections,options,function(err,result){
-                if(err) return callback(err);
-                if(result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                if(result) return callback();
-                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            })
-        },
-        setDefaultCard:function(callback){
-            var query = {
-                _id:userID._id,
-            }
-            var options = {lean:true};
-            var dataToSet = {
-                isDefault:payloadData.cardID
-            }
-            Service.DonorService.updateDonor(query,dataToSet,options,function(err,result){
-                if(err) return callback(err);
-                if(result) return callback();
-                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            })
-        }
-    },function(err,result){
-        if(err) return callbackRoute(err);
-        callbackRoute();
-    })
-}*/
-
 
 
 var setDefaultCard = function(payload, userData, callbackRoute) {
@@ -522,7 +483,7 @@ var listCards = function (payloadData, userID, callback) {
 
     var populateVariable = {
         path: "cards",
-        select: 'Digit'
+        select: 'Digit isDefault'
     };
 
     Service.DonorService.getDonorCardPopulate(criteria, projection, options, populateVariable, function (err, res) {
