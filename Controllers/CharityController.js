@@ -1262,7 +1262,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             cb();
         },
         function (cb) {
-            if (dataToSave.mainImageFileId) {
+            if (dataToSave.mainImageFileId && dataToSave.action == 'UPDATE') {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.mainImageFileId, dataToSave.id, document, function (err, uploadedInfo) {
                     if (err) {
@@ -1291,7 +1291,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             });
         },
         function (cb) {
-            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0 && dataToSave.action == 'UPDATE') {
                 var taskInParallel = [];
                 for (var key in dataToSave.pictures) {
                     (function (key) {
@@ -1322,7 +1322,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             }
         },
         function (cb) {
-            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0 && dataToSave.action == 'UPDATE') {
                 //Insert Into DB
 
                 if(imagesids.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);

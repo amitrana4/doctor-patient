@@ -593,7 +593,8 @@ var setRating = function (payloadData, userData, callback) {
 
     var dataToSave = payloadData;
             var query = {
-                _id: dataToSave.donationId
+                _id: dataToSave.donationId,
+                donorId: userData._id
             }
             var options = {lean: true};
             var dataToSet = {
@@ -626,4 +627,3 @@ module.exports = {
     Donation: Donation,
     UpdateDonor: UpdateDonor
 };
-

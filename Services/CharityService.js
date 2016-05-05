@@ -1,6 +1,7 @@
 'use strict';
 
 var Models = require('../Models');
+var UniversalFunctions = require('../Utils/UniversalFunctions');
 
 //Get Users from DB
 var getCharityOwner = function (criteria, projection, options, callback) {
@@ -80,6 +81,7 @@ var getCharityCampaign = function (criteria, projection, options, callback) {
 var getCampaignDeepPopulate = function (criteria, project, options,populateModel, callback) {
     Models.charityCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
         if ( err ) return callback(err, docs);
+        if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
         Models.donor.populate(docs[0].donation, {
             path: 'donorId'
             , select: 'emailId firstName lastName'

@@ -354,7 +354,7 @@ module.exports = [
             validate: {
                 payload:{
                     donationId:Joi.string().length(24).required(),
-                    rating:Joi.number().required(),
+                    rating:Joi.number().max(5).required(),
                     comment:Joi.string().required().trim()
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
