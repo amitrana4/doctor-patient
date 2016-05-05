@@ -381,6 +381,7 @@ var addCard = function (payloadData, userData, callback) {
         },
         function (cb) {
             dataToSave.createdOn = new Date().toISOString();
+            dataToSave.isDefault = true;
             Service.DonorService.createCard(dataToSave, function (err, donorDataFromDB) {
                 if (err) {
                     if (err.code == 11000 && err.message.indexOf('donorcardsschemas.$payPalId_1') > -1) {
@@ -394,7 +395,17 @@ var addCard = function (payloadData, userData, callback) {
                     return cb();
                 }
             })
-        },function (cb) {
+        },
+        function (cb){
+            var criteria = { $and: [{'_id':{ $nin: [cardData._id] }}]};
+            var setData = {isDefault:false};
+            DAO.UpdateMultipleRecords(Models.donorCards,criteria, setData, {multi: true},function(err, data){
+                if (err) return cb(err)
+                if(data==null)return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                return cb()
+            });
+        },
+        function (cb) {
             var criteria    = {_id:userData._id};
             var dataCard  = {cards:cardData._id};
             var datatoSet1  = {$addToSet:dataCard};
@@ -416,7 +427,7 @@ var addCard = function (payloadData, userData, callback) {
     });
 };
 
-var setDefaultCard = function(payloadData,userID,callbackRoute){
+/*var setDefaultCard1 = function(payloadData,userID,callbackRoute){
     async.series({
         checkCard:function(callback){
             var query = {
@@ -452,7 +463,53 @@ var setDefaultCard = function(payloadData,userID,callbackRoute){
         if(err) return callbackRoute(err);
         callbackRoute();
     })
-}
+}*/
+
+
+
+var setDefaultCard = function(payload, userData, callbackRoute) {
+    var cardArray = [];
+    async.series([
+        function(callback) {
+            var query = {
+                $and:[
+                    {_id:userData._id},
+                    {'cards': { $in : [payload.cardID]}}
+                ]
+            }
+            var options = {lean:true};
+            var projections = {_id:1};
+            Service.DonorService.getDonor(query,projections,options,function(err,result){
+                if(err) return callback(err);
+                if(result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if(result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function(callback) {
+            var query = {_id:payload.cardID,isDeleted:false};
+            var dataToset = {isDefault:true}
+            Service.DonorService.updateDonorCards(query,dataToset, {new :true},function (err, CustomerCardData) {
+                if(err) return callback(err);
+                if(CustomerCardData==null) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                cardArray=CustomerCardData;
+                return callback();
+            });
+        },
+        function (cb){
+            var criteria = { $and: [{'_id':{ $nin: [payload.cardID] }}]};
+            var setData = {isDefault:false};
+            DAO.UpdateMultipleRecords(Models.donorCards,criteria, setData, {multi: true},function(err, data){
+                if (err) return cb(err)
+                if(data==null)return cb(ERROR_MSG.INVALID_CARD_ID);
+                return cb()
+            });
+        },
+    ], function (err, result) {
+        if(err)return callbackRoute(err);
+        return callbackRoute(null , cardArray);
+    });
+};
 
 
 var listCards = function (payloadData, userID, callback) {

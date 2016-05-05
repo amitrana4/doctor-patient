@@ -441,7 +441,7 @@ var STATUS_MSG = {
         },
         CAMPAIGN_CLOSED: {
             statusCode:400,
-            customMessage : 'Campaign date is end.',
+            customMessage : 'Campaign is closed.',
             type : 'CAMPAIGN_CLOSED'
         },
         CAMPAIGN_OVERFLOW: {

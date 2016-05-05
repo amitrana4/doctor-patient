@@ -1113,7 +1113,10 @@ var getCampaignById = function (payloadData, CharityData, callback) {
         select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId'
     };
 
-    var criteria      = { _id:payloadData.campaignId},
+    var criteria      = {$and:[
+        {charityId: CharityData.charityId},
+        {_id: payloadData.campaignId}
+        ]},
         options = {lean: true},
         projection ={charityId:0};
 
@@ -1195,7 +1198,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                     {_id: dataToSave.id}
                 ]
             };
-            var projection = {pictures:1};
+            var projection = {pictures:1, complete:1, endDate:1};
             var option = {
                 lean: true
             };
@@ -1205,6 +1208,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                 } else {
                     if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                     var totalResult = result && result[0] || null;
+                    if(totalResult.complete == true || totalResult.endDate > new Date()) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
 
                     if (dataToSave.pictures) {
                         var totalLength = Number(dataToSave.pictures.length + totalResult.pictures.length);
