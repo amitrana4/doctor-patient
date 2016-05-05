@@ -367,4 +367,43 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/loginViaFacebook',
+        handler: function (request, reply) {
+            var payloadData = request.payload;
+            Controller.DonorController.loginViaFacebook(payloadData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Login Via Facebook For  Customer',
+            tags: ['api', 'customer'],
+            validate: {
+                payload: {
+                    facebookId: Joi.string().required(),
+                    deviceType: Joi.string().required().valid(
+                        [
+                            UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS,
+                            UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID
+                        ]
+                    ),
+                    deviceToken: Joi.string().required().trim(),
+                    flushPreviousSessions: Joi.boolean().required(),
+                    appVersion: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType : 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }]

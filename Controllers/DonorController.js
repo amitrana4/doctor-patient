@@ -632,6 +632,110 @@ var setRating = function (payloadData, userData, callback) {
 };
 
 
+
+var loginViaFacebook = function (payloadData, callback) {
+
+    var accessToken;
+    var finalDonation = {};
+    var userFound = {};
+    var successLogin = false;
+    var flushPreviousSessions = payloadData.flushPreviousSessions || false;
+    var updatedUserDetails = {};
+    async.series([
+        function (cb) {
+            var criteria = {
+                facebookId: payloadData.facebookId
+            };
+            var projection = {};
+            var option = {
+                lean: true
+            };
+            Service.DonorService.getDonor(criteria, projection, option, function (err, result) {
+                if (err) {
+                    cb(err)
+                } else {
+                    userFound = result && result[0] || null;
+                    cb();
+                }
+            });
+
+        },
+        function (cb) {
+            //validations
+            if (!userFound) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.FACEBOOK_ID_NOT_FOUND);
+            } else {
+                successLogin = true;
+                cb();
+            }
+        },
+        function (cb) {
+            //Clear Device Tokens if present anywhere else
+            if (userFound && payloadData.deviceToken != userFound.deviceToken && !flushPreviousSessions) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.ACTIVE_PREVIOUS_SESSIONS)
+            } else {
+                var criteria = {
+                    deviceToken: payloadData.deviceToken
+                };
+                var setQuery = {
+                    $unset: {deviceToken: 1}
+                };
+                var options = {
+                    multi: true
+                };
+                Service.DonorService.updateDonor(criteria, setQuery, options, cb)
+            }
+        },
+        function (cb) {
+            var criteria = {
+                _id: userFound._id
+            };
+            var setQuery = {
+                appVersion: payloadData.appVersion,
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType
+            };
+            Service.DonorService.updateDonor(criteria, setQuery, {new: true}, function (err, data) {
+                updatedUserDetails = data;
+                cb(err, data);
+            });
+
+        },
+        function (cb) {
+            if (successLogin) {
+                var tokenData = {
+                    id: userFound._id,
+                    type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR
+                };
+                TokenManager.setToken(tokenData, function (err, output) {
+                    if (err) {
+                        cb(err);
+                    } else {
+                        if (output && output.accessToken){
+                            accessToken = output && output.accessToken;
+                            cb();
+                        }else {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+                        }
+                    }
+                })
+            } else {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
+            }
+
+        },
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, {accessToken: accessToken,
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedUserDetails.toObject())});
+        }
+    });
+};
+
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -643,5 +747,6 @@ module.exports = {
     setRating: setRating,
     listCards: listCards,
     Donation: Donation,
+    loginViaFacebook: loginViaFacebook,
     UpdateDonor: UpdateDonor
 };
