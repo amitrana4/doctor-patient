@@ -116,7 +116,7 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/api/donor/getCampaign',
+        path: '/api/donor/getCampaigns',
         handler: function (request, reply) {
 
             Controller.DonorController.getCampaign(function (err, data) {
@@ -129,6 +129,61 @@ module.exports = [
         },
         config: {
             description: 'Get all campaign data',
+            tags: ['api', 'Donor'],
+            validate: {
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/donor/getDonations',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.getDonations(userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Get all donations data',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/donor/getCharities',
+        handler: function (request, reply) {
+
+            Controller.DonorController.getCharities(function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Get all charity data',
             tags: ['api', 'Donor'],
             validate: {
                 failAction: UniversalFunctions.failActionFunction
@@ -179,6 +234,42 @@ module.exports = [
     },
     {
         method: 'POST',
+        path: '/api/donor/charityDonation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.charityDonation(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Register as Donor',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    charityId: Joi.string().required().trim(),
+                    donatedAmount: Joi.string().required().trim(),
+                    donatedCurrency: Joi.string().required().trim(),
+                    cardId: Joi.string().required().trim(),
+                    paymentGatewayTransactionId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/api/donor/getCampaignById',
         handler: function (request, reply) {
             Controller.DonorController.getCampaignById(request.payload, function (err, data) {
@@ -194,7 +285,36 @@ module.exports = [
             tags: ['api', 'donor'],
             validate: {
                 payload: {
-                    campaignId: Joi.string().optional().trim()
+                    campaignId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/getCharityById',
+        handler: function (request, reply) {
+            Controller.DonorController.getCharityById(request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'get charity by id.',
+            tags: ['api', 'donor'],
+            validate: {
+                payload: {
+                    charityId: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },

@@ -28,6 +28,7 @@ var charitySchema = new Schema({
     onceLogin: {type: String, trim: true, required: true, default:false},
     pictures: [{type: Schema.ObjectId, ref: 'charityImagesSchema'}],
     campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
+    donation: [{type: Schema.ObjectId, ref: 'charityDonationSchema'}],
 
     //**************************Optional**********************************//
     keyWord: {type: String, required: false},

@@ -258,6 +258,23 @@ var getCampaign = function (callback) {
     });
 };
 
+var getCharities = function (callback) {
+
+
+    var _date = new Date();
+    var criteria = {},
+        options = {lean: true},
+        projection = {createdOn:0};
+
+    Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
 
 var getCampaignById = function (payloadData, callback) {
 
@@ -266,6 +283,22 @@ var getCampaignById = function (payloadData, callback) {
         projection ={charityId:0};
 
     Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+var getCharityById = function (payloadData, callback) {
+
+    console.log(payloadData)
+    var criteria      = { _id:payloadData.charityId},
+        options = {lean: true},
+        projection ={};
+
+    Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
         if (err) {
             callback(err)
         } else {
@@ -496,6 +529,31 @@ var listCards = function (payloadData, userID, callback) {
 };
 
 
+var getDonations = function (userID, callback) {
+    var criteria = {
+                _id:userID._id
+            },
+        options = {lean: true},
+        projection = {donation:1, charityDonation:1};
+
+    var populateVariable = [{
+        path: "donation",
+        select: 'campaignId donorId'
+    },{
+        path: "charityDonation",
+        select: 'donatedAmount charityId'
+    }];
+
+    Service.DonorService.getDonorPopulate(criteria, projection, options, populateVariable, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
+
 
 
 var Donation = function (payloadData, userData, callback) {
@@ -592,6 +650,100 @@ var Donation = function (payloadData, userData, callback) {
                 }
             }
             Service.CharityService.updateCharityCampaign(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, UniversalFunctions.deleteUnnecessaryDonorData(finalDonation.toObject()));
+        }
+    });
+};
+
+
+var charityDonation = function (payloadData, userData, callback) {
+
+    var finalDonation = {};
+    var dataToSave = payloadData;
+    var charityData = {};
+    async.series([
+        function (callback) {
+            var criteria = {_id: dataToSave.charityId},
+                options = {lean: true},
+                projection = {charityId: 0};
+
+            Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
+                if (err) callback(err);
+                if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                charityData = res[0];
+                callback();
+            });
+        },
+        function (callback) {
+            var query = {
+                $and: [
+                    {_id: userData._id},
+                    {'cards': {$in: [dataToSave.cardId]}}
+                ]
+            }
+            var options = {lean: true};
+            var projections = {};
+            Service.DonorService.getDonor(query, projections, options, function (err, result) {
+                console.log(result)
+                if (err) return callback(err);
+                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (cb) {
+            dataToSave.charityId = charityData._id;
+            dataToSave.donorId = userData._id;
+            dataToSave.cardId = charityData.cardId;
+            dataToSave.endDate = charityData.endDate;
+            dataToSave.createdOn = new Date().toISOString();
+
+            Service.DonorService.createCharityDonation(dataToSave, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalDonation = donorDataFromDB;
+                    cb();
+                }
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.donorId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $addToSet: {
+                    charityDonation: finalDonation._id
+                }
+            }
+            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.charityId
+            }
+
+            var options = {lean: true};
+            var finalDataToSave = {};
+            finalDataToSave.donation = finalDonation._id;
+            var dataToSet = {
+                $addToSet: finalDataToSave
+            }
+            Service.CharityService.updateCharityOwner(query, dataToSet, options, function (err, result) {
                 if (err) return callback(err);
                 if (result) return callback();
                 callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
@@ -740,13 +892,17 @@ module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
     getCampaign: getCampaign,
+    getCharities: getCharities,
     getCampaignById: getCampaignById,
+    getCharityById: getCharityById,
     loginDonor: loginDonor,
     addCard: addCard,
     setDefaultCard: setDefaultCard,
     setRating: setRating,
     listCards: listCards,
     Donation: Donation,
+    charityDonation: charityDonation,
     loginViaFacebook: loginViaFacebook,
+    getDonations: getDonations,
     UpdateDonor: UpdateDonor
 };

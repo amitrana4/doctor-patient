@@ -11,6 +11,7 @@ module.exports = {
     charitykeyWord : require('./charitykeyWord'),
     charityOwner : require('./charityOwner'),
     donation : require('./donation'),
+    charityDonations : require('./charityDonations'),
     donor : require('./donor'),
     donorCards : require('./donorCards'),
     favouriteCampaign : require('./favouriteCampaign'),
