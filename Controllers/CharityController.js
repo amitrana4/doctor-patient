@@ -1600,7 +1600,7 @@ var updateProfile = function (payloadData, CharityData, callback) {
                                         image.images.thumbnail = uploadedInfo && uploadedInfo.thumbnail && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.thumbnail || null;
                                         //mImage.push(image);
                                         image.charityId = charityData._id;
-                                        image.createdOn = new Date().toISOString();
+                                        image.updatedOn = new Date().toISOString();
                                         Service.CharityService.createCharityImages(image, function (err, result) {
 
                                             if (err) return embeddedCB(err);

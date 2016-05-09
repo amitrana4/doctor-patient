@@ -76,63 +76,61 @@ var getDonorCardPopulate = function (criteria, project, options,populateModel, c
 
 var getDonorPopulate = function (criteria, project, options,populateModel, callback) {
     /*Models.donor.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
-        if (err) {
-            return callback(err, docs);
-        }else{
-            callback(null, docs);
-        }
-    });*/
+     if (err) {
+     return callback(err, docs);
+     }else{
+     callback(null, docs);
+     }
+     });*/
 
     Models.donor.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
-        console.log(docs, '===============')
-        if ( err ) return callback(err, docs);
+        if (err) return callback(err, docs);
 
 
-        if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-        async.auto([function(callback){
+        if (docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+        async.auto([function (callback) {
 
             Models.donor.populate(docs[0].donation, {
                 path: 'donorId'
                 , select: 'emailId firstName lastName'
-            }, function(err, things){
-                if ( err ) return callback(err, things);
+            }, function (err, things) {
+                if (err) return callback(err, things);
                 callback(null, things);
             });
 
         },
-            function(callback){
+            function (callback) {
 
                 Models.charityCampaign.populate(docs[0].donation, {
                     path: 'campaignId'
-                    , select: 'campaignName address description costPerUnit targetUnitCount endDate videoLink pictures complete unitRaised'
-                }, function(err, things){
-                    if ( err ) return callback(err, things);
+                    ,
+                    select: 'campaignName address description costPerUnit targetUnitCount endDate videoLink pictures complete unitRaised'
+                }, function (err, things) {
+                    if (err) return callback(err, things);
                     callback(null, things);
                 });
 
-            }
-            ,function(callback){
+            },
+            function (callback) {
                 Models.charity.populate(docs[0].charityDonation, {
                     path: 'charityId'
-                    , select: 'profileComplete registrationProofFileId supportingDocumentFileId adminApproval pictures logoFileId videos type description' +
+                    ,
+                    select: 'profileComplete registrationProofFileId supportingDocumentFileId adminApproval pictures logoFileId videos type description' +
                     'officeAddress1 officeAddress2 officeCity officeState officeCountry taxDeductionCode country countryCode emailId phoneNumber contactPerson' +
                     'website name'
-                }, function(err, things){
-                    if ( err ) return callback(err, things);
+                }, function (err, things) {
+                    if (err) return callback(err, things);
                     callback(null, things);
                 });
 
             }
         ], function (err, data) {
-            if ( err ) return callback(err, docs);
+            if (err) return callback(err, docs);
             callback(null, docs);
         });
 
 
-
     });
-
-
 };
 
 module.exports = {
