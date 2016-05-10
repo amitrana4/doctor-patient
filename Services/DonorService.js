@@ -61,6 +61,20 @@ var updateDonorCards = function (criteria, dataToSet, options, callback) {
     Models.donorCards.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+
+//Update User in DB
+var updateFavouriteCharity = function (criteria, dataToSet, options, callback) {
+    Models.favouriteCharity.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+//Update User in DB
+var updateFavouriteCampaign = function (criteria, dataToSet, options, callback) {
+    Models.favouriteCampaign.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+
+
+
 //Get Users from DB
 var getCharityCampaign = function (criteria, projection, options, callback) {
     Models.charityCampaign.find(criteria, projection, options, callback);
@@ -147,6 +161,8 @@ module.exports = {
     createCampaignFavourite: createCampaignFavourite,
     createCharityFavourite: createCharityFavourite,
     getDonorCardPopulate: getDonorCardPopulate,
+    updateFavouriteCampaign: updateFavouriteCampaign,
+    updateFavouriteCharity: updateFavouriteCharity,
     getDonorPopulate: getDonorPopulate,
     getCampaignPopulate: getCampaignPopulate
 };

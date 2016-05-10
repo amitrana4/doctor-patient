@@ -552,6 +552,12 @@ module.exports = [
                             'CHARITY',
                             'CAMPAIGN'
                         ]
+                    ),
+                    favourite: Joi.string().required().valid(
+                        [
+                            'true',
+                            'false'
+                        ]
                     )
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,

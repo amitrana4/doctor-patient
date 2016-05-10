@@ -6,6 +6,7 @@ var favouriteCharitySchema = new Schema({
     //**************************Required Fields**********************************//
     charityId: {type: Schema.ObjectId,required: true, ref: 'charitySchema'},
     donorId: {type: Schema.ObjectId,required: true, ref: 'donorSchema'},
+    favourite: {type: Boolean, required: true, default: false},
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Date, required: true}
