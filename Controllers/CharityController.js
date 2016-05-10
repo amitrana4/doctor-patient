@@ -1701,7 +1701,6 @@ var getResetPasswordToken = function (query, callback) {
                 },
                 function (cb) {
                     if (charityData) {
-                        console.log(charityData,'====================', charityOwnerData, '==============================')
                         variableDetails = {
                             user_name: charityOwnerData.name,
                             password_reset_token: charityData.passwordResetToken,
@@ -1737,6 +1736,58 @@ var getResetPasswordToken = function (query, callback) {
 };
 
 
+
+var logoutCharity = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var userId = userData && userData.id || 1;
+
+        async.series([
+            function (cb) {
+                //Check if the driver is free or not
+                Service.CharityService.getCharityOwnerId({_id : userData.id}, {},{lean:true}, function (err, charityAry) {
+                    if (err){
+                        cb(err)
+                    }else {
+                            cb()
+                    }
+                })
+            },
+            function (cb) {
+                var criteria = {
+                    _id: userId
+                };
+                var setQuery = {
+                    $unset: {
+                        accessToken: 1,
+                        deviceToken:1
+                    }
+                };
+                var options = {};
+                Service.CharityService.updateCharityOwnerId(criteria, setQuery, options, cb);
+            },
+            function (cb) {
+                var criteria = {
+                    _id: userData.charityId
+                };
+                var setQuery = {
+                    $unset: {
+                        deviceToken:1
+                    }
+                };
+                var options = {};
+                Service.CharityService.updateCharityOwner(criteria, setQuery, options, cb);
+            }
+        ], function (err, result) {
+            callback(err, null);
+        })
+    }
+};
+
+
+
+
 module.exports = {
     createCharityOwner: createCharityOwner,
     CharityOwnerBankDetails: CharityOwnerBankDetails,
@@ -1753,5 +1804,6 @@ module.exports = {
     loginViaAccessToken: loginViaAccessToken,
     deleteProfilePictures: deleteProfilePictures,
     deleteCampaignPictures: deleteCampaignPictures,
+    logoutCharity: logoutCharity,
     getResetPasswordToken: getResetPasswordToken
 };

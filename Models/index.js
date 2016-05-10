@@ -15,5 +15,6 @@ module.exports = {
     donor : require('./donor'),
     donorCards : require('./donorCards'),
     favouriteCampaign : require('./favouriteCampaign'),
+    favouriteCharity : require('./favouriteCharity'),
     Admins : require('./Admins')
 };

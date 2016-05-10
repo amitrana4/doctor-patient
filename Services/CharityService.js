@@ -79,6 +79,7 @@ var getCharityCampaign = function (criteria, projection, options, callback) {
 
 
 var getCampaignDeepPopulate = function (criteria, project, options,populateModel, callback) {
+    
     Models.charityCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
         if ( err ) return callback(err, docs);
         if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
@@ -90,6 +91,7 @@ var getCampaignDeepPopulate = function (criteria, project, options,populateModel
             callback(null, docs);
         });
     });
+    
 };
 
 var getDonationPopulate = function (criteria, project, options,populateModel, callback) {

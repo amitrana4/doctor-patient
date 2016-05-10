@@ -657,5 +657,34 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'PUT',
+        path: '/api/charity/logout',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.logoutCharity(userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess())
+                }
+            });
+        },
+        config: {
+            description: 'Edit Profile',
+            tags: ['api', 'charity'],
+            auth: 'CharityAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }
 ]

@@ -28,6 +28,18 @@ var createCharityDonation = function (objToSave, callback) {
     new Models.charityDonations(objToSave).save(callback)
 };
 
+
+//Update User in DB
+var createCampaignFavourite = function (objToSave, callback) {
+    new Models.favouriteCampaign(objToSave).save(callback)
+};
+
+//Update User in DB
+var createCharityFavourite = function (objToSave, callback) {
+    new Models.favouriteCharity(objToSave).save(callback)
+};
+
+
 // /get Donation in DB
 var getDonation = function (criteria, projection, options, callback) {
     Models.donation.find(criteria, projection, options, callback);
@@ -132,6 +144,8 @@ module.exports = {
     updateDonor: updateDonor,
     updateDonorCards: updateDonorCards,
     getCharityCampaign: getCharityCampaign,
+    createCampaignFavourite: createCampaignFavourite,
+    createCharityFavourite: createCharityFavourite,
     getDonorCardPopulate: getDonorCardPopulate,
     getDonorPopulate: getDonorPopulate,
     getCampaignPopulate: getCampaignPopulate

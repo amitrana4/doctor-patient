@@ -888,6 +888,86 @@ var loginViaFacebook = function (payloadData, callback) {
 
 
 
+
+
+var setFavourite = function (payload, userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var campaignData;
+        var charityData;
+        async.series([
+            function (cb) {
+                if(payload.type == 'CAMPAIGN'){
+                    //Check if the driver is free or not
+                    Service.DonorService.getCharityCampaign({_id : payload.id}, {},{lean:true}, function (err, campaignAry) {
+                        console.log(campaignAry, '========payload')
+                        if (err){
+                            cb(err)
+                        }else {
+                            if(campaignAry.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            campaignData = campaignAry[0];
+                            cb()
+                        }
+                    })
+                }
+                else if(payload.type == 'CHARITY'){
+                    //Check if the driver is free or not
+                    Service.CharityService.getCharityOwner({_id : payload.id}, {},{lean:true}, function (err, charityAry) {
+                        console.log(charityAry, '========payloadsdfsdfsdfsdf')
+                        if (err){
+                            cb(err)
+                        }else {
+                            if(charityAry.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            charityData = charityAry[0];
+                            cb()
+                        }
+                    })
+                }
+
+            },
+            function (cb) {
+                if(payload.type == 'CAMPAIGN'){
+                    var setQuery = {
+                            campaignId: campaignData._id,
+                            donorId:userData._id,
+                            createdOn: new Date()
+                    };
+                    Service.DonorService.createCampaignFavourite(setQuery, function (err, charityDataFromDB) {
+                        if (err.code == 11000 && err.message.indexOf('favouritecampaignschemas.$campaignId_1_donorId_1') > -1){
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
+
+                        }
+                    });
+
+                }
+
+                if(payload.type == 'CHARITY'){
+                    var setQuery = {
+                            charityId: charityData._id,
+                            donorId:userData._id,
+                            createdOn: new Date()
+                    };
+                    Service.DonorService.createCharityFavourite(setQuery, function (err, charityDataFromDB) {
+                        if (err.code == 11000 && err.message.indexOf('favouritecharityschemas.$campaignId_1_donorId_1') > -1){
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
+
+                        }
+                    });
+                }
+
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -903,6 +983,7 @@ module.exports = {
     Donation: Donation,
     charityDonation: charityDonation,
     loginViaFacebook: loginViaFacebook,
+    setFavourite: setFavourite,
     getDonations: getDonations,
     UpdateDonor: UpdateDonor
 };

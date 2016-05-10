@@ -1,7 +1,7 @@
 {
-  "name": "Seed-Project",
+  "name": "Give-App",
   "version": "0.1.6",
-  "description": "Test Description",
+  "description": "Giveapp is based on donation and chearity services.",
   "main": "server.js",
   "dependencies": {
     "async": "^1.4.0",
@@ -34,6 +34,6 @@
   "scripts": {
     "start": "node server.js"
   },
-  "author": "Shahab Ahmad Khan",
+  "author": "Amit Rana",
   "license": "ISC"
 }

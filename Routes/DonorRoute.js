@@ -526,4 +526,42 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/setFavourite',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.setFavourite(request.payload, donorData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Set Favourite charity or campaign',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload:{
+                    id:Joi.string().length(24).required(),
+                    type: Joi.string().required().valid(
+                        [
+                            'CHARITY',
+                            'CAMPAIGN'
+                        ]
+                    )
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }]
