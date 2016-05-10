@@ -39,6 +39,26 @@ var createCharityFavourite = function (objToSave, callback) {
     new Models.favouriteCharity(objToSave).save(callback)
 };
 
+// /get Donation in DB
+var getFavouriteCampaignPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.favouriteCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+// /get Donation in DB
+var getFavouriteCharityPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.favouriteCharity.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
 
 // /get Donation in DB
 var getDonation = function (criteria, projection, options, callback) {
@@ -158,6 +178,8 @@ module.exports = {
     updateDonor: updateDonor,
     updateDonorCards: updateDonorCards,
     getCharityCampaign: getCharityCampaign,
+    getFavouriteCampaignPopulate: getFavouriteCampaignPopulate,
+    getFavouriteCharityPopulate: getFavouriteCharityPopulate,
     createCampaignFavourite: createCampaignFavourite,
     createCharityFavourite: createCharityFavourite,
     getDonorCardPopulate: getDonorCardPopulate,

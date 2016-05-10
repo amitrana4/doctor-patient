@@ -570,4 +570,47 @@ module.exports = [
                 }
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/api/donor/getAllAndFavourite',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.getFavourites(request.payload, donorData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Get Favourite charity or campaign',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload:{
+                    jobType: Joi.string().required().valid(
+                        [
+                            'FAVOURITE',
+                            'ALL'
+                        ]
+                    ),
+                    type: Joi.string().required().valid(
+                        [
+                            'CHARITY',
+                            'CAMPAIGN'
+                        ]
+                    )
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     }]

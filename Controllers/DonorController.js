@@ -901,7 +901,6 @@ var setFavourite = function (payload, userData, callback) {
                 if (payload.type == 'CAMPAIGN') {
                     //Check if the driver is free or not
                     Service.DonorService.getCharityCampaign({_id: payload.id}, {}, {lean: true}, function (err, campaignAry) {
-                        console.log(campaignAry, '========payload')
                         if (err) {
                             cb(err)
                         } else {
@@ -914,7 +913,6 @@ var setFavourite = function (payload, userData, callback) {
                 else if (payload.type == 'CHARITY') {
                     //Check if the driver is free or not
                     Service.CharityService.getCharityOwner({_id: payload.id}, {}, {lean: true}, function (err, charityAry) {
-                        console.log(charityAry, '========payloadsdfsdfsdfsdf')
                         if (err) {
                             cb(err)
                         } else {
@@ -939,7 +937,6 @@ var setFavourite = function (payload, userData, callback) {
                         favourite: payload.favourite
                     };
                     Service.DonorService.updateFavouriteCampaign(onQuery, setQuery, {upsert: true}, function (err, charityDataFromDB) {
-                        console.log(err,'===============')
                         if(err) {
                             if (err.code == 11000 && err.message.indexOf('favouritecampaignschemas.$campaignId_1_donorId_1') > -1) {
                                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
@@ -961,7 +958,6 @@ var setFavourite = function (payload, userData, callback) {
                         favourite: payload.favourite
                     };
                     Service.DonorService.updateFavouriteCharity(onQuery, setQuery, {upsert: true}, function (err, charityDataFromDB) {
-                        console.log(err,'===============')
                         if(err) {
                             if (err.code == 11000 && err.message.indexOf('favouritecharityschemas.$campaignId_1_donorId_1') > -1) {
                                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
@@ -986,6 +982,87 @@ var setFavourite = function (payload, userData, callback) {
 };
 
 
+
+var getFavourites = function (payload, userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var finalData;
+        async.auto([
+            function (cb) {
+                if (payload.type == 'CAMPAIGN') {
+                    if(payload.jobType == 'FAVOURITE') {
+                        var populateVariable = {
+                            path: "campaignId"
+                        };
+                        Service.DonorService.getFavouriteCampaignPopulate({donorId: userData.id, favourite : true}, {campaignId:1}, {lean: true}, populateVariable, function (err, campaignAry) {
+                            if (err) {
+                                cb(err)
+                            } else {
+                                finalData = campaignAry;
+                                cb()
+                            }
+                        })
+                    }
+                    else {
+                        Service.CharityService.getCharityCampaign({}, function (err, campaignAry) {
+                            if (err) {
+                                cb(err)
+                            } else {
+                                finalData = campaignAry;
+                                cb()
+                            }
+                        })
+                    }
+                }
+                else{
+                    cb();
+                }
+
+            },
+            function (cb) {
+
+                if (payload.type == 'CHARITY') {
+                    if(payload.jobType == 'FAVOURITE') {
+                        var populateVariable = {
+                            path: "charityId"
+                        };
+                        Service.DonorService.getFavouriteCharityPopulate({donorId: userData.id, favourite : true}, {charityId:1}, {lean: true}, populateVariable, function (err, charityAry) {
+                            if (err) {
+                                cb(err)
+                            } else {
+                                finalData = charityAry;
+                                cb()
+                            }
+                        })
+                    }
+                    else{
+                        Service.CharityService.getCharityOwner({}, function (err, charityAry) {
+                            if (err) {
+                                cb(err)
+                            } else {
+                                finalData = charityAry;
+                                cb()
+                            }
+                        })
+                    }
+                }
+                else{
+                    cb();
+                }
+
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, finalData);
+            }
+        });
+    }
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -1003,5 +1080,6 @@ module.exports = {
     loginViaFacebook: loginViaFacebook,
     setFavourite: setFavourite,
     getDonations: getDonations,
+    getFavourites: getFavourites,
     UpdateDonor: UpdateDonor
 };
