@@ -821,8 +821,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
     async.series([
 
         function (cb) {
-            if(typeof dataToSave.pictures == 'undefined')return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PICTURE_REQUIRED);
-            if(dataToSave.pictures.length > 5 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+            if(dataToSave.pictures) {
+                if (dataToSave.pictures.length > 5) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMAGE_LENGTH_EXCEEDED);
+            }
             cb();
         },
         function (cb) {
@@ -991,7 +992,7 @@ var createCampaign = function (payloadData, CharityData, callback) {
             });
         },
         function (cb) {
-            if (dataToSave.pictures != undefined && dataToSave.pictures.length > 0) {
+            if (dataToSave.pictures != undefined) {
                 var taskInParallel = [];
                 for (var key in dataToSave.pictures) {
                     (function (key) {
