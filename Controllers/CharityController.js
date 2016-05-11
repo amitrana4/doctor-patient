@@ -1209,7 +1209,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
                 } else {
                     if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                     var totalResult = result && result[0] || null;
-                    if(totalResult.complete == true || totalResult.endDate > new Date()) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                    if(totalResult.complete == true || totalResult.endDate < new Date()) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
 
                     if (dataToSave.pictures) {
                         var totalLength = Number(dataToSave.pictures.length + totalResult.pictures.length);
@@ -1289,6 +1289,9 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             var options = {lean: true};
             Service.CharityService.updateCharityCampaign(criteria, campDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
+                    if (err.code == 11000 && err.message.indexOf('charitycampaignschemas.$campaignName_1') > -1){
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_EXIST);
+                    }
                     cb(err)
                 } else {
                     campaignData = charityDataFromDB;

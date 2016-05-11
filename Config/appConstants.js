@@ -416,7 +416,7 @@ var STATUS_MSG = {
         },
         CHARITYREGNO_ALREADY_EXIST: {
             statusCode:400,
-            customMessage : 'charityRegistrationNo Already Exists',
+            customMessage : 'Charity Registration No Already Exists',
             type : 'CHARITYREGNO_ALREADY_EXIST'
         },
         ERROR_PROFILE_PIC_UPLOAD: {
@@ -498,7 +498,7 @@ var STATUS_MSG = {
     },
     SUCCESS: {
         CREATED: {
-            statusCode:200,
+            statusCode:201,
             customMessage : 'Created Successfully',
             type : 'CREATED'
         },
