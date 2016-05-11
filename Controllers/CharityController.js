@@ -1068,8 +1068,8 @@ var campaignList = function (payloadData, CharityData, callback) {
                             {'endDate':{$lt:new Date()}}
 
                         ]
-                },
-                select: 'campa1ignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
+                }
+               /* select: 'campa1ignName description unitName targetUnitCount endDate unitRaised mainImageFileId'*/
             };
         }
         if(dataToSave.type == 'PENDING'){
@@ -1081,8 +1081,8 @@ var campaignList = function (payloadData, CharityData, callback) {
                         {complete:false},
                         {'endDate':{$gte:new Date()}}
                     ]
-                },
-                select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'
+                }
+                /*select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'*/
             };
         }
     }
@@ -1093,7 +1093,7 @@ var campaignList = function (payloadData, CharityData, callback) {
 
     var criteria      = { charityOwnerId:CharityData._id},
         options = {lean: true},
-        projection ={type:1,campaignId:1};
+        projection ={campaignId:1};
 
     Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
         if (err) {
@@ -1263,6 +1263,7 @@ var updateCampaign = function (payloadData, CharityData, callback) {
             }
             else if(dataToSave.action == 'COMPLETE') {
                 campDataToSave.complete = true;
+                campDataToSave.completedOn = new Date();
             }
             cb();
         },

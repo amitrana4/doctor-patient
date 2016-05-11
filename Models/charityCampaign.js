@@ -24,6 +24,7 @@ var charityCampaignSchema = new Schema({
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
 
     createdOn: {type: Date, required: true},
+    completedOn: {type: Date, required: false},
     updatedOn: {default: Date.now, type: Number, required: true}
 });
 charityCampaignSchema.index({campaignName: 1}, {unique: true});

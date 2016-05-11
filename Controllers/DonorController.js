@@ -640,6 +640,7 @@ var Donation = function (payloadData, userData, callback) {
                 var dataToSet = {
                     unitRaised: newCount,
                     complete: true,
+                    completedOn: new Date(),
                     $addToSet: finalDataToSave
                 }
             }
