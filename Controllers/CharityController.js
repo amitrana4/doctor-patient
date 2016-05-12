@@ -1657,7 +1657,7 @@ var getResetPasswordToken = function (query, callback) {
                             cb(err)
                         } else {
                             if (!userData || userData.length == 0) {
-                                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
+                                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
                             } else {
                                 charityData = userData;
                                 cb()

@@ -11,7 +11,7 @@ var charityCampaignSchema = new Schema({
     long: {type: String, trim: true, required: true},
     address: {type: String, trim: true, required: true},
     description: {type: String, trim: true, required: true},
-    hasKeyWords: {type: Boolean, required: true, default: false},
+    hasKeyWords: {type: String, trim: true, required: true},
     mainImageFileId: {type: String, trim: true, required: false},
     unitName: {type: String, trim: true, required: true},
     costPerUnit: {type: Number, required: true},

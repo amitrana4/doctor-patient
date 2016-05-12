@@ -451,7 +451,7 @@ var STATUS_MSG = {
         },
         EMAIL_NOT_FOUND: {
             statusCode:400,
-            customMessage : 'You are not registered yet!',
+            customMessage : 'You are not registered yet.',
             type : 'EMAIL_NOT_FOUND'
         },
         PROFILE_EXIST: {
