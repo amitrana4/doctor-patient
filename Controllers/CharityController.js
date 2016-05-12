@@ -670,7 +670,6 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
         return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
     }
 
-    var accessToken = {};
     var customerDataArray ={};
     async.series([
         function(cb)
@@ -695,35 +694,10 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
                 cb();
 
             });
-        },
-        /*function (cb) { //console.log("userFound 153  ",userFound);
-            if (customerDataArray) {
-                var tokenData = {
-                    id: userData.id,
-                    type: UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER
-                };
-                TokenManager.setToken(tokenData, function (err, output) {
-                    if (err) {
-                        cb(err);
-                    } else {
-                        if (output && output.accessToken){
-                            accessToken = output && output.accessToken;
-                            cb();
-                        }else {
-                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
-                        }
-                    }
-                })
-            } else {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.ERROR.IMP_ERROR)
-            }
-
-        },*/
+        }
     ], function (err) {
         if(err) return callback(err);
         return callback(null, {
-
-            accessToken: accessToken,
             userDetails: UniversalFunctions.deleteUnnecessaryCharityData(customerDataArray)
         });
     });
