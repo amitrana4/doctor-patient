@@ -396,6 +396,78 @@ var getContactDriver = function (payload, callback) {
     })
 };
 
+
+var getAllCharity = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        Service.CharityService.getCharityOwner({}, function (err, charityAry) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, charityAry);
+            }
+        });
+    }
+};
+
+var getAllCampaign = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        Service.CharityService.getCharityCampaign({}, function (err, charityAry) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, charityAry);
+            }
+        });
+    }
+};
+
+
+
+var approveCharity = function (payload, userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var charityData;
+        async.series([
+            function (cb) {
+                    Service.CharityService.getCharityOwner({_id: payload.charityId}, {}, {lean: true}, function (err, charityAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            charityData = charityAry[0];
+                            cb()
+                        }
+                    })
+            },
+            function (cb) {
+                var onQuery = {
+                    _id: payload.charityId
+                };
+                    var setQuery = {
+                        charityId: charityData._id,
+                        adminApproval: payload.status
+                    };
+                    Service.CharityService.updateCharityOwner(onQuery, setQuery, {upsert: true}, function (err, charityDataFromDB) {
+                        if(err) cb(err);
+                        cb();
+                    });
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
+
 module.exports = {
     deleteCustomer: deleteCustomer,
     deleteDriver: changePassword,
@@ -406,5 +478,8 @@ module.exports = {
     updateCustomer: updateCustomer,
     getCustomer: getCustomer,
     getInvitedUsers: getInvitedUsers,
+    getAllCharity: getAllCharity,
+    getAllCampaign: getAllCampaign,
+    approveCharity: approveCharity,
     getPartner: getPartner
 };

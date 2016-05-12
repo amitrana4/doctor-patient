@@ -32,7 +32,7 @@ module.exports = [
             },
             validate: {
                 payload: {
-                    name: Joi.string().regex(/^[a-zA-Z ]+$/).trim().min(2).required(),
+                    name: Joi.string().regex(/^[a-zA-Z -]+$/).trim().min(2).required(),
                     charityRegistrationNo: Joi.number().required(),
                     website: Joi.string().required().trim(),
                     contactPerson: Joi.string().required().trim(),

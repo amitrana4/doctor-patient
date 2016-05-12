@@ -8,7 +8,7 @@ var UniversalFunctions = require('../Utils/UniversalFunctions');
 var Joi = require('joi');
 
 var non_auth_routes = [
-    {
+    /*{
         method: 'DELETE',
         path: '/api/admin/deleteCustomer',
         handler: function (request, reply) {
@@ -36,7 +36,7 @@ var non_auth_routes = [
             }
         }
     }
-    }
+    }*/
    /* {
         method: 'DELETE',
         path: '/api/admin/deleteDriver',
@@ -67,7 +67,7 @@ var non_auth_routes = [
     }
     }, */
 
-    ,{
+    {
         method: 'POST',
         path: '/api/admin/login',
         config: {
@@ -105,7 +105,7 @@ var non_auth_routes = [
 ];
 
 var userRoutes = [
-    {
+    /*{
         method: 'GET'
         , path: '/api/admin/getAllCustomers'
         , handler: function (request, reply) {
@@ -139,7 +139,7 @@ var userRoutes = [
             }
         }
     }
-    },
+    },*/
 
     /*{
         method: 'GET'
@@ -179,7 +179,7 @@ var userRoutes = [
         }
     }
     },*/
-    {
+ /*   {
         method: 'PUT'
         , path: '/api/admin/updateCustomer'
         , handler: function (request, reply) {
@@ -287,7 +287,110 @@ var userRoutes = [
             }
         }
     }
+    },*/
+    {
+        method: 'GET',
+        path: '/api/admin/getAllCharity',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getAllCharity(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all charity',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/admin/getAllCampaign',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getAllCampaign(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all charity',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/admin/approveCharity',
+        handler: function (request, reply) {
+            var payloadData = request.payload;
+            Controller.AdminController.approveCharity(payloadData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+
+        }, config: {
+        description: 'Approve Charity',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                charityId: Joi.string().optional(),
+                status: Joi.string().required().valid(
+                    [
+                        'true',
+                        'false'
+                    ]
+                )
+            },
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
     }
+    },
     /*,
     {
         method: 'PUT'

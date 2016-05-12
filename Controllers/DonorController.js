@@ -943,6 +943,9 @@ var setFavourite = function (payload, userData, callback) {
                                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
 
                             }
+                            else{
+                                cb(err)
+                            }
                         }
                         else{
                             cb()
@@ -962,7 +965,9 @@ var setFavourite = function (payload, userData, callback) {
                         if(err) {
                             if (err.code == 11000 && err.message.indexOf('favouritecharityschemas.$campaignId_1_donorId_1') > -1) {
                                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DUPLICATE);
-
+                            }
+                            else{
+                                cb(err)
                             }
                         }
                         else{

@@ -684,8 +684,7 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
                 path: "pictures",
                 select: 'images'
             };
-
-
+            
             Service.CharityService.updateCharityOwnerPopulate(criteria, dataToSet,{lean: true}, populateVariable, function(err,customerData){
                 if (err) {
                     return cb(err);
@@ -1016,7 +1015,9 @@ var createCampaign = function (payloadData, CharityData, callback) {
         if (err) {
             return callback(err);
         }
-        callback();
+        else {
+            callback(null, {id: campaignData._id});
+        }
     });
 };
 
