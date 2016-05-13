@@ -357,6 +357,39 @@ module.exports = [
         }
     },
     {
+        method: 'GET',
+        path: '/api/charity/getAllMyDonation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+                Controller.CharityController.getAllMyDonations(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        console.log(data,'=====ghjghj======')
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Charity Owner Profile Info',
+            auth: 'CharityAuth',
+            tags: ['api', 'charity'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'POST',
         path: '/api/charity/campaignList',
         handler: function (request, reply) {

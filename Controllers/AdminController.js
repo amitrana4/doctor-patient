@@ -8,7 +8,7 @@ var UploadManager = require('../Lib/UploadManager');
 var TokenManager = require('../Lib/TokenManager');
 var NotificationManager = require('../Lib/NotificationManager');
 
-var updateCustomer = function (phoneNo, data, callback) {
+/*var updateCustomer = function (phoneNo, data, callback) {
     var criteria = {
         phoneNo: phoneNo
     };
@@ -51,9 +51,9 @@ var updateCustomer = function (phoneNo, data, callback) {
             }
         }
     })
-};
+};*/
 
-var resetPassword = function (email, callback) {
+/*var resetPassword = function (email, callback) {
     var generatedPassword = UniversalFunctions.generateRandomString();
     var customerObj = null;
     if (!email) {
@@ -98,7 +98,7 @@ var resetPassword = function (email, callback) {
             callback(err, {generatedPassword: generatedPassword}); //TODO Change in production DO NOT Expose the password
         })
     }
-};
+};*/
 
 var adminLogin = function(userData, callback) {
 
@@ -182,6 +182,7 @@ var adminLogout = function (token, callback) {
     })
 };
 
+/*
 var changePassword = function (queryData, userData, callback) {
     var userFound = null;
     if (!queryData.oldPassword || !queryData.newPassword || !userData) {
@@ -353,14 +354,14 @@ var deleteCustomer = function (phoneNo, callback) {
                     }
                 })
             },
-            /*function (cb) {
+            /!*function (cb) {
              //TODO use it later when bookings API are completed
              //Delete Booking
              var criteria = {
              $or: [{driver: userId}, {customer: userId}]
              };
              Service.Booking.deleteBooking(criteria, cb)
-             },*/
+             },*!/
             function (cb) {
                 //Finally Delete User
                 var criteria = {
@@ -376,6 +377,7 @@ var deleteCustomer = function (phoneNo, callback) {
         })
     }
 };
+*/
 
 var getContactBusiness= function (payload, callback) {
     Service.ContactFormService.getBusinessData({},{__v:0},{lean:true}, function (err, businessArray) {
@@ -426,6 +428,21 @@ var getAllCampaign = function (userData, callback) {
 };
 
 
+var getAllDonors = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        Service.DonorService.getDonor({}, function (err, charityAry) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, charityAry);
+            }
+        });
+    }
+};
+
+
 
 var approveCharity = function (payload, userData, callback) {
     if (!userData || !userData.id) {
@@ -445,14 +462,23 @@ var approveCharity = function (payload, userData, callback) {
                     })
             },
             function (cb) {
+                var setQuery = {}
                 var onQuery = {
                     _id: payload.charityId
                 };
-                    var setQuery = {
-                        charityId: charityData._id,
-                        adminApproval: payload.status
+                if(payload.status == 'true'){
+                    setQuery = {
+                        "$set" : {adminApproval: payload.status}
                     };
-                    Service.CharityService.updateCharityOwner(onQuery, setQuery, {upsert: true}, function (err, charityDataFromDB) {
+                }
+                else if(payload.status == 'false'){
+                    setQuery = {
+                            "$set" : {reject: true}
+                    };
+
+                }
+                    Service.CharityService.updateCharityOwner(onQuery, setQuery, {lean: true}, function (err, charityDataFromDB) {
+                        console.log(setQuery, charityDataFromDB, payload.status, '====================')
                         if(err) cb(err);
                         cb();
                     });
@@ -469,17 +495,18 @@ var approveCharity = function (payload, userData, callback) {
 
 
 module.exports = {
-    deleteCustomer: deleteCustomer,
+    /*deleteCustomer: deleteCustomer,
     deleteDriver: changePassword,
     getContactDriver : getContactDriver,
-    getContactBusiness : getContactBusiness,
+    getContactBusiness : getContactBusiness,*/
     adminLogin: adminLogin,
     adminLogout: adminLogout,
-    updateCustomer: updateCustomer,
+  /*  updateCustomer: updateCustomer,
     getCustomer: getCustomer,
-    getInvitedUsers: getInvitedUsers,
+    getInvitedUsers: getInvitedUsers,*/
     getAllCharity: getAllCharity,
     getAllCampaign: getAllCampaign,
     approveCharity: approveCharity,
-    getPartner: getPartner
+    getAllDonors: getAllDonors,
+   /* getPartner: getPartner*/
 };

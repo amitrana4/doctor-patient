@@ -1110,7 +1110,7 @@ var getCampaignDonors = function (payloadData, CharityData, callback) {
 
     var populateVariable = {
         path: "donorId",
-        select: 'emailId firstName lastName'
+        select: 'emailId firstName lastName phoneNumber'
     };
 
     if(payloadData.campaignId){
@@ -1152,6 +1152,59 @@ var getCharityProfileInfo = function (CharityData,callbackRoute) {
         } else {
             callbackRoute(null,res);
         }
+    });
+};
+
+
+var getAllMyDonations = function (payload,callback) {
+
+    var finalData = {};
+    async.series([
+
+        function (cb) {
+            var populateVariable = {
+                path: "donorId",
+                select: 'emailId firstName lastName'
+            };
+
+            var criteria = {charityId: payload.charityId};
+            var options = {lean: true},
+                projection = {updatedOn: 0};
+
+            Service.CharityService.getDonationPopulate(criteria, projection, options, populateVariable, function (err, res) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalData.donation = res;
+                    cb();
+                }
+            })
+        },
+        function (cb) {
+            var populateVariable = {
+                path: "donorId",
+                select: 'emailId firstName lastName'
+            };
+
+            var criteria = {charityId: payload.charityId};
+            var options = {lean: true},
+                projection = {updatedOn: 0};
+
+            Service.CharityService.getCharityDonationPopulate(criteria, projection, options, populateVariable, function (err, res) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalData.charityDonation = res;
+                    cb();
+                }
+            })
+        }
+    ], function (err, result) {
+        if (err) {
+            return callback(err);
+        }
+      //  console.log(finalData,'====')
+        callback(null, finalData);
     });
 };
 
@@ -1785,5 +1838,6 @@ module.exports = {
     deleteProfilePictures: deleteProfilePictures,
     deleteCampaignPictures: deleteCampaignPictures,
     logoutCharity: logoutCharity,
+    getAllMyDonations: getAllMyDonations,
     getResetPasswordToken: getResetPasswordToken
 };

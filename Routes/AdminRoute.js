@@ -323,6 +323,39 @@ var userRoutes = [
     },
     {
         method: 'GET',
+        path: '/api/admin/getAllDonors',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getAllDonors(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all charity',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }   
+    },
+    {
+        method: 'GET',
         path: '/api/admin/getAllCampaign',
         handler: function (request, reply) {
             var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
@@ -358,8 +391,8 @@ var userRoutes = [
         method: 'PUT',
         path: '/api/admin/approveCharity',
         handler: function (request, reply) {
-            var payloadData = request.payload;
-            Controller.AdminController.approveCharity(payloadData, function (err, data) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.approveCharity(request.payload, AdminData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
@@ -373,7 +406,7 @@ var userRoutes = [
         tags: ['api', 'admin'],
         validate: {
             payload: {
-                charityId: Joi.string().optional(),
+                charityId: Joi.string().required(),
                 status: Joi.string().required().valid(
                     [
                         'true',
@@ -381,6 +414,7 @@ var userRoutes = [
                     ]
                 )
             },
+            headers: UniversalFunctions.authorizationHeaderObj,
             failAction: UniversalFunctions.failActionFunction
         },
         plugins: {

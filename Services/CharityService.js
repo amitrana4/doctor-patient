@@ -104,6 +104,17 @@ var getDonationPopulate = function (criteria, project, options,populateModel, ca
     });
 };
 
+
+var getCharityDonationPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.charityDonations.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
 var getCharityPopulate = function (criteria, project, options,populateModel, callback) {
     Models.charity.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
         if (err) {
@@ -136,6 +147,7 @@ module.exports = {
     getCharityOwnerId: getCharityOwnerId,
     getDonationPopulate: getDonationPopulate,
     getCampaignDeepPopulate: getCampaignDeepPopulate,
+    getCharityDonationPopulate: getCharityDonationPopulate,
     getCharityOwner: getCharityOwner,
     updateCharityOwnerPopulate: updateCharityOwnerPopulate
 };
