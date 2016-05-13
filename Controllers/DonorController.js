@@ -565,7 +565,7 @@ var Donation = function (payloadData, userData, callback) {
         function (callback) {
             var criteria = {_id: dataToSave.campaignId},
                 options = {lean: true},
-                projection = {charityId: 0};
+                projection = {};
 
             Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
                 if (err) callback(err);
