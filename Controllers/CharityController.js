@@ -1149,8 +1149,7 @@ var getCharityProfileInfo = function (CharityData,callbackRoute) {
     Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
         if (err) {
             callbackRoute(err)
-        } else {
-            callbackRoute(null,res);
+        } else {            callbackRoute(null,res);
         }
     });
 };
@@ -1158,7 +1157,8 @@ var getCharityProfileInfo = function (CharityData,callbackRoute) {
 
 var getAllMyDonations = function (payload,callback) {
 
-    var finalData = {};
+    var charityDonation = {};
+    var donation = {};
     async.series([
 
         function (cb) {
@@ -1175,7 +1175,7 @@ var getAllMyDonations = function (payload,callback) {
                 if (err) {
                     cb(err)
                 } else {
-                    finalData.donation = res;
+                    donation = res;
                     cb();
                 }
             })
@@ -1194,7 +1194,7 @@ var getAllMyDonations = function (payload,callback) {
                 if (err) {
                     cb(err)
                 } else {
-                    finalData.charityDonation = res;
+                    charityDonation = res;
                     cb();
                 }
             })
@@ -1203,8 +1203,9 @@ var getAllMyDonations = function (payload,callback) {
         if (err) {
             return callback(err);
         }
-      //  console.log(finalData,'====')
-        callback(null, finalData);
+        var finalDataNew = donation.concat(charityDonation);
+
+        callback(null, finalDataNew);
     });
 };
 
