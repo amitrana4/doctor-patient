@@ -20,7 +20,7 @@ var charitySchema = new Schema({
     taxDeductionCode: {type: String, trim: true, required: true},
     registrationProofFileId: {type: String, default: null},
     supportingDocumentFileId: {type: String, default: null},
-    hasKeyWords: {type: String, trim: true, required: true},
+    hasKeyWords: {type: String, trim: true, required: false},
     adminApproval: {type: Boolean, required: true, default: false},
     reject: {type: Boolean, required: true, default: false},
     deviceType: {type: String, trim: true, required: true},

@@ -228,7 +228,6 @@ var userRoutes = [
                     password: Joi.string().required().min(5).trim(),
                     taxId: Joi.string().required().trim(),
                     taxDeductionCode: Joi.string().required().trim(),
-                    hasKeyWords: Joi.string().required().trim(),
                     registrationProofFileId: Joi.any()
                         .meta({swaggerType: 'file'})
                         .required()

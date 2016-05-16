@@ -44,7 +44,6 @@ module.exports = [
                     deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
                     deviceToken: Joi.string().required().min(1).trim(),
                     appVersion: Joi.string().required().trim(),
-                    hasKeyWords: Joi.string().required().trim(),
                     password: Joi.string().required().min(5).trim(),
                     taxId: Joi.string().required().trim(),
                     taxDeductionCode: Joi.string().required().trim(),

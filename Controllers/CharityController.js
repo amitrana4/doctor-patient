@@ -128,7 +128,6 @@ var createCharityOwner = function (payloadData, callback) {
                 charityFinalDataToSave.charityOwnerId = charityOwnerData._id;
                 charityFinalDataToSave.emailId = dataToSave.emailId;
                 charityFinalDataToSave.phoneNumber = dataToSave.phoneNumber;
-                charityFinalDataToSave.hasKeyWords = dataToSave.hasKeyWords;
                 charityFinalDataToSave.countryCode = dataToSave.countryCode;
                 charityFinalDataToSave.country = dataToSave.country;
                 charityFinalDataToSave.taxId = dataToSave.taxId;
