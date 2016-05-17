@@ -176,10 +176,7 @@ module.exports = [
                     officeState: Joi.string().required().trim(),
                     officeCountry: Joi.string().required().trim(),
                     pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
-                    videos: Joi.any()
-                        .meta({swaggerType: 'file'})
-                        .optional()
-                        .description('video file')
+                    videos: Joi.string().optional().trim()
 
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
@@ -648,10 +645,7 @@ module.exports = [
                     officeState: Joi.string().optional().trim(),
                     officeCountry: Joi.string().optional().trim(),
                     pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
-                    videos: Joi.any()
-                        .meta({swaggerType: 'file'})
-                        .optional()
-                        .description('video file')
+                    videos: Joi.string().optional().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },
@@ -705,7 +699,7 @@ module.exports = [
             });
         },
         config: {
-            description: 'Edit Profile',
+            description: 'Logout',
             tags: ['api', 'charity'],
             auth: 'CharityAuth',
             validate: {
