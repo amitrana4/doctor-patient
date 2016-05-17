@@ -249,6 +249,100 @@ var userRoutes = [
             }
         }
     },
+    {
+        method: 'POST',
+        path: '/api/admin/charityProfile',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.CharityController.CharityOwnerProfileStep1(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
+                }
+            });
+        },
+        config: {
+            description: 'Add Profile of Charity Owner',
+            tags: ['api', 'charity'],
+            auth: 'UserAuth',
+            payload: {
+                output: 'file',
+                parse: true,
+                allow: 'multipart/form-data',
+                maxBytes: 40485760
+            },
+            validate: {
+                payload: {
+                    logoFileId: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .required()
+                        .description('image file'),
+                    foundationDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').required(),
+                    type: Joi.string().required().trim(),
+                    charityId: Joi.string().required().trim(),
+                    description: Joi.string().required().trim(),
+                    keyWord: Joi.string().required().trim(),
+                    officeAddress1: Joi.string().required().trim(),
+                    officeAddress2: Joi.string().optional().trim(),
+                    officeCity: Joi.string().required().trim(),
+                    officeState: Joi.string().required().trim(),
+                    officeCountry: Joi.string().required().trim(),
+                    pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
+                    videos: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .optional()
+                        .description('video file')
+
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    //payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/admin/charityBankDetails',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            Controller.CharityController.CharityOwnerBankDetails(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Add Profile of Charity Owner',
+            tags: ['api', 'charity'],
+            auth: 'UserAuth',
+            validate: {
+                payload: {
+                    charityId: Joi.string().required().trim(),
+                    bankAccountHolderName: Joi.string().required().trim(),
+                    bankAccountHolderPhoneNumber: Joi.number().required(),
+                    bankAccountNumber: Joi.string().required().trim()
+
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
 ];
 
 var adminLogin = [

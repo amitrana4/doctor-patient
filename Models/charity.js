@@ -7,7 +7,7 @@ var Config = require('../Config');
 var charitySchema = new Schema({
     //**************************Required Fields**********************************//
     charityOwnerId: {type: String, trim: true, required: true},
-    profileComplete: {type: String, default: 0, required: true},
+    profileComplete: {type: Number, default: 0, required: true},
     name: {type: String, trim: true, required: true},
     website: {type: String, trim: true, required: true},
     contactPerson: {type: String, trim: true, required: true},
@@ -45,7 +45,7 @@ var charitySchema = new Schema({
     videos: {type: String, trim: true, required: false},
     bankAccountHolderName: {type: String, trim: true, required: false},
     bankAccountHolderPhoneNumber: {type: Number, trim: true, required: false},
-    bankAccountNumber: {type: String, trim: true, required: false},
+    bankAccountNumber: {type: Number, trim: true, required: false},
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Date, required: true}

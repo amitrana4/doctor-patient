@@ -262,16 +262,23 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             }
         },
         function (cb) {
-            var criteria = {
-                charityOwnerId: CharityData._id
-            };
+            var criteria = {};
+            if(payloadData.charityId){
+                criteria = {
+                    charityOwnerId: payloadData.charityId
+                };
+            }else {
+                criteria = {
+                    charityOwnerId: CharityData._id
+                };
+            }
             var projection = {profileComplete : 1};
             var option = {
                 lean: true
             };
             Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
-                console.log(err, result)
                 if (err) return cb(err)
+                if(result.length==0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if(result[0].profileComplete != 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PROFILE_EXIST);
                 return cb();
             });
@@ -337,13 +344,6 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             } else {
                 cb();
             }
-        },function (cb) {
-            //Validate phone No
-            if (!dataToSave.videos) {
-                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.VIDEO_REQUIRED);
-            } else {
-                cb();
-            }
         },
         function (cb) {
             //Validate phone No
@@ -354,6 +354,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             }
         },
         function (cb) {
+            var criteria = {};
             //Insert Into DB
             var finalDataToSave = {};
             finalDataToSave.foundationDate = dataToSave.foundationDate;
@@ -365,9 +366,17 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             finalDataToSave.officeCity = dataToSave.officeCity;
             finalDataToSave.officeState = dataToSave.officeState;
             finalDataToSave.officeCountry = dataToSave.officeCountry;
+            finalDataToSave.videos = dataToSave.videos;
             finalDataToSave.profileComplete = 1;
-
-            var criteria = {charityOwnerId: CharityData._id};
+            if(payloadData.charityId){
+                criteria = {
+                    charityOwnerId: payloadData.charityId
+                };
+            }else {
+                criteria = {
+                    charityOwnerId: CharityData._id
+                };
+            }
             var datatoSet = {$addToSet: finalDataToSave};
             var options = {lean: true};
 
@@ -453,7 +462,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                 cb();
             }
         },
-        function (cb) {
+        /*function (cb) {
             if (charityOwnerProfileData && charityOwnerProfileData._id && dataToSave.videos) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.videos, charityOwnerProfileData._id, document, function (err, uploadedInfo) {
@@ -467,7 +476,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             } else {
                 cb();
             }
-        },
+        },*/
         function (cb) {
             var criteria = {_id: charityOwnerProfileData._id};
             var options = {}; //{multi: true};
@@ -492,16 +501,23 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
 
     async.series([
         function (cb) {
-            var criteria = {
-                charityOwnerId: CharityData._id
-            };
+            var criteria = {};
+            if(payloadData.charityId){
+                criteria = {
+                    charityOwnerId: payloadData.charityId
+                };
+            }else {
+                criteria = {
+                    charityOwnerId: CharityData._id
+                };
+            }
             var projection = {profileComplete : 1};
             var option = {
                 lean: true
             };
             Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
                 if (err) return cb(err)
-                if(result.profileComplete == 2 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
+                if(result[0].profileComplete == 2 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
                 return cb();
             });
         },
@@ -531,29 +547,30 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
         },
         function (cb) {
             //Insert Into DB
-
-            payloadData.profileComplete = 2;
-            var criteria = {charityOwnerId: CharityData._id,
-                "bankAccountNumber" : { $exists : true, $ne : null }};
+            var finalDataToSave = {}
+            finalDataToSave.bankAccountHolderName = payloadData.bankAccountHolderName;
+            finalDataToSave.bankAccountHolderPhoneNumber = payloadData.bankAccountHolderPhoneNumber;
+            finalDataToSave.bankAccountNumber = payloadData.bankAccountNumber;
+            finalDataToSave.profileComplete = 2;
+            /*var criteria = {charityOwnerId: CharityData._id,
+             "bankAccountNumber" : { $exists : true, $ne : null }};*/
+            var criteria = {};
+            if (payloadData.charityId) {
+                criteria = {
+                    charityOwnerId: payloadData.charityId
+                };
+            } else {
+                criteria = {
+                    charityOwnerId: CharityData._id
+                };
+            }
             var options = {lean: true};
 
-            Service.CharityService.getCharityOwner(criteria, payloadData, options, function (err, charityDataFromDB) {
+            Service.CharityService.updateCharityOwner(criteria, finalDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
                     cb(err)
                 } else {
-                    if(charityDataFromDB.length == 0){
-                        var criteria = {charityOwnerId: CharityData._id};
-                        Service.CharityService.updateCharityOwner(criteria, payloadData, options, function (err, charityDataFromDB) {
-                            if (err) {
-                                cb(err)
-                            } else {
-                                cb();
-                            }
-                        });
-                    }
-                    else{
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
-                    }
+                    cb();
                 }
             });
         }
@@ -1570,6 +1587,9 @@ var updateProfile = function (payloadData, CharityData, callback) {
             if (dataToSave.officeCountry) {
                 campDataToSave.officeCountry = dataToSave.officeCountry;
             }
+            if (dataToSave.videos) {
+                campDataToSave.videos = dataToSave.videos;
+            }
             cb();
         },
         function (cb) {
@@ -1587,7 +1607,7 @@ var updateProfile = function (payloadData, CharityData, callback) {
                 cb();
             }
         },
-        function (cb) {
+       /* function (cb) {
             if (dataToSave.videos) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.videos, CharityData._id, document, function (err, uploadedInfo) {
@@ -1601,7 +1621,7 @@ var updateProfile = function (payloadData, CharityData, callback) {
             } else {
                 cb();
             }
-        },
+        },*/
         function (cb) {
             //Insert Into DB
             var criteria = {'charityOwnerId':CharityData._id};
@@ -1736,10 +1756,10 @@ var getResetPasswordToken = function (query, callback) {
                 function (cb) {
                     if (charityData) {
                         variableDetails = {
-                            user_name: charityOwnerData.name,
+                            user_name: charityData.name,
                             password_reset_token: charityData.passwordResetToken,
                             date: moment().format("D MMMM YYYY"),
-                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/customer/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.email+"&newPassword=" //TODO change this to proper html page link
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/customer/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
                         };
                         cb();
                     } else {
@@ -1747,7 +1767,8 @@ var getResetPasswordToken = function (query, callback) {
                     }
                 },
                 function(callback){
-                    NotificationManager.sendEmailToUser('CHARITY_FORGOT_PASSWORD', variableDetails, charityData.email, function(err){
+                    console.log(variableDetails, charityData.emailId, '================')
+                    NotificationManager.sendEmailToUser('CHARITY_FORGOT_PASSWORD', variableDetails, charityData.emailId, function(err){
                         if(err){
                             return callback(err);
                         }

@@ -49,7 +49,7 @@ var sendSMSToUser = function (four_digit_verification_code, countryCode, phoneNo
 
 var sendEmailToUser = function (emailType ,emailVariables, emailId, callback) {
     var mailOptions = {
-        from: 'support@boohol.com',
+        from: 'support@giveApp.com',
         to: emailId,
         subject: null,
         html: null
@@ -81,6 +81,7 @@ var sendEmailToUser = function (emailType ,emailVariables, emailId, callback) {
             cb();
 
         },function(cb){
+            console.log(mailOptions, '=============mailOptions===========')
             sendMailViaTransporter(mailOptions, function(err,res){
                 cb(err,res);
             })
