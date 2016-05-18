@@ -15,6 +15,7 @@ var moment = require('moment');
 var ERROR_MESSAGE = UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR;
 
 var createCharityOwner = function (payloadData, callback) {
+    console.log('herere')
     var accessToken = null;
     var charityOwnerData = null;
     var uniqueCode = null;
