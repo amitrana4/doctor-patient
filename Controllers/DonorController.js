@@ -11,6 +11,9 @@ var CodeGenerator = require('../Lib/CodeGenerator');
 var DAO = require('../DAO/DAO');
 var Models = require('../Models');
 
+var paypal = require('paypal-rest-sdk');
+var Config = require('../Config');
+
 
 var createDonor = function (payloadData, callback) {
     var accessToken = null;
@@ -1069,6 +1072,31 @@ var getFavourites = function (payload, userData, callback) {
 };
 
 
+var storeCards = function (payload, userData, callback) {
+
+
+    var savedCard = {
+        "type": "visa",
+        "number": "4417119669820331",
+        "expire_month": "11",
+        "expire_year": "2019",
+        "cvv2": "123",
+        "first_name": "Joe",
+        "last_name": "Shopper"
+    };
+
+    paypal.creditCard.create(savedCard, function (error, credit_card) {
+        if (error) {
+            throw error;
+        } else {
+            console.log("Save Credit Card Response");
+            console.log(JSON.stringify(credit_card));
+        }
+
+    });
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -1087,5 +1115,6 @@ module.exports = {
     setFavourite: setFavourite,
     getDonations: getDonations,
     getFavourites: getFavourites,
-    UpdateDonor: UpdateDonor
+    UpdateDonor: UpdateDonor,
+    storeCards: storeCards
 };

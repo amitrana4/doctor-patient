@@ -308,10 +308,44 @@ var userRoutes = [
     },
     {
         method: 'POST',
+        path: '/api/admin/getCharityCampaign',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+
+            Controller.CharityController.campaignList(request.payload,CharityData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Add Profile of Charity Owner',
+            tags: ['api', 'charity'],
+            auth: 'UserAuth',
+            validate: {
+                payload: {
+                    charityId: Joi.string().required().trim(),
+                    type: Joi.string().required().valid(['COMPLETE', 'PENDING'])
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/api/admin/charityBankDetails',
         handler: function (request, reply) {
             var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
-            //reply(request.payload.materialImages);
+
             Controller.CharityController.CharityOwnerBankDetails(request.payload,CharityData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));

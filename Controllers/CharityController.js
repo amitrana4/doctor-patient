@@ -404,7 +404,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
 
                                     image.images = {original: null, thumbnail: null}
                                     if (err) {
-                                        cb(err)
+                                        return embeddedCB(err)
                                     } else {
                                         image.images.original = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
                                         image.images.thumbnail = uploadedInfo && uploadedInfo.thumbnail && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.thumbnail || null;
@@ -1047,8 +1047,6 @@ var campaignList = function (payloadData, CharityData, callback) {
     var campaignData = null;
     var dataToSave = payloadData;
 
-    /* var criteria      = { complete:false},*/
-
     var criteria  = {};
     if(dataToSave.type) {
         if(dataToSave.type == 'COMPLETE'){
@@ -1062,7 +1060,6 @@ var campaignList = function (payloadData, CharityData, callback) {
 
                         ]
                 }
-               /* select: 'campa1ignName description unitName targetUnitCount endDate unitRaised mainImageFileId'*/
             };
         }
         if(dataToSave.type == 'PENDING'){
@@ -1075,7 +1072,6 @@ var campaignList = function (payloadData, CharityData, callback) {
                         {'endDate':{$gte:new Date()}}
                     ]
                 }
-                /*select: 'campaignName description unitName targetUnitCount endDate unitRaised mainImageFileId'*/
             };
         }
     }
@@ -1083,15 +1079,24 @@ var campaignList = function (payloadData, CharityData, callback) {
 
 
 
+    if(payloadData.charityId){
+        criteria = {
+            charityOwnerId: payloadData.charityId
+        };
+    }else {
+        criteria = {
+            charityOwnerId: CharityData._id
+        };
+    }
 
-    var criteria      = { charityOwnerId:CharityData._id},
-        options = {lean: true},
+    var options = {lean: true},
         projection ={campaignId:1};
 
     Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
+            if(res.length==0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             callback(null,res);
         }
     });

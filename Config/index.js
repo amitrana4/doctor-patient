@@ -5,5 +5,6 @@ module.exports = {
     dbConfig: require('./dbConfig'),
     smsConfig: require('./smsConfig'),
     awsS3Config: require('./awsS3Config'),
-    emailConfig: require('./emailConfig')
+    emailConfig: require('./emailConfig'),
+    configure: require('./configure')
 };

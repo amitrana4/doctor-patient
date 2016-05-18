@@ -82,6 +82,38 @@ module.exports = [
         }
     },
     {
+        method: 'POST',
+        path: '/api/donor/storeCard',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.storeCards(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+        },
+        config: {
+            description: 'Register as Donor',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    firstName: Joi.string().optional().trim(),
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'PUT',
         path: '/api/donor/changePassword',
         handler: function (request, reply) {
