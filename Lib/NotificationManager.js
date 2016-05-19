@@ -49,7 +49,7 @@ var sendSMSToUser = function (four_digit_verification_code, countryCode, phoneNo
 
 var sendEmailToUser = function (emailType ,emailVariables, emailId, callback) {
     var mailOptions = {
-        from: 'support@giveApp.com',
+        from: 'support@homegenie.me',
         to: emailId,
         subject: null,
         html: null

@@ -686,6 +686,37 @@ module.exports = [
         }
     },
     {
+        method: 'GET',
+        path: '/api/charity/resetPassword',
+        handler: function (request, reply) {
+            var queryData = request.query;
+            Controller.CharityController.resetPassword(queryData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Reset Password For Customer',
+            tags: ['api', 'customer'],
+            validate: {
+                query: {
+                    email: Joi.string().email().required(),
+                    passwordResetToken: Joi.string().required(),
+                    newPassword : Joi.string().min(5).required()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'PUT',
         path: '/api/charity/logout',
         handler: function (request, reply) {

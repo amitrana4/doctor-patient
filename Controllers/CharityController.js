@@ -1765,7 +1765,7 @@ var getResetPasswordToken = function (query, callback) {
                             user_name: charityData.name,
                             password_reset_token: charityData.passwordResetToken,
                             date: moment().format("D MMMM YYYY"),
-                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/customer/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
                         };
                         cb();
                     } else {
@@ -1846,6 +1846,66 @@ var logoutCharity = function (userData, callback) {
     }
 };
 
+var resetPassword = function (payloadData, callback) {
+    var charityObj = null;
+    if (!payloadData || !payloadData.email || !payloadData.passwordResetToken || !payloadData.newPassword) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        async.series([
+            function (cb) {
+                //Get User
+                var criteria = {
+                    emailId: payloadData.email
+                };
+                Service.CharityService.getCharityOwnerId(criteria, {}, {lean: true}, function (err, userData) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (!userData || userData.length == 0) {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
+                        } else {
+                            charityObj = userData && userData[0] || null;
+                            cb()
+                        }
+                    }
+                })
+            },
+            function (cb) {
+                if (charityObj) {
+                    if (charityObj.passwordResetToken != payloadData.passwordResetToken) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_RESET_PASSWORD_TOKEN);
+                    } else {
+                        cb();
+                    }
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
+                }
+            },
+            function (cb) {
+                if (charityObj) {
+                    var criteria = {
+                        emailId: payloadData.email
+                    };
+                    var setQuery = {
+                        passwordHash: UniversalFunctions.CryptData(payloadData.newPassword),
+                        $unset: {passwordResetToken: 1}
+                    };
+                    Service.CharityService.getCharityOwnerId(criteria, setQuery, {}, function (err, userData) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            cb();
+                        }
+                    })
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                }
+            }
+        ], function (err, result) {
+            callback(err, null);
+        })
+    }
+};
 
 
 
@@ -1867,5 +1927,6 @@ module.exports = {
     deleteCampaignPictures: deleteCampaignPictures,
     logoutCharity: logoutCharity,
     getAllMyDonations: getAllMyDonations,
+    resetPassword: resetPassword,
     getResetPasswordToken: getResetPasswordToken
 };
