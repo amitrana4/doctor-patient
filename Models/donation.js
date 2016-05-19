@@ -14,10 +14,7 @@ var donationSchema = new Schema({
     donatedUnit: {type: String, trim: true, required: true},
     costPerUnit: {type: Number, required: true},
 
-    donatedCurrency: {type: String, trim: true, required: true},
     paymentGatewayTransactionId: {type: String, trim: true, required: true},
-
-    endDate: {type: Date, required: true},
 
     recurringDonation: {type: Boolean, required: true, default: false},
     frequency: {type: String, trim: true, required: false},

@@ -7,6 +7,11 @@ var donorCardsSchema = new Schema({
 
     Digit : {type : String, required:true},
     payPalId : {type: String, unique: true, trim: true, required: true},
+    type : {type: String, trim: true, required: true},
+    expire_month : {type: String, trim: true, required: true},
+    expire_year : {type: String, trim: true, required: true},
+    first_name : {type: String, trim: true, required: true},
+    last_name : {type: String, trim: true, required: true},
     isDefault: {type: Boolean, required: true, default: false},
     isDeleted : {type : Boolean, required: true, default:false},
     

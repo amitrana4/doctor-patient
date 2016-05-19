@@ -82,38 +82,6 @@ module.exports = [
         }
     },
     {
-        method: 'POST',
-        path: '/api/donor/storeCard',
-        handler: function (request, reply) {
-            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
-            Controller.DonorController.storeCards(request.payload, userData, function (err, data) {
-                if (err) {
-                    reply(UniversalFunctions.sendError(err));
-                } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
-                }
-            });
-        },
-        config: {
-            description: 'Register as Donor',
-            tags: ['api', 'Donor'],
-            auth: 'DonorAuth',
-            validate: {
-                headers: UniversalFunctions.authorizationHeaderObj,
-                payload: {
-                    firstName: Joi.string().optional().trim(),
-                },
-                failAction: UniversalFunctions.failActionFunction
-            },
-            plugins: {
-                'hapi-swagger': {
-                    payloadType: 'form',
-                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
-                }
-            }
-        }
-    },
-    {
         method: 'PUT',
         path: '/api/donor/changePassword',
         handler: function (request, reply) {
@@ -248,11 +216,8 @@ module.exports = [
                 headers: UniversalFunctions.authorizationHeaderObj,
                 payload: {
                     campaignId: Joi.string().required().trim(),
-                    donatedAmount: Joi.string().required().trim(),
                     donatedUnit: Joi.number().required(),
-                    donatedCurrency: Joi.string().required().trim(),
-                    cardId: Joi.string().required().trim(),
-                    paymentGatewayTransactionId: Joi.string().required().trim()
+                    cardId: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },
@@ -412,8 +377,13 @@ module.exports = [
             auth: 'DonorAuth',
             validate: {
                 payload: {
-                    Digit:Joi.string().required().trim(),
-                    payPalId:Joi.string().required().trim()
+                    type: Joi.string().required().trim().description('visa'),
+                    number: Joi.string().required().trim().description('4916339731576481'),
+                    expire_month: Joi.string().required().trim().description('11'),
+                    expire_year: Joi.string().required().trim().description('2019'),
+                    cvv2: Joi.string().required().trim().description('123'),
+                    first_name: Joi.string().required().trim().description('Joe'),
+                    last_name: Joi.string().required().trim().description('Shopper')
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
                 failAction: UniversalFunctions.failActionFunction

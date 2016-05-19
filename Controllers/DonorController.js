@@ -398,27 +398,85 @@ var loginDonor = function (payloadData, callback) {
 
 var addCard = function (payloadData, userData, callback) {
 
+
     var cardData = {};
+    var cardDataPaypal = {};
+    var paypalReturnData = {};
     var dataToSave = payloadData;
     async.series([
         function (cb) {
-            if (!dataToSave.Digit) {
+            if (!dataToSave.type) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CARD_DIGIT_REQUIRED);
             } else {
                 cb();
             }
         },
         function (cb) {
-            if (!dataToSave.payPalId) {
+            if (!dataToSave.number) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            if (!dataToSave.expire_month) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            if (!dataToSave.expire_year) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            if (!dataToSave.cvv2) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            if (!dataToSave.first_name) {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
+            } else {
+                cb();
+            }
+        },function (cb) {
+            if (!dataToSave.last_name) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.PAYPALID_REQUIRED);
             } else {
                 cb();
             }
         },
         function (cb) {
-            dataToSave.createdOn = new Date().toISOString();
-            dataToSave.isDefault = true;
-            Service.DonorService.createCard(dataToSave, function (err, donorDataFromDB) {
+            var savedCard = {
+                "type": dataToSave.type,
+                "number": dataToSave.number,
+                "expire_month": dataToSave.expire_month,
+                "expire_year": dataToSave.expire_year,
+                "cvv2": dataToSave.cvv2,
+                "first_name": dataToSave.first_name,
+                "last_name": dataToSave.last_name
+            };
+
+            paypal.creditCard.create(savedCard, function (error, credit_card) {
+                if (error) return cb(error.response.details[0].issue)
+                cardDataPaypal = credit_card;
+                cb()
+
+            })
+        },
+        function (cb) {
+            paypalReturnData.createdOn = new Date().toISOString();
+            paypalReturnData.isDefault = true;
+            paypalReturnData.payPalId = cardDataPaypal.id;
+            paypalReturnData.type = cardDataPaypal.type;
+            paypalReturnData.Digit = cardDataPaypal.number;
+            paypalReturnData.expire_month = cardDataPaypal.expire_month;
+            paypalReturnData.expire_year = cardDataPaypal.expire_year;
+            paypalReturnData.first_name = cardDataPaypal.first_name;
+            paypalReturnData.last_name = cardDataPaypal.last_name;
+            Service.DonorService.createCard(paypalReturnData, function (err, donorDataFromDB) {
                 if (err) {
                     if (err.code == 11000 && err.message.indexOf('donorcardsschemas.$payPalId_1') > -1) {
                         return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CARD_EXIST);
@@ -519,7 +577,7 @@ var listCards = function (payloadData, userID, callback) {
 
     var populateVariable = {
         path: "cards",
-        select: 'Digit isDefault'
+        select: 'type expire_month expire_year first_name last_name Digit isDefault'
     };
 
     Service.DonorService.getDonorCardPopulate(criteria, projection, options, populateVariable, function (err, res) {
@@ -564,6 +622,10 @@ var Donation = function (payloadData, userData, callback) {
     var finalDonation = {};
     var dataToSave = payloadData;
     var campaignData = {};
+    var cardSelected;
+    var savedCard = {};
+    var totalAmount;
+    var paypalReturn;
     async.series([
         function (callback) {
             var criteria = {_id: dataToSave.campaignId},
@@ -589,21 +651,75 @@ var Donation = function (payloadData, userData, callback) {
             }
             var options = {lean: true};
             var projections = {};
-            Service.DonorService.getDonor(query, projections, options, function (err, result) {
-                console.log(result)
+            var populateVariable = {
+                path: "cards",
+                select: 'payPalId'
+            };
+            Service.DonorService.getDonorCardPopulate(query, projections, options, populateVariable, function (err, result) {
                 if (err) return callback(err);
                 if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                result[0].cards.forEach(function(val, index){
+                    if(val._id == dataToSave.cardId){
+                        cardSelected = val.payPalId;
+                    }
+                })
                 if (result) return callback();
                 callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             })
+        },function (callback) {
+
+            totalAmount = campaignData.costPerUnit * dataToSave.donatedUnit;
+            savedCard = {
+                "intent": "sale",
+                "payer": {
+                    "payment_method": "credit_card",
+                    "funding_instruments": [{
+                        "credit_card_token": {
+                            "credit_card_id": cardSelected
+                        }
+                    }]
+                },
+                "transactions": [{
+                    "item_list": {
+                        "items": [{
+                            "name": campaignData.campaignName,
+                            "sku": campaignData.campaignName,
+                            "price": campaignData.costPerUnit,
+                            "currency": "USD",
+                            "quantity": dataToSave.donatedUnit
+                        }]
+                    },
+                    "amount": {
+                        "currency": "USD",
+                        "total": totalAmount
+                    },
+                    "description": "This is the payment description for" + campaignData.campaignName
+                }]
+            };
+
+            paypal.payment.create(savedCard, function (error, payment) {
+                if (error) {
+                    //  throw error;
+                    callback(error)
+                } else {
+                    paypalReturn = payment;
+                    callback()
+                }
+
+            });
+
         },
         function (cb) {
             dataToSave.charityId = campaignData.charityId;
-            dataToSave.costPerUnit = campaignData.costPerUnit;
+            dataToSave.campaignId = campaignData._id;
             dataToSave.donorId = userData._id;
             dataToSave.cardId = campaignData.cardId;
-            dataToSave.endDate = campaignData.endDate;
+            dataToSave.donatedAmount = totalAmount;
+            dataToSave.donatedUnit = dataToSave.donatedUnit;
+            dataToSave.costPerUnit = campaignData.costPerUnit;
+            dataToSave.paymentGatewayTransactionId = paypalReturn.id;
             dataToSave.createdOn = new Date().toISOString();
+
 
             Service.DonorService.createDonation(dataToSave, function (err, donorDataFromDB) {
                 if (err) {
@@ -1072,31 +1188,6 @@ var getFavourites = function (payload, userData, callback) {
 };
 
 
-var storeCards = function (payload, userData, callback) {
-
-
-    var savedCard = {
-        "type": "visa",
-        "number": "4417119669820331",
-        "expire_month": "11",
-        "expire_year": "2019",
-        "cvv2": "123",
-        "first_name": "Joe",
-        "last_name": "Shopper"
-    };
-
-    paypal.creditCard.create(savedCard, function (error, credit_card) {
-        if (error) {
-            throw error;
-            callback(error);
-        } else {
-            callback(null, credit_card);
-            console.log("Save Credit Card Response");
-            console.log(JSON.stringify(credit_card));
-        }
-
-    });
-};
 
 
 module.exports = {
@@ -1117,6 +1208,5 @@ module.exports = {
     setFavourite: setFavourite,
     getDonations: getDonations,
     getFavourites: getFavourites,
-    UpdateDonor: UpdateDonor,
-    storeCards: storeCards
+    UpdateDonor: UpdateDonor
 };
