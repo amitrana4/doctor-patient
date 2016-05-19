@@ -7,8 +7,8 @@ var nodeMailer = {
         auth: {
             /*user: "marketing@homegenie.me",
             pass: "831hw3l3ZLCahx6Si6jfuw"*/
-            user: "givapp@Hotpty.com ",
-            pass: "Supergivapp1!"
+            user: "givapp",
+            pass: "c_kyRl_lRPm5W7IcAUxRng"
         }
     }
 };

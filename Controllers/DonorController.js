@@ -1088,7 +1088,9 @@ var storeCards = function (payload, userData, callback) {
     paypal.creditCard.create(savedCard, function (error, credit_card) {
         if (error) {
             throw error;
+            callback(error);
         } else {
+            callback(null, credit_card);
             console.log("Save Credit Card Response");
             console.log(JSON.stringify(credit_card));
         }
