@@ -2,27 +2,24 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var Config = require('../Config');
 
-var donationSchema = new Schema({
+var donationRecurringSchema = new Schema({
     //**************************Required Fields**********************************//
 
     campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
     charityId: {type: Schema.ObjectId, ref: 'charitySchema'},
     donorId: {type: Schema.ObjectId, ref: 'donorSchema'},
     cardId: {type: Schema.ObjectId, ref: 'donorCardsSchema'},
+    donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
 
-    donatedAmount: {type: String, trim: true, required: true},
-    donatedUnit: {type: String, trim: true, required: true},
-    costPerUnit: {type: Number, required: true},
-
-    paymentGatewayTransactionId: {type: String, trim: true, required: true},
-
-    recurringDonation: {type: Boolean, required: true, default: false},
-    comment: {type: String, trim: true, required: false},
-    rating: {type: String, trim: true, required: false},
+    frequency: {type: String, trim: true, required: true},
+    recurringDone: {type: Number, trim: true, required: false},
+    LastRecurring: {type: Date, required: false},
+    startDate: {type: Date, required: true},
+    endDate: {type: Date, required: true},
 
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}
 });
 
-module.exports = mongoose.model('donationSchema', donationSchema);
+module.exports = mongoose.model('donationRecurringSchema', donationRecurringSchema);

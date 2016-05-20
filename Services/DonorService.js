@@ -24,6 +24,11 @@ var createDonation = function (objToSave, callback) {
 };
 
 // /Insert Donation in DB
+var createDonationRecurring = function (objToSave, callback) {
+    new Models.donationRecurring(objToSave).save(callback)
+};
+
+// /Insert Donation in DB
 var createCharityDonation = function (objToSave, callback) {
     new Models.charityDonations(objToSave).save(callback)
 };
@@ -186,5 +191,6 @@ module.exports = {
     updateFavouriteCampaign: updateFavouriteCampaign,
     updateFavouriteCharity: updateFavouriteCharity,
     getDonorPopulate: getDonorPopulate,
+    createDonationRecurring: createDonationRecurring,
     getCampaignPopulate: getCampaignPopulate
 };

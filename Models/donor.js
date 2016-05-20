@@ -26,6 +26,7 @@ var donorSchema = new Schema({
     loggedInOn: {type: Date, required: false},
     passwordChangedOn: {type: Number, required: false},
     failedLogInAttempts: {type: Number, required: false},
+    recurring: [{type: Schema.ObjectId, ref: 'donationRecurringSchema'}],
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}

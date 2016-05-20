@@ -109,7 +109,6 @@ var createCharityOwner = function (payloadData, callback) {
                     }else {
                         cb(err)
                     }
-                    cb(err)
                 } else {
                     charityOwnerData = charityDataFromDB;
                     cb();

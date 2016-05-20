@@ -785,6 +785,127 @@ var Donation = function (payloadData, userData, callback) {
 };
 
 
+
+
+
+
+var recurringDonation = function (payloadData, userData, callback) {
+
+    var finalDonation = {};
+    var dataToSave = payloadData;
+    var campaignData = {};
+    var cardSelected;
+    var savedCard = {};
+    var totalAmount;
+    var paypalReturn;
+    async.series([
+        function (callback) {
+            var criteria = {_id: dataToSave.campaignId},
+                options = {lean: true},
+                projection = {};
+
+            Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+                if (err) callback(err);
+                if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (new Date(res[0].endDate) < new Date() || res[0].complete == true) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                if (res[0].targetUnitCount < Number(res[0].unitRaised + dataToSave.donatedUnit)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_OVERFLOW);
+                if (Number(res[0].targetUnitCount) == Number(res[0].unitRaised)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                campaignData = res[0];
+                callback();
+            });
+        },
+        function (callback) {
+            var query = {
+                $and: [
+                    {_id: userData._id},
+                    {'cards': {$in: [dataToSave.cardId]}}
+                ]
+            }
+            var options = {lean: true};
+            var projections = {};
+            var populateVariable = {
+                path: "cards",
+                select: 'payPalId'
+            };
+            Service.DonorService.getDonorCardPopulate(query, projections, options, populateVariable, function (err, result) {
+                if (err) return callback(err);
+                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                result[0].cards.forEach(function(val, index){
+                    if(val._id == dataToSave.cardId){
+                        cardSelected = val.payPalId;
+                    }
+                })
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (cb) {
+            console.log(campaignData,'==============')
+            var ruccDonation = {};
+            ruccDonation.charityId = campaignData.charityId;
+            ruccDonation.campaignId = campaignData._id;
+            ruccDonation.donorId = userData._id;
+            ruccDonation.cardId = campaignData.cardId;
+            ruccDonation.frequency = payloadData.frequency;
+            ruccDonation.startDate = new Date();
+            ruccDonation.endDate = payloadData.endDate;
+            ruccDonation.createdOn = new Date().toISOString();
+
+
+            Service.DonorService.createDonationRecurring(ruccDonation, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalDonation = donorDataFromDB;
+                    cb();
+                }
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.donorId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $addToSet: {
+                    recurring: finalDonation._id
+                }
+            }
+            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var newCount = campaignData.unitRaised + dataToSave.donatedUnit
+            var query = {
+                _id: finalDonation.campaignId
+            }
+
+            var options = {lean: true};
+            /*var finalDataToSave = {};
+            finalDataToSave.recurring = finalDonation._id;*/
+            var dataToSet = {
+                $addToSet: {
+                    recurring: finalDonation._id
+                }
+            }
+            Service.CharityService.updateCharityCampaign(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback();
+        }
+    });
+};
+
 var charityDonation = function (payloadData, userData, callback) {
 
     var finalDonation = {};
@@ -1208,5 +1329,6 @@ module.exports = {
     setFavourite: setFavourite,
     getDonations: getDonations,
     getFavourites: getFavourites,
+    recurringDonation: recurringDonation,
     UpdateDonor: UpdateDonor
 };

@@ -231,6 +231,42 @@ module.exports = [
     },
     {
         method: 'POST',
+        path: '/api/donor/recurringDonation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.recurringDonation(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Register as Donor',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    campaignId: Joi.string().required().trim(),
+                    donatedUnit: Joi.number().required(),
+                    frequency: Joi.string().required().trim(),
+                    endDate: Joi.string().required(),
+                    cardId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/api/donor/charityDonation',
         handler: function (request, reply) {
             var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
