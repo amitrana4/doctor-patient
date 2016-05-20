@@ -518,6 +518,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
             };
             Service.CharityService.getCharityOwner(criteria, projection, option, function (err, result) {
                 if (err) return cb(err)
+                if(result.length==0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if(result[0].profileComplete == 2 ) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.BANK_DETAILS_EXIST);
                 return cb();
             });
