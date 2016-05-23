@@ -35,6 +35,11 @@ var createDonationRecurring = function (objToSave, callback) {
 };
 
 // /Insert Donation in DB
+var createDonationRecurringCharity = function (objToSave, callback) {
+    new Models.donationRecurringCharity(objToSave).save(callback)
+};
+
+// /Insert Donation in DB
 var createCharityDonation = function (objToSave, callback) {
     new Models.charityDonations(objToSave).save(callback)
 };
@@ -81,9 +86,20 @@ var getDonationRecurring = function (criteria, projection, options, callback) {
     Models.donationRecurring.find(criteria, projection, options, callback);
 };
 
+
+// /get Donation in DB
+var getDonationRecurringCharity = function (criteria, projection, options, callback) {
+    Models.donationRecurringCharity.find(criteria, projection, options, callback);
+};
+
 // /Update Donation in DB
 var updateDonationRecurring = function (criteria, dataToSet, options, callback) {
     Models.donationRecurring.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+// /Update Donation in DB
+var updateDonationRecurringCharity = function (criteria, dataToSet, options, callback) {
+    Models.donationRecurringCharity.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
 // /Update Donation in DB
@@ -209,7 +225,10 @@ module.exports = {
     updateFavouriteCharity: updateFavouriteCharity,
     getDonorPopulate: getDonorPopulate,
     createDonationRecurring: createDonationRecurring,
+    createDonationRecurringCharity: createDonationRecurringCharity,
     getDonationRecurring: getDonationRecurring,
+    getDonationRecurringCharity: getDonationRecurringCharity,
     updateDonationRecurring: updateDonationRecurring,
+    updateDonationRecurringCharity: updateDonationRecurringCharity,
     getCampaignPopulate: getCampaignPopulate
 };

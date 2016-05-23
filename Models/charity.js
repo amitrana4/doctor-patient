@@ -30,6 +30,7 @@ var charitySchema = new Schema({
     pictures: [{type: Schema.ObjectId, ref: 'charityImagesSchema'}],
     campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
     donation: [{type: Schema.ObjectId, ref: 'charityDonationSchema'}],
+    charityRecurring: [{type: Schema.ObjectId, ref: 'donationRecurringCharitySchema'}],
 
     //**************************Optional**********************************//
     keyWord: {type: String, required: false},

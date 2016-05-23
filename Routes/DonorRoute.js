@@ -268,6 +268,45 @@ module.exports = [
                 }
             }
         }
+    },{
+        method: 'POST',
+        path: '/api/donor/charityRecurringDonation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.charityRecurringDonation(request.payload, userData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Recurring donation.',
+            tags: ['api', 'Donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                payload: {
+                    charityId: Joi.string().required().trim(),
+                    donatedAmount: Joi.number().required(),
+                    frequency: Joi.string().required().valid(
+                        [
+                            '7', '15', '30'
+                        ]
+                    ),
+                    endDate: Joi.string().required(),
+                    cardId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
     },
     {
         method: 'POST',

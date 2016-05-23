@@ -75,14 +75,24 @@ Bootstrap.bootstrapAdmin(function (err, message) {
 var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
-rule.minute = 36;
+rule.minute = 14;
 
 var j = schedule.scheduleJob(rule, function(){
-    Controller.DonorController.cronRecurringDonation(function (err, data) {
+    Controller.DonorController.cronRecurringDonationCampaign(function (err, data) {
         if (err) {
             console.log('error in api')
         } else {
-            console.log('Cron success')
+            console.log('Cron success campaign')
+        }
+    })
+
+});
+var q = schedule.scheduleJob(rule, function(){
+    Controller.DonorController.cronRecurringDonationCharity(function (err, data) {
+        if (err) {
+            console.log('error in api')
+        } else {
+            console.log('Cron success charity')
         }
     })
 

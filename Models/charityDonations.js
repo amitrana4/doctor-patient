@@ -10,12 +10,9 @@ var charityDonationSchema = new Schema({
     cardId: {type: Schema.ObjectId, ref: 'donorCardsSchema'},
 
     donatedAmount: {type: String, trim: true, required: true},
-
-    donatedCurrency: {type: String, trim: true, required: true},
     paymentGatewayTransactionId: {type: String, trim: true, required: true},
 
     recurringDonation: {type: Boolean, required: true, default: false},
-    frequency: {type: String, trim: true, required: false},
 
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
