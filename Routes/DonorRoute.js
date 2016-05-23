@@ -243,7 +243,7 @@ module.exports = [
             });
         },
         config: {
-            description: 'Register as Donor',
+            description: 'Recurring donation.',
             tags: ['api', 'Donor'],
             auth: 'DonorAuth',
             validate: {
@@ -251,7 +251,11 @@ module.exports = [
                 payload: {
                     campaignId: Joi.string().required().trim(),
                     donatedUnit: Joi.number().required(),
-                    frequency: Joi.string().required().trim(),
+                    frequency: Joi.string().required().valid(
+                        [
+                            '7', '15', '30'
+                        ]
+                    ),
                     endDate: Joi.string().required(),
                     cardId: Joi.string().required().trim()
                 },

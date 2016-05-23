@@ -12,6 +12,7 @@ var DAO = require('../DAO/DAO');
 var Models = require('../Models');
 
 var paypal = require('paypal-rest-sdk');
+var moment = require('moment');
 var Config = require('../Config');
 
 
@@ -808,7 +809,6 @@ var recurringDonation = function (payloadData, userData, callback) {
                 if (err) callback(err);
                 if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if (new Date(res[0].endDate) < new Date() || res[0].complete == true) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
-                if (res[0].targetUnitCount < Number(res[0].unitRaised + dataToSave.donatedUnit)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_OVERFLOW);
                 if (Number(res[0].targetUnitCount) == Number(res[0].unitRaised)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
                 campaignData = res[0];
                 callback();
@@ -840,14 +840,14 @@ var recurringDonation = function (payloadData, userData, callback) {
             })
         },
         function (cb) {
-            console.log(campaignData,'==============')
             var ruccDonation = {};
             ruccDonation.charityId = campaignData.charityId;
             ruccDonation.campaignId = campaignData._id;
             ruccDonation.donorId = userData._id;
-            ruccDonation.cardId = campaignData.cardId;
+            ruccDonation.cardId = payloadData.cardId;
             ruccDonation.frequency = payloadData.frequency;
-            ruccDonation.startDate = new Date();
+            ruccDonation.donatedUnit = payloadData.donatedUnit;
+            ruccDonation.startDate = new Date().toISOString();
             ruccDonation.endDate = payloadData.endDate;
             ruccDonation.createdOn = new Date().toISOString();
 
@@ -878,7 +878,6 @@ var recurringDonation = function (payloadData, userData, callback) {
             })
         },
         function (callback) {
-            var newCount = campaignData.unitRaised + dataToSave.donatedUnit
             var query = {
                 _id: finalDonation.campaignId
             }
@@ -896,6 +895,238 @@ var recurringDonation = function (payloadData, userData, callback) {
                 if (result) return callback();
                 callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback();
+        }
+    });
+};
+
+
+var cronFunction = function (data, callback){
+    var campaignData = {};
+    var finalDonation = {};
+    var cardSelected = {};
+    var totalAmount;
+    var paypalReturn;
+    async.series([
+        /*function (callB) {
+           // console.log(data,'===========')
+            var startDate = data.startDate;
+            var endDate = data.endDate;
+            var frequency = data.frequency;
+            var today = new Date();
+                var d = moment(startDate).add(7, 'days');
+            console.log(d,'=============')
+            if(d == endDate)
+        },*/
+        function (callB) {
+            if(data.complete == true) return callB('completed');
+            callB();
+        },
+        function (callB) {
+            var criteria = {_id: data.campaignId},
+                options = {lean: true},
+                projection = {};
+
+            Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+                if (err) callB(err);
+                if (res.length == 0) callB(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                campaignData = res[0];
+                callB();
+            });
+        },
+        function (callback) {
+            var query = {
+                _id:data.cardId
+            }
+            var options = {lean: true};
+            var projections = {};
+            Service.DonorService.getDonorCards(query, projections, options, function (err, result) {
+                if (err) return callback(err);
+                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                cardSelected = result[0];
+                if (result) return callback();
+            })
+        },
+        function (callB) {
+            if(data.endDate <= new Date() || campaignData.targetUnitCount == campaignData.unitRaised || campaignData.endDate <= new Date()) {
+                var query = {
+                    _id: data._id
+                }
+                var options = {lean: true};
+                var dataToSet = {
+                    $set: {
+                        complete: true
+                    }
+                }
+                Service.DonorService.updateDonationRecurring(query, dataToSet, options, function (err, donorDataFromDB) {
+                    if (err) {
+                        callB(err)
+                    }
+                })
+                callB('job or recuurence expired')
+            }
+          /*  else{
+                var query = {
+                    _id: data._id
+                }
+                var options = {lean: true};
+                var dataToSet = {
+                    $set: {
+                        LastRecurring: new Date().toISOString();
+                    }
+                }
+                Service.DonorService.updateDonationRecurring(query, dataToSet, options, function (err, donorDataFromDB) {
+                    if (err) {
+                        callB(err)
+                    }
+                })
+                callB()
+            }*/
+
+            callB()
+        },
+        function (callback) {
+            totalAmount = campaignData.costPerUnit * data.donatedUnit;
+            var savedCard = {
+                "intent": "sale",
+                "payer": {
+                    "payment_method": "credit_card",
+                    "funding_instruments": [{
+                        "credit_card_token": {
+                            "credit_card_id": cardSelected.payPalId
+                        }
+                    }]
+                },
+                "transactions": [{
+                    "item_list": {
+                        "items": [{
+                            "name": campaignData.campaignName,
+                            "sku": campaignData.campaignName,
+                            "price": campaignData.costPerUnit,
+                            "currency": "USD",
+                            "quantity": data.donatedUnit
+                        }]
+                    },
+                    "amount": {
+                        "currency": "USD",
+                        "total": totalAmount
+                    },
+                    "description": "This is the payment description for" + campaignData.campaignName
+                }]
+            };
+
+            paypal.payment.create(savedCard, function (error, payment) {
+                if (error) {
+                    //  throw error;
+                    callback(error)
+                } else {
+                    paypalReturn = payment;
+                    callback()
+                }
+
+            });
+
+        },
+        function (cb) {
+            var dataToSave = {};
+            dataToSave.charityId = campaignData.charityId;
+            dataToSave.campaignId = campaignData._id;
+            dataToSave.donorId = data.donorId;
+            dataToSave.cardId = campaignData.cardId;
+            dataToSave.donatedAmount = totalAmount;
+            dataToSave.donatedUnit = data.donatedUnit;
+            dataToSave.costPerUnit = campaignData.costPerUnit;
+            dataToSave.paymentGatewayTransactionId = paypalReturn.id;
+            dataToSave.recurringDonation = true;
+            dataToSave.createdOn = new Date().toISOString();
+
+
+            Service.DonorService.createDonation(dataToSave, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalDonation = donorDataFromDB;
+                    cb();
+                }
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.donorId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $addToSet: {
+                    donation: finalDonation._id
+                }
+            }
+            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var newCount = campaignData.unitRaised + data.donatedUnit
+            var query = {
+                _id: finalDonation.campaignId
+            }
+
+            var options = {lean: true};
+            var finalDataToSave = {};
+            finalDataToSave.donation = finalDonation._id;
+            if(campaignData.targetUnitCount == newCount){
+                var dataToSet = {
+                    unitRaised: newCount,
+                    complete: true,
+                    completedOn: new Date(),
+                    $addToSet: finalDataToSave
+                }
+            }
+            else {
+                var dataToSet = {
+                    unitRaised: newCount,
+                    $addToSet: finalDataToSave
+                }
+            }
+            Service.CharityService.updateCharityCampaign(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    ], function (err, data) {
+            callback();
+    });
+}
+
+var cronRecurringDonation = function (callback) {
+
+    var campaignData = {};
+    var finalDonation = {};
+    var cardSelected;
+    async.series([
+        function (cb) {
+          /*  var criteria = {_id: dataToSave.campaignId}*/
+
+            Service.DonorService.getDonationRecurring({}, {}, {lean: true}, function (err, res) {
+                if (err) cb(err);
+                campaignData = res;
+                cb();
+            });
+        },
+        function (cb) {
+            async.eachSeries(campaignData,cronFunction, function(data, err) {
+                if(err){
+                    console.log("Error ", err);
+                }
+                console.log("cron completed successfully");
+            });
         }
     ], function (err, data) {
         if (err) {
@@ -1330,5 +1561,6 @@ module.exports = {
     getDonations: getDonations,
     getFavourites: getFavourites,
     recurringDonation: recurringDonation,
+    cronRecurringDonation: cronRecurringDonation,
     UpdateDonor: UpdateDonor
 };

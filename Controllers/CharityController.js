@@ -498,7 +498,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
 
 var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
     var charityOwnerProfileData = null;
-
+    var fData = {};
     async.series([
         function (cb) {
             var criteria = {};
@@ -571,6 +571,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
                 if (err) {
                     cb(err)
                 } else {
+                    fData = charityDataFromDB;
                     cb();
                 }
             });
@@ -579,7 +580,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
         if (err) {
             return callback(err);
         }
-        callback();
+        callback(null, fData);
     });
 };
 

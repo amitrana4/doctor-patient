@@ -11,7 +11,9 @@ var donationRecurringSchema = new Schema({
     cardId: {type: Schema.ObjectId, ref: 'donorCardsSchema'},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
 
-    frequency: {type: String, trim: true, required: true},
+    frequency: {type: Number, trim: true, required: true},
+    donatedUnit: {type: Number, trim: true, required: true},
+    complete: {type: Boolean, required: true, default: false},
     recurringDone: {type: Number, trim: true, required: false},
     LastRecurring: {type: Date, required: false},
     startDate: {type: Date, required: true},

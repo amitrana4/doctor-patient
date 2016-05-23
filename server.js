@@ -11,6 +11,7 @@ var Hapi = require('hapi');
 var Config = require('./Config');
 var Routes = require('./Routes');
 var Plugins = require('./Plugins');
+var Controller = require('./Controllers');
 var Bootstrap = require('./Utils/BootStrap');
 
 //Create Server
@@ -74,10 +75,17 @@ Bootstrap.bootstrapAdmin(function (err, message) {
 var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
-rule.minute = 54;
+rule.minute = 36;
 
 var j = schedule.scheduleJob(rule, function(){
-    console.log('The answer to life, the universe, and everything!');
+    Controller.DonorController.cronRecurringDonation(function (err, data) {
+        if (err) {
+            console.log('error in api')
+        } else {
+            console.log('Cron success')
+        }
+    })
+
 });
 
 
