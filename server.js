@@ -75,7 +75,9 @@ Bootstrap.bootstrapAdmin(function (err, message) {
 var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
-rule.minute = 14;
+
+rule.hour = 12;
+rule.minute = 5;
 
 var j = schedule.scheduleJob(rule, function(){
     Controller.DonorController.cronRecurringDonationCampaign(function (err, data) {
@@ -87,6 +89,7 @@ var j = schedule.scheduleJob(rule, function(){
     })
 
 });
+
 var q = schedule.scheduleJob(rule, function(){
     Controller.DonorController.cronRecurringDonationCharity(function (err, data) {
         if (err) {

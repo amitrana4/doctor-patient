@@ -24,6 +24,12 @@ module.exports = [
         config: {
             description: 'Register as Donor',
             tags: ['api', 'Donor'],
+            payload: {
+                output: 'file',
+                parse: true,
+                allow: 'multipart/form-data',
+                maxBytes: 40485760
+            },
             validate: {
                 payload: {
                     firstName: Joi.string().required().trim(),
@@ -33,6 +39,10 @@ module.exports = [
                     facebookId: Joi.string().optional().trim(),
                     deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
                     deviceToken: Joi.string().required().min(1).trim(),
+                    profilePic: Joi.any()
+                        .meta({swaggerType: 'file'})
+                        .required()
+                        .description('image file'),
                     appVersion: Joi.string().required().trim()
 
                 },
@@ -330,9 +340,7 @@ module.exports = [
                 payload: {
                     charityId: Joi.string().required().trim(),
                     donatedAmount: Joi.string().required().trim(),
-                    donatedCurrency: Joi.string().required().trim(),
                     cardId: Joi.string().required().trim(),
-                    paymentGatewayTransactionId: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },
@@ -397,6 +405,34 @@ module.exports = [
             plugins: {
                 'hapi-swagger': {
                     payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/api/donor/forgotPassword',
+        handler: function (request, reply) {
+            Controller.DonorController.getResetPasswordToken(request.query, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Sends Reset Password Token To Charity',
+            tags: ['api', 'donor'],
+            validate: {
+                query: {
+                    email: Joi.string().email().required()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
                     responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
                 }
             }

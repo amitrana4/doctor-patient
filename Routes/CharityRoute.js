@@ -249,7 +249,7 @@ module.exports = [
                 payload: {
                     bankAccountHolderName: Joi.string().required().trim(),
                     bankAccountHolderPhoneNumber: Joi.number().required(),
-                    bankAccountNumber: Joi.string().required().trim()
+                    bankAccountNumber: Joi.number().required()
 
                 },
                 headers: UniversalFunctions.authorizationHeaderObj,
@@ -674,7 +674,7 @@ module.exports = [
             tags: ['api', 'charity'],
             validate: {
                 query: {
-                    email: Joi.string().email().optional()
+                    email: Joi.string().email().required()
                 },
                 failAction: UniversalFunctions.failActionFunction
             },

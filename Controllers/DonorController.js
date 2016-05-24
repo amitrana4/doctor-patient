@@ -25,6 +25,7 @@ var createDonor = function (payloadData, callback) {
         dataToSave.password = UniversalFunctions.CryptData(dataToSave.password);
     dataToSave.firstTimeLogin = false;
     var dataToUpdate = {};
+    var updatedDonorData = {};
 
 
     dataToSave.emailId =dataToSave.emailId.toLowerCase();
@@ -96,6 +97,33 @@ var createDonor = function (payloadData, callback) {
                 }
             })
         },
+        function(cb){
+            if (dataToSave.profilePic) {
+                var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
+                UploadManager.uploadFile(dataToSave.profilePic, donorData._id, document, function (err, uploadedInfo) {
+                    if (err) {
+                        cb(err)
+                    }
+                    var supportingDocumentFileId = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
+                    dataToUpdate.profilePic = supportingDocumentFileId;
+                    return  cb();
+                });
+            }else{
+                cb();
+            }
+        },
+        function(cb){
+            var criteria = {_id: donorData._id};
+
+            Service.DonorService.updateDonor(criteria, dataToUpdate, {new: true}, function (err, DataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    updatedDonorData = DataFromDB;
+                    cb();
+                }
+            });
+        },
         function (cb) {
             if (donorData) {
                 var tokenData = {
@@ -120,7 +148,7 @@ var createDonor = function (payloadData, callback) {
         } else {
             callback(null, {
                 accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(donorData.toObject())
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedDonorData)
             });
         }
     });
@@ -297,7 +325,6 @@ var getCampaignById = function (payloadData, callback) {
 
 var getCharityById = function (payloadData, callback) {
 
-    console.log(payloadData)
     var criteria      = { _id:payloadData.charityId},
         options = {lean: true},
         projection ={};
@@ -786,6 +813,148 @@ var Donation = function (payloadData, userData, callback) {
 };
 
 
+
+
+
+
+
+
+var charityDonation = function (payloadData, userData, callback) {
+
+    var finalDonation = {};
+    var dataToSave = payloadData;
+    var charityData = {};
+    var cardSelected = '';
+    var paypalReturn = {};
+    async.series([
+        function (callback) {
+            var criteria = {_id: dataToSave.charityId},
+                options = {lean: true},
+                projection = {charityId: 0};
+
+            Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
+                if (err) callback(err);
+                if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                charityData = res[0];
+                callback();
+            });
+        },
+        function (callback) {
+            var query = {
+                $and: [
+                    {_id: userData._id},
+                    {'cards': {$in: [dataToSave.cardId]}}
+                ]
+            }
+            var options = {lean: true};
+            var projections = {};
+            var populateVariable = {
+                path: "cards",
+                select: 'payPalId'
+            };
+            Service.DonorService.getDonorCardPopulate(query, projections, options, populateVariable, function (err, result) {
+                if (err) return callback(err);
+                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
+                result[0].cards.forEach(function(val, index){
+                    if(val._id == dataToSave.cardId){
+                        cardSelected = val.payPalId;
+                    }
+                })
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var savedCard = {
+                "intent": "sale",
+                "payer": {
+                    "payment_method": "credit_card",
+                    "funding_instruments": [{
+                        "credit_card_token": {
+                            "credit_card_id": cardSelected
+                        }
+                    }]
+                },
+                "transactions": [{
+                    "amount": {
+                        "currency": "USD",
+                        "total": dataToSave.donatedAmount
+                    },
+                    "description": "This is the payment description for" + charityData.campaignName
+                }]
+            };
+
+            paypal.payment.create(savedCard, function (error, payment) {
+                if (error) {
+                    //  throw error;
+                    callback(error)
+                } else {
+                    paypalReturn = payment;
+                    callback()
+                }
+
+            });
+
+        },
+        function (cb) {
+            dataToSave.charityId = charityData._id;
+            dataToSave.donorId = userData._id;
+            dataToSave.cardId = charityData.cardId;
+            dataToSave.endDate = charityData.endDate;
+            dataToSave.donatedAmount = dataToSave.donatedAmount;
+            dataToSave.paymentGatewayTransactionId = paypalReturn.id;
+            dataToSave.createdOn = new Date().toISOString();
+
+            Service.DonorService.createCharityDonation(dataToSave, function (err, donorDataFromDB) {
+                if (err) {
+                    cb(err)
+                } else {
+                    finalDonation = donorDataFromDB;
+                    cb();
+                }
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.donorId
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $addToSet: {
+                    charityDonation: finalDonation._id
+                }
+            }
+            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        },
+        function (callback) {
+            var query = {
+                _id: finalDonation.charityId
+            }
+
+            var options = {lean: true};
+            var finalDataToSave = {};
+            finalDataToSave.donation = finalDonation._id;
+            var dataToSet = {
+                $addToSet: finalDataToSave
+            }
+            Service.CharityService.updateCharityOwner(query, dataToSet, options, function (err, result) {
+                if (err) return callback(err);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+        }
+    ], function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, UniversalFunctions.deleteUnnecessaryDonorData(finalDonation.toObject()));
+        }
+    });
+};
 
 
 
@@ -1288,7 +1457,7 @@ var cronFunctionCharity = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        function (callB) {
+       /* function (callB) {
             var startDate = data.startDate;
             var endDate = data.endDate;
             var frequency = data.frequency;
@@ -1309,7 +1478,7 @@ var cronFunctionCharity = function (data, callback){
                 var d = moment(startDate).add(1, 'months');
                 if (d == today) callB();
             }
-        },
+        },*/
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();
@@ -1376,7 +1545,6 @@ var cronFunctionCharity = function (data, callback){
             }
         },
         function (callback) {
-            console.log('herer', data)
             totalAmount = data.donatedAmount;
             var savedCard = {
                 "intent": "sale",
@@ -1412,9 +1580,10 @@ var cronFunctionCharity = function (data, callback){
         function (cb) {
 
             var dataToSave = {};
-            dataToSave.charityId = charityData.charityId;
+            console.log(charityData,'==========')
+            dataToSave.charityId = charityData._id;
             dataToSave.donorId = data.donorId;
-            dataToSave.cardId = charityData.cardId;
+            dataToSave.cardId = cardSelected._id;
             dataToSave.donatedAmount = totalAmount;
             dataToSave.paymentGatewayTransactionId = paypalReturn.id;
             dataToSave.recurringDonation = true;
@@ -1467,14 +1636,13 @@ var cronFunctionCharity = function (data, callback){
         },
         function (callback) {
             var query = {
-                _id: finalDonation.campaignId
+                _id: finalDonation.charityId
             }
-
             var options = {lean: true};
-            var finalDataToSave = {};
-            finalDataToSave.donation = finalDonation._id;
             var dataToSet = {
-                    $set: finalDataToSave
+                $addToSet: {
+                    donation: finalDonation._id
+                }
             }
             Service.CharityService.updateCharityOwner(query, dataToSet, options, function (err, result) {
                 if (err) return callback(err);
@@ -1520,100 +1688,6 @@ var cronRecurringDonationCharity = function (callback) {
 
 
 
-var charityDonation = function (payloadData, userData, callback) {
-
-    var finalDonation = {};
-    var dataToSave = payloadData;
-    var charityData = {};
-    async.series([
-        function (callback) {
-            var criteria = {_id: dataToSave.charityId},
-                options = {lean: true},
-                projection = {charityId: 0};
-
-            Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
-                if (err) callback(err);
-                if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                charityData = res[0];
-                callback();
-            });
-        },
-        function (callback) {
-            var query = {
-                $and: [
-                    {_id: userData._id},
-                    {'cards': {$in: [dataToSave.cardId]}}
-                ]
-            }
-            var options = {lean: true};
-            var projections = {};
-            Service.DonorService.getDonor(query, projections, options, function (err, result) {
-                console.log(result)
-                if (err) return callback(err);
-                if (result.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_CARDID);
-                if (result) return callback();
-                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            })
-        },
-        function (cb) {
-            dataToSave.charityId = charityData._id;
-            dataToSave.donorId = userData._id;
-            dataToSave.cardId = charityData.cardId;
-            dataToSave.endDate = charityData.endDate;
-            dataToSave.createdOn = new Date().toISOString();
-
-            Service.DonorService.createCharityDonation(dataToSave, function (err, donorDataFromDB) {
-                if (err) {
-                    cb(err)
-                } else {
-                    finalDonation = donorDataFromDB;
-                    cb();
-                }
-            })
-        },
-        function (callback) {
-            var query = {
-                _id: finalDonation.donorId
-            }
-            var options = {lean: true};
-            var dataToSet = {
-                $addToSet: {
-                    charityDonation: finalDonation._id
-                }
-            }
-            Service.DonorService.updateDonor(query, dataToSet, options, function (err, result) {
-                if (err) return callback(err);
-                if (result) return callback();
-                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            })
-        },
-        function (callback) {
-            var query = {
-                _id: finalDonation.charityId
-            }
-
-            var options = {lean: true};
-            var finalDataToSave = {};
-            finalDataToSave.donation = finalDonation._id;
-            var dataToSet = {
-                $addToSet: finalDataToSave
-            }
-            Service.CharityService.updateCharityOwner(query, dataToSet, options, function (err, result) {
-                if (err) return callback(err);
-                if (result) return callback();
-                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            })
-        }
-    ], function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, UniversalFunctions.deleteUnnecessaryDonorData(finalDonation.toObject()));
-        }
-    });
-};
-
-
 var setRating = function (payloadData, userData, callback) {
 
     var dataToSave = payloadData;
@@ -1629,7 +1703,6 @@ var setRating = function (payloadData, userData, callback) {
                 }
             }
             Service.DonorService.updateDonation(query, dataToSet, options, function (err, result) {
-                console.log(err, result)
                 if (err) return callback(err);
                 if (result == null) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if (result.donorId.toString() != userData._id.toString()) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
@@ -1925,6 +1998,78 @@ var getFavourites = function (payload, userData, callback) {
 
 
 
+
+
+
+var getResetPasswordToken = function (query, callback) {
+    var variableDetails = {};
+    if(query.email){
+        var email = query.email;
+        var generatedString = UniversalFunctions.generateRandomString();
+        var donorData = null;
+        var charityOwnerData = null;
+        if (!email) {
+            callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+        } else {
+            async.series([
+                function (cb) {
+                    //update user
+                    var criteria = {
+                        emailId: email
+                    };
+                    var setQuery = {
+                        passwordResetToken: UniversalFunctions.CryptData(generatedString)
+                    };
+                    Service.DonorService.updateDonor(criteria, setQuery, {new: true}, function (err, userData) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (!userData || userData.length == 0) {
+                                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMAIL_NOT_FOUND);
+                            } else {
+                                donorData = userData;
+                                cb()
+                            }
+                        }
+                    })
+                },
+                function (cb) {
+                    if (donorData) {
+                        variableDetails = {
+                            user_name: donorData.name,
+                            password_reset_token: donorData.passwordResetToken,
+                            date: moment().format("D MMMM YYYY"),
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+donorData.passwordResetToken+'&email='+donorData.emailId+"&newPassword=" //TODO change this to proper html page link
+                        };
+                        cb();
+                    } else {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                    }
+                },
+                function(callback){
+                    NotificationManager.sendEmailToUser('CHARITY_FORGOT_PASSWORD', variableDetails, donorData.emailId, function(err){
+                        if(err){
+                            return callback(err);
+                        }
+                        callback();
+                    });
+                }
+            ], function (err, result) {
+                if (err) {
+                    callback(err)
+                } else {
+                    //callback(null, {password_reset_token: driverObj.passwordResetToken})//TODO Change in production DO NOT Expose the password
+                    callback(null)//TODO Change in production DO NOT Expose the password
+                }
+            })
+        }
+    }
+    else {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMPTY_VALUE);
+    }
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -1947,5 +2092,6 @@ module.exports = {
     cronRecurringDonationCampaign: cronRecurringDonationCampaign,
     cronRecurringDonationCharity: cronRecurringDonationCharity,
     charityRecurringDonation: charityRecurringDonation,
+    getResetPasswordToken: getResetPasswordToken,
     UpdateDonor: UpdateDonor
 };

@@ -22,6 +22,7 @@ var charitySchema = new Schema({
     supportingDocumentFileId: {type: String, default: null},
     hasKeyWords: {type: String, trim: true, required: false},
     adminApproval: {type: Boolean, required: true, default: false},
+    adminCreated: {type: Boolean, required: true, default: false},
     reject: {type: Boolean, required: true, default: false},
     deviceType: {type: String, trim: true, required: true},
     deviceToken: {type: String, trim: true, required: true},

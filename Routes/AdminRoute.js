@@ -149,6 +149,39 @@ var userRoutes = [
         }
     },
     {
+        method: 'GET',
+        path: '/api/admin/getAllDonation',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getAllCampaign(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all charity',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'PUT',
         path: '/api/admin/approveCharity',
         handler: function (request, reply) {
@@ -227,6 +260,7 @@ var userRoutes = [
                     appVersion: Joi.string().required().trim(),
                     password: Joi.string().required().min(5).trim(),
                     taxId: Joi.string().required().trim(),
+                    adminCreated: Joi.string().default('true'),
                     taxDeductionCode: Joi.string().required().trim(),
                     registrationProofFileId: Joi.any()
                         .meta({swaggerType: 'file'})

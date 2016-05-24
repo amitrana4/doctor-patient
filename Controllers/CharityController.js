@@ -15,10 +15,8 @@ var moment = require('moment');
 var ERROR_MESSAGE = UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR;
 
 var createCharityOwner = function (payloadData, callback) {
-    console.log('herere')
     var accessToken = null;
     var charityOwnerData = null;
-    var uniqueCode = null;
     var dataToSave = payloadData;
     if (dataToSave.password)
         dataToSave.password = UniversalFunctions.CryptData(dataToSave.password);
@@ -123,6 +121,9 @@ var createCharityOwner = function (payloadData, callback) {
                 var charityFinalDataToSave = {};
                 charityFinalDataToSave.createdOn = new Date().toISOString();
                 charityFinalDataToSave.name = dataToSave.name;
+                if(dataToSave.adminCreated) {
+                    charityFinalDataToSave.adminCreated = dataToSave.adminCreated;
+                }
                 charityFinalDataToSave.website = dataToSave.website;
                 charityFinalDataToSave.contactPerson = dataToSave.contactPerson;
                 charityFinalDataToSave.charityOwnerId = charityOwnerData._id;
@@ -1091,7 +1092,7 @@ var campaignList = function (payloadData, CharityData, callback) {
     }
 
     var options = {lean: true},
-        projection ={campaignId:1};
+        projection ={};
 
     Service.CharityService.getCharityPopulate(criteria, projection, options,populateVariable, function (err, res) {
         if (err) {
