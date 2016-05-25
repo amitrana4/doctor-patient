@@ -221,6 +221,44 @@ var userRoutes = [
     },
 
     {
+        method: 'PUT',
+        path: '/api/admin/makeFeatured',
+        handler: function (request, reply) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.makeFeatured(request.payload, AdminData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess())
+                }
+            });
+
+        }, config: {
+        description: 'Approve Charity',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                campaignId: Joi.string().required(),
+                status: Joi.string().required().valid(
+                    [
+                        'true',
+                        'false'
+                    ]
+                )
+            },
+            headers: UniversalFunctions.authorizationHeaderObj,
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
+    }
+    },
+    {
         method: 'POST',
         path: '/api/admin/addCharity',
         handler: function (request, reply) {

@@ -421,6 +421,7 @@ var getAllCampaign = function (userData, callback) {
             if (err) {
                 callback(err);
             } else {
+                console.log(charityAry)
                 callback(null, charityAry);
             }
         });
@@ -493,6 +494,47 @@ var approveCharity = function (payload, userData, callback) {
     }
 };
 
+var makeFeatured = function (payload, userData, callback) {
+    console.log(payload.campaignId)
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var campaignData;
+        async.series([
+            function (cb) {
+                var criteria= {_id: payload.campaignId},
+                    options = {lean: true},
+                    projection ={};
+
+                Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        campaignData = res[0];
+                        cb();
+                    }
+                });
+            },
+            function (cb) {
+                var onQuery = {
+                    _id: campaignData._id
+                };
+                    Service.CharityService.updateCharityCampaign(onQuery, {feature: payload.status}, {lean: true}, function (err, charityDataFromDB) {
+                        if(err) cb(err);
+                        cb();
+                    });
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
 
 module.exports = {
     /*deleteCustomer: deleteCustomer,
@@ -508,5 +550,6 @@ module.exports = {
     getAllCampaign: getAllCampaign,
     approveCharity: approveCharity,
     getAllDonors: getAllDonors,
+    makeFeatured: makeFeatured,
    /* getPartner: getPartner*/
 };

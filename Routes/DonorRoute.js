@@ -383,6 +383,35 @@ module.exports = [
     },
     {
         method: 'POST',
+        path: '/api/donor/getComments',
+        handler: function (request, reply) {
+            Controller.DonorController.getCommentsById(request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Create donor',
+            tags: ['api', 'donor'],
+            validate: {
+                payload: {
+                    campaignId: Joi.string().required().trim()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
         path: '/api/donor/getCharityById',
         handler: function (request, reply) {
             Controller.DonorController.getCharityById(request.payload, function (err, data) {

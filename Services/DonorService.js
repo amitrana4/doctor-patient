@@ -2,6 +2,7 @@
 
 var Models = require('../Models');
 var async = require('async');
+var UniversalFunctions = require('../Utils/UniversalFunctions');
 
 //Get Users from DB
 var getDonor = function (criteria, projection, options, callback) {
@@ -82,6 +83,27 @@ var getDonation = function (criteria, projection, options, callback) {
 };
 
 // /get Donation in DB
+var getDonationDistict = function (criteria, projection, callback) {
+  //  Models.donation.find(criteria, projection, options, callback).distinct( "dept" );
+    Models.donation.distinct( 'donorId', criteria , callback)
+};
+
+/*
+var aggregateData = function (group, cb) {
+
+    Models.donation.aggregate(group, function (err, data) {
+
+        if (err) {
+            cb(err);
+        }
+        else {
+            cb(null, data);
+        }
+    });
+};*/
+
+
+// /get Donation in DB
 var getDonationRecurring = function (criteria, projection, options, callback) {
     Models.donationRecurring.find(criteria, projection, options, callback);
 };
@@ -145,6 +167,22 @@ var getCampaignPopulate = function (criteria, project, options,populateModel, ca
             callback(null, docs);
         }
     });
+};
+
+var getCampaignDeepPopulate = function (criteria, project, options,populateModel, callback) {
+
+    Models.charityCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if ( err ) return callback(err, docs);
+        if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+        Models.donor.populate(docs[0].donation, {
+            path: 'donorId'
+            , select: 'emailId firstName lastName'
+        }, function(err, things){
+            if ( err ) return callback(err, docs);
+            callback(null, docs);
+        });
+    });
+
 };
 
 var getDonorCardPopulate = function (criteria, project, options,populateModel, callback) {
@@ -230,5 +268,7 @@ module.exports = {
     getDonationRecurringCharity: getDonationRecurringCharity,
     updateDonationRecurring: updateDonationRecurring,
     updateDonationRecurringCharity: updateDonationRecurringCharity,
+    getCampaignDeepPopulate: getCampaignDeepPopulate,
+    getDonationDistict: getDonationDistict,
     getCampaignPopulate: getCampaignPopulate
 };

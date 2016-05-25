@@ -23,6 +23,7 @@ var charityCampaignSchema = new Schema({
     pictures: {type: Object, trim: true, required: false},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
     recurring: [{type: Schema.ObjectId, ref: 'donationRecurringSchema'}],
+    feature: {type: Boolean, required: true, default: false},
 
     createdOn: {type: Date, required: true},
     completedOn: {type: Date, required: false},

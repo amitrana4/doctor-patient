@@ -271,6 +271,7 @@ var getCampaign = function (callback) {
     var criteria = {
             $and:[
                 {complete:false},
+                {feature:true},
                 {'endDate':{$gte:new Date()}}
             ]},
         options = {lean: true},
@@ -278,8 +279,8 @@ var getCampaign = function (callback) {
 
     var populateVariable = {
         path: "charityId",
-        select: 'name'
-    };
+        select: 'name contactPerson emailId'
+        };
 
     Service.DonorService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
@@ -310,14 +311,69 @@ var getCharities = function (callback) {
 
 var getCampaignById = function (payloadData, callback) {
 
-    var criteria      = { _id:payloadData.campaignId},
-        options = {lean: true},
-        projection ={charityId:0};
 
-    Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+    var finalData = {};
+    async.series([
+        function (cb) {
+            var populateVariable = [{
+                path: "donation",
+                options: {sort: {'createdOn': -1}, limit: 2},
+                select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId'
+            },
+                {
+                    path: "charityId",
+                    select: 'name website contactPerson emailId description keyWord type'
+                }];
+
+            var criteria = {_id: payloadData.campaignId},
+                options = {lean: true},
+                projection = {};
+
+            Service.DonorService.getCampaignDeepPopulate(criteria, projection, options, populateVariable, function (err, res) {
+                if (err) {
+                    cb(err)
+                } else {
+                    if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                    finalData.data = res;
+                    cb();
+                }
+            });
+        },
+        function (cb) {
+            var criteria = {campaignId: payloadData.campaignId},
+                projection = {campaignId:1};
+            Service.DonorService.getDonationDistict(criteria, projection, function (err, res) {
+                console.log(err, res)
+                if (err) {
+                    cb(err)
+                } else {
+                    finalData.count = res.length;
+                    cb();
+                }
+            });
+
+        }
+    ], function (err, result) {
+        if (err) {
+            callback(err);
+        }
+        callback(null, finalData);
+    })
+
+
+};
+
+var getCommentsById = function (payloadData, callback) {
+
+    var criteria= {campaignId: payloadData.campaignId},
+        options = {lean: true},
+        projection ={comment:1, rating:1};
+
+    Service.DonorService.getDonation(criteria, projection, options, function (err, res) {
         if (err) {
             callback(err)
         } else {
+            if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             callback(null,res);
         }
     });
@@ -333,6 +389,7 @@ var getCharityById = function (payloadData, callback) {
         if (err) {
             callback(err)
         } else {
+            if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             callback(null,res);
         }
     });
@@ -2089,6 +2146,7 @@ module.exports = {
     getDonations: getDonations,
     getFavourites: getFavourites,
     recurringDonation: recurringDonation,
+    getCommentsById: getCommentsById,
     cronRecurringDonationCampaign: cronRecurringDonationCampaign,
     cronRecurringDonationCharity: cronRecurringDonationCharity,
     charityRecurringDonation: charityRecurringDonation,
