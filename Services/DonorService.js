@@ -84,23 +84,8 @@ var getDonation = function (criteria, projection, options, callback) {
 
 // /get Donation in DB
 var getDonationDistict = function (criteria, projection, callback) {
-  //  Models.donation.find(criteria, projection, options, callback).distinct( "dept" );
     Models.donation.distinct( 'donorId', criteria , callback)
 };
-
-/*
-var aggregateData = function (group, cb) {
-
-    Models.donation.aggregate(group, function (err, data) {
-
-        if (err) {
-            cb(err);
-        }
-        else {
-            cb(null, data);
-        }
-    });
-};*/
 
 
 // /get Donation in DB
@@ -164,7 +149,6 @@ var getCampaignPopulate = function (criteria, project, options,populateModel, ca
         if (err) {
             return callback(err, docs);
         }else{
-            Models.donation.distinct( 'donorId', function(err, things){console.log(err, things)})
             callback(null, docs);
         }
     });

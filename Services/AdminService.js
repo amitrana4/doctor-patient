@@ -17,9 +17,31 @@ var updateAdmin = function (criteria, dataToSet, options, callback) {
     Models.Admins.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+var getDonationPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.donation.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
+var getcharityDonationsPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.charityDonations.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
 module.exports = {
     getAdmin: getAdmin,
     createAdmin: createAdmin,
+    getDonationPopulate: getDonationPopulate,
+    getcharityDonationsPopulate: getcharityDonationsPopulate,
     updateAdmin: updateAdmin
 };
 

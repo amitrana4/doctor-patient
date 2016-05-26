@@ -344,11 +344,11 @@ var getCampaignById = function (payloadData, callback) {
             var populateVariable = [{
                 path: "donation",
                 options: {sort: {'createdOn': -1}, limit: 2},
-                select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId'
+                select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId createdOn'
             },
                 {
                     path: "charityId",
-                    select: 'name website contactPerson emailId description keyWord type'
+                    select: 'name website contactPerson emailId description keyWord type phoneNumber'
                 }];
 
             var criteria = {_id: payloadData.campaignId},

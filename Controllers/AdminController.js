@@ -428,6 +428,56 @@ var getAllCampaign = function (userData, callback) {
     }
 };
 
+var getAllCampaignDonation = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        var populateVariable = [{
+            path: "campaignId",
+            select: 'campaignName'
+        },{
+            path: "charityId",
+            select: 'name'
+        },{
+            path: "donorId",
+            select: 'firstName'
+        }];
+
+        Service.AdminService.getDonationPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, donations);
+            }
+        });
+    }
+};
+
+
+var getAllCharityDonation = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        var populateVariable = [{
+            path: "charityId",
+            select: 'name'
+        },{
+            path: "donorId",
+            select: 'firstName'
+        }];
+
+        Service.AdminService.getcharityDonationsPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, donations);
+            }
+        });
+    }
+};
+
 
 var getAllDonors = function (userData, callback) {
     if (!userData || !userData.id) {
@@ -537,19 +587,13 @@ var makeFeatured = function (payload, userData, callback) {
 
 
 module.exports = {
-    /*deleteCustomer: deleteCustomer,
-    deleteDriver: changePassword,
-    getContactDriver : getContactDriver,
-    getContactBusiness : getContactBusiness,*/
     adminLogin: adminLogin,
     adminLogout: adminLogout,
-  /*  updateCustomer: updateCustomer,
-    getCustomer: getCustomer,
-    getInvitedUsers: getInvitedUsers,*/
     getAllCharity: getAllCharity,
     getAllCampaign: getAllCampaign,
     approveCharity: approveCharity,
+    getAllCampaignDonation: getAllCampaignDonation,
     getAllDonors: getAllDonors,
-    makeFeatured: makeFeatured,
-   /* getPartner: getPartner*/
+    getAllCharityDonation: getAllCharityDonation,
+    makeFeatured: makeFeatured
 };
