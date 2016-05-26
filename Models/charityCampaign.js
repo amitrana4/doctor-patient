@@ -22,6 +22,8 @@ var charityCampaignSchema = new Schema({
     videoLink: {type: String, trim: true, required: false},
     pictures: {type: Object, trim: true, required: false},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],
+    donor: [{type: Schema.ObjectId, ref: 'donorSchema'}],
+    recurringDonor: [{type: Schema.ObjectId, ref: 'donorSchema'}],
     recurring: [{type: Schema.ObjectId, ref: 'donationRecurringSchema'}],
     feature: {type: Boolean, required: true, default: false},
 

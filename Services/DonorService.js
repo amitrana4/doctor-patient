@@ -164,6 +164,7 @@ var getCampaignPopulate = function (criteria, project, options,populateModel, ca
         if (err) {
             return callback(err, docs);
         }else{
+            Models.donation.distinct( 'donorId', function(err, things){console.log(err, things)})
             callback(null, docs);
         }
     });

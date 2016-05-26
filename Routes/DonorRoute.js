@@ -601,6 +601,34 @@ module.exports = [
         }
     },
     {
+        method: 'GET',
+        path: '/api/donor/getAllCampaign',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.getAllCampaign(function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Set Default Card',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'PUT',
         path: '/api/donor/rating',
         handler: function (request, reply) {

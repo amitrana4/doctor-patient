@@ -291,6 +291,32 @@ var getCampaign = function (callback) {
     });
 };
 
+var getAllCampaign = function (callback) {
+
+
+    var _date = new Date();
+    var criteria = {
+            $and:[
+                {complete:false},
+                {'endDate':{$gte:new Date()}}
+            ]},
+        options = {lean: true},
+        projection = {createdOn:0};
+
+    var populateVariable = {
+        path: "charityId",
+        select: 'name contactPerson emailId'
+    };
+
+    Service.DonorService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,res);
+        }
+    });
+};
+
 var getCharities = function (callback) {
 
 
@@ -334,12 +360,12 @@ var getCampaignById = function (payloadData, callback) {
                     cb(err)
                 } else {
                     if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                    finalData.data = res;
+                    finalData = res[0];
                     cb();
                 }
             });
         },
-        function (cb) {
+       /* function (cb) {
             var criteria = {campaignId: payloadData.campaignId},
                 projection = {campaignId:1};
             Service.DonorService.getDonationDistict(criteria, projection, function (err, res) {
@@ -352,7 +378,7 @@ var getCampaignById = function (payloadData, callback) {
                 }
             });
 
-        }
+        }*/
     ], function (err, result) {
         if (err) {
             callback(err);
@@ -840,6 +866,7 @@ var Donation = function (payloadData, userData, callback) {
             var options = {lean: true};
             var finalDataToSave = {};
             finalDataToSave.donation = finalDonation._id;
+            finalDataToSave.donor = finalDonation.donorId;
             if(campaignData.targetUnitCount == newCount){
                 var dataToSet = {
                     unitRaised: newCount,
@@ -995,6 +1022,7 @@ var charityDonation = function (payloadData, userData, callback) {
             var options = {lean: true};
             var finalDataToSave = {};
             finalDataToSave.donation = finalDonation._id;
+            finalDataToSave.recurringDonor = finalDonation.donorId;
             var dataToSet = {
                 $addToSet: finalDataToSave
             }
@@ -1113,6 +1141,7 @@ var recurringDonation = function (payloadData, userData, callback) {
             finalDataToSave.recurring = finalDonation._id;*/
             var dataToSet = {
                 $addToSet: {
+                    recurringDonor: finalDonation.donorId,
                     recurring: finalDonation._id
                 }
             }
@@ -1222,6 +1251,7 @@ var charityRecurringDonation = function (payloadData, userData, callback) {
             var options = {lean: true};
             var dataToSet = {
                 $addToSet: {
+                    recurringDonor: finalDonation.donorId,
                     charityRecurring: finalDonation._id
                 }
             }
@@ -2151,5 +2181,6 @@ module.exports = {
     cronRecurringDonationCharity: cronRecurringDonationCharity,
     charityRecurringDonation: charityRecurringDonation,
     getResetPasswordToken: getResetPasswordToken,
+    getAllCampaign: getAllCampaign,
     UpdateDonor: UpdateDonor
 };
