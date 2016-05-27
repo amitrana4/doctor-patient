@@ -404,7 +404,7 @@ var getCommentsById = function (payloadData, callback) {
         if (err) {
             callback(err)
         } else {
-            if (res.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            if (res.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NO_COMMENT_FOUND);
             callback(null,res);
         }
     });

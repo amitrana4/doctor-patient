@@ -99,6 +99,11 @@ var STATUS_MSG = {
             customMessage : 'Invalid Id Provided',
             type : 'INVALID_ID'
         },
+        NO_COMMENT_FOUND: {
+            statusCode:400,
+            customMessage : 'No Comment Found',
+            type : 'NO_COMMENT_FOUND'
+        },
         INVALID_CARDID: {
             statusCode:400,
             customMessage : 'Invalid Card Id',
