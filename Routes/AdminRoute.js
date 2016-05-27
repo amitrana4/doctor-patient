@@ -84,6 +84,105 @@ var userRoutes = [
     },
     {
         method: 'GET',
+        path: '/api/admin/getCharityRecurring',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getCharityRecurring(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all charity recurring',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/admin/getPaymentStatus',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.paymentStatus(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get all payment status',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/admin/getCampaignRecurring',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
+            if (userData && userData.id) {
+
+                Controller.AdminController.getCampaignRecurring(userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            } else {
+                reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR));
+            }
+        },
+        config: {
+            description: 'Get recurring payment',
+            auth: 'UserAuth',
+            tags: ['api', 'admin'],
+            validate: {
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
         path: '/api/admin/getAllDonors',
         handler: function (request, reply) {
             var userData = request.auth && request.auth.credentials && request.auth.credentials.userData;
@@ -101,7 +200,7 @@ var userRoutes = [
             }
         },
         config: {
-            description: 'Get all charity',
+            description: 'Get all donors',
             auth: 'UserAuth',
             tags: ['api', 'admin'],
             validate: {
@@ -134,7 +233,7 @@ var userRoutes = [
             }
         },
         config: {
-            description: 'Get all charity',
+            description: 'Get all campaigns',
             auth: 'UserAuth',
             tags: ['api', 'admin'],
             validate: {
@@ -167,7 +266,7 @@ var userRoutes = [
             }
         },
         config: {
-            description: 'Get all charity',
+            description: 'Get all campaign donation',
             auth: 'UserAuth',
             tags: ['api', 'admin'],
             validate: {
@@ -200,7 +299,7 @@ var userRoutes = [
             }
         },
         config: {
-            description: 'Get all charity',
+            description: 'Get all charity donation',
             auth: 'UserAuth',
             tags: ['api', 'admin'],
             validate: {
@@ -267,7 +366,7 @@ var userRoutes = [
             });
 
         }, config: {
-        description: 'Approve Charity',
+        description: 'make campaign featured nonfeatured',
         auth: 'UserAuth',
         tags: ['api', 'admin'],
         validate: {

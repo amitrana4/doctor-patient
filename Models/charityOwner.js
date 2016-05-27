@@ -12,12 +12,6 @@ var charityOwnerSchema = new Schema({
     passwordHash: {type: String, required: false},
     facebookId: {type: String, required: false},
     charityId: {type: String, required: false},
-    /*accountState: {
-     type: String,
-     trim: true,
-     required: true
-     },*/
-    /*pictures: [{type: Schema.ObjectId, ref: 'charityImages'}],*/
     loggedInOn: {type: Date, required: true},
     failedLogInAttempts: {type: Number, required: false},
     //**************************Optional**********************************//

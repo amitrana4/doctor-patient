@@ -5,7 +5,7 @@ var Config = require('../Config');
 var donationRecurringCharitySchema = new Schema({
     //**************************Required Fields**********************************//
 
-    charityId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
+    charityId: {type: Schema.ObjectId, ref: 'charitySchema'},
     donorId: {type: Schema.ObjectId, ref: 'donorSchema'},
     cardId: {type: Schema.ObjectId, ref: 'donorCardsSchema'},
     donation: [{type: Schema.ObjectId, ref: 'donationSchema'}],

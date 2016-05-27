@@ -434,14 +434,11 @@ var getAllCampaignDonation = function (userData, callback) {
     } else {
 
         var populateVariable = [{
-            path: "campaignId",
-            select: 'campaignName'
+            path: "campaignId"
         },{
-            path: "charityId",
-            select: 'name'
+            path: "charityId"
         },{
-            path: "donorId",
-            select: 'firstName'
+            path: "donorId"
         }];
 
         Service.AdminService.getDonationPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
@@ -461,14 +458,111 @@ var getAllCharityDonation = function (userData, callback) {
     } else {
 
         var populateVariable = [{
-            path: "charityId",
-            select: 'name'
+            path: "charityId"
         },{
-            path: "donorId",
-            select: 'firstName'
+            path: "donorId"
         }];
 
         Service.AdminService.getcharityDonationsPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, donations);
+            }
+        });
+    }
+};
+
+var getCharityRecurring = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        var populateVariable = [{
+            path: "charityId"
+        },{
+            path: "donorId"
+        },{
+            path: "cardId"
+        },{
+            path: "donation"
+        }];
+
+        Service.AdminService.getdonationRecurringCharityPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, donations);
+            }
+        });
+    }
+};
+
+
+var paymentStatus = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        async.series([
+            function (cb) {
+                var criteria = [
+                    {
+                        $group:
+                        {
+                            _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
+                            totalAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+                            count: { $sum: 1 }
+                        }
+                    }
+                ];
+                Service.AdminService.getCampaignRecurringDonation(criteria, function (err, donations) {
+                    if (err) {
+                        cb(err);
+                    } else {
+                        console.log(donations)
+                        cb();
+                    }
+                });
+            },
+            function (cb) {
+                Service.AdminService.getCharityRecurringDonation({}, {}, {lean:true}, populateVariable, function (err, donations) {
+                    if (err) {
+                        console.log(donations)
+                        cb(err);
+                    } else {
+                        cb();
+                    }
+                });
+            }
+        ], function (err, result) {
+            if (err) {
+                return callback(err);
+            }
+            callback();
+        });
+    }
+};
+
+
+var getCampaignRecurring = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        var populateVariable = [{
+            path: "charityId"
+        },{
+            path: "donorId"
+        },{
+            path: "cardId"
+        },{
+            path: "donation"
+        },{
+            path: "campaignId"
+        }];
+
+        Service.AdminService.getdonationRecurringCampaignPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
             if (err) {
                 callback(err);
             } else {
@@ -595,5 +689,8 @@ module.exports = {
     getAllCampaignDonation: getAllCampaignDonation,
     getAllDonors: getAllDonors,
     getAllCharityDonation: getAllCharityDonation,
+    getCharityRecurring: getCharityRecurring,
+    getCampaignRecurring: getCampaignRecurring,
+    paymentStatus: paymentStatus,
     makeFeatured: makeFeatured
 };

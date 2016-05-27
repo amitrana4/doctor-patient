@@ -77,6 +77,18 @@ var getFavouriteCharityPopulate = function (criteria, project, options,populateM
     });
 };
 
+
+// /get Donation in DB
+var getDonationPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.donation.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
+
 // /get Donation in DB
 var getDonation = function (criteria, projection, options, callback) {
     Models.donation.find(criteria, projection, options, callback);
@@ -255,5 +267,6 @@ module.exports = {
     updateDonationRecurringCharity: updateDonationRecurringCharity,
     getCampaignDeepPopulate: getCampaignDeepPopulate,
     getDonationDistict: getDonationDistict,
+    getDonationPopulate: getDonationPopulate,
     getCampaignPopulate: getCampaignPopulate
 };

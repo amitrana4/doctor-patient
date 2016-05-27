@@ -391,15 +391,20 @@ var getCampaignById = function (payloadData, callback) {
 
 var getCommentsById = function (payloadData, callback) {
 
+    var populateVariable = {
+        path: "donorId",
+        select: 'firstName profilePic'
+    };
+
     var criteria= {campaignId: payloadData.campaignId},
         options = {lean: true},
-        projection ={comment:1, rating:1};
+        projection ={comment:1, rating:1, createdOn:1, donorId:1};
 
-    Service.DonorService.getDonation(criteria, projection, options, function (err, res) {
+    Service.DonorService.getDonationPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
-            if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            if (res.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             callback(null,res);
         }
     });
