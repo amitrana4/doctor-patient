@@ -268,7 +268,6 @@ module.exports = [
         path: '/api/charity/createCampaign',
         handler: function (request, reply) {
             var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
-            //reply(request.payload.materialImages);
             Controller.CharityController.createCampaign(request.payload,CharityData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
@@ -363,7 +362,6 @@ module.exports = [
                     if (err) {
                         reply(UniversalFunctions.sendError(err));
                     } else {
-                        console.log(data,'=====ghjghj======')
                         reply(UniversalFunctions.sendSuccess(null, data))
                     }
                 });

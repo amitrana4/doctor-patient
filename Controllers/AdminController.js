@@ -436,7 +436,8 @@ var getAllCampaignDonation = function (userData, callback) {
         var populateVariable = [{
             path: "campaignId"
         },{
-            path: "charityId"
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         },{
             path: "donorId"
         }];
@@ -458,9 +459,11 @@ var getAllCharityDonation = function (userData, callback) {
     } else {
 
         var populateVariable = [{
-            path: "charityId"
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         },{
-            path: "donorId"
+            path: "donorId",
+            select: 'emailId firstName lastName'
         }];
 
         Service.AdminService.getcharityDonationsPopulate({}, {}, {lean:true}, populateVariable, function (err, donations) {
@@ -479,9 +482,11 @@ var getCharityRecurring = function (userData, callback) {
     } else {
 
         var populateVariable = [{
-            path: "charityId"
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         },{
-            path: "donorId"
+            path: "donorId",
+            select: 'emailId firstName lastName'
         },{
             path: "cardId"
         },{
@@ -549,9 +554,11 @@ var getCampaignRecurring = function (userData, callback) {
     } else {
 
         var populateVariable = [{
-            path: "charityId"
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         },{
-            path: "donorId"
+            path: "donorId",
+            select: 'emailId firstName lastName'
         },{
             path: "cardId"
         },{
@@ -565,6 +572,63 @@ var getCampaignRecurring = function (userData, callback) {
                 callback(err);
             } else {
                 callback(null, donations);
+            }
+        });
+    }
+};
+
+
+var charityPayment = function (userData, payload, callback) {
+    var donation = {};
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var criteria = {
+            charityId: payload.charityId
+        };
+        var populateVariable = [{
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
+        }, {
+            path: "donorId",
+            select: 'emailId firstName lastName'
+        }];
+        Service.AdminService.getcharityDonationsPopulate(criteria, {}, {lean: true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                if (donations.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                donation = donations;
+                callback(null, donation);
+            }
+        });
+    }
+};
+
+
+var CampaignPayment = function (userData, payload, callback) {
+    var donation = {};
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+
+        var criteria = {
+            campaignId: payload.campaignId
+        };
+        var populateVariable = [{
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
+        }, {
+            path: "donorId",
+            select: 'emailId firstName lastName'
+        }];
+        Service.AdminService.getDonationPopulate(criteria, {}, {lean: true}, populateVariable, function (err, donations) {
+            if (err) {
+                callback(err);
+            } else {
+                if (donations.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                donation = donations;
+                callback(null, donation);
             }
         });
     }
@@ -689,6 +753,8 @@ module.exports = {
     getAllCharityDonation: getAllCharityDonation,
     getCharityRecurring: getCharityRecurring,
     getCampaignRecurring: getCampaignRecurring,
+    charityPayment: charityPayment,
     paymentStatus: paymentStatus,
+    CampaignPayment: CampaignPayment,
     makeFeatured: makeFeatured
 };

@@ -149,6 +149,70 @@ var userRoutes = [
         }
     },
     {
+        method: 'POST',
+        path: '/api/admin/getCharityPayment',
+        handler: function (request, reply) {
+            var CharityData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.charityPayment(CharityData, request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
+                }
+            });
+        },
+        config: {
+            description: 'Create campaign',
+            tags: ['api', 'admin'],
+            auth: 'UserAuth',
+            validate: {
+                payload: {
+                    charityId: Joi.string().required().trim()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/admin/getCampaignPayment',
+        handler: function (request, reply) {
+            var CampaignData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.CampaignPayment(CampaignData, request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
+                }
+            });
+        },
+        config: {
+            description: 'Create campaign',
+            tags: ['api', 'admin'],
+            auth: 'UserAuth',
+            validate: {
+                payload: {
+                    campaignId: Joi.string().required().trim()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'GET',
         path: '/api/admin/getCampaignRecurring',
         handler: function (request, reply) {
