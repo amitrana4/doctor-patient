@@ -508,11 +508,9 @@ var paymentStatus = function (userData, callback) {
             function (cb) {
                 var criteria = [
                     {
-                        $group:
-                        {
-                            _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
-                            totalAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
-                            count: { $sum: 1 }
+                        $group : {
+                            _id: {$recurringDonation : true},
+                            totalAmount: { $sum: "$donatedAmount" },
                         }
                     }
                 ];
@@ -525,7 +523,7 @@ var paymentStatus = function (userData, callback) {
                     }
                 });
             },
-            function (cb) {
+           /* function (cb) {
                 Service.AdminService.getCharityRecurringDonation({}, {}, {lean:true}, populateVariable, function (err, donations) {
                     if (err) {
                         console.log(donations)
@@ -534,7 +532,7 @@ var paymentStatus = function (userData, callback) {
                         cb();
                     }
                 });
-            }
+            }*/
         ], function (err, result) {
             if (err) {
                 return callback(err);

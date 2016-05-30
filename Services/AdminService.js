@@ -19,7 +19,7 @@ var updateAdmin = function (criteria, dataToSet, options, callback) {
 
 //Update User in DB
 var getCampaignRecurringDonation = function (criteria, callback) {
-    Models.Admins.aggregate(criteria, callback);
+    Models.donation.aggregate(criteria, callback);
 };
 
 
@@ -70,6 +70,7 @@ module.exports = {
     getcharityDonationsPopulate: getcharityDonationsPopulate,
     getdonationRecurringCharityPopulate: getdonationRecurringCharityPopulate,
     getdonationRecurringCampaignPopulate: getdonationRecurringCampaignPopulate,
+    getCampaignRecurringDonation: getCampaignRecurringDonation,
     updateAdmin: updateAdmin
 };
 
