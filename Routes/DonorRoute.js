@@ -13,6 +13,7 @@ module.exports = [
         path: '/api/donor/register',
         handler: function (request, reply) {
             var payloadData = request.payload;
+            console.log(payloadData,'===========')
             Controller.DonorController.createDonor(payloadData, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
