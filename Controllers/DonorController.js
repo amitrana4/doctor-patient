@@ -124,6 +124,8 @@ var createDonor = function (payloadData, callback) {
                         cb();
                     }
                 });
+            }else{
+                cb();
             }
         },
         function (cb) {
@@ -148,9 +150,15 @@ var createDonor = function (payloadData, callback) {
         if (err) {
             callback(err);
         } else {
+            var finalD;
+            if (dataToSave.profilePic) {
+                finalD = updatedDonorData;
+            }else {
+                finalD = donorData;
+            }
             callback(null, {
                 accessToken: accessToken,
-                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(updatedDonorData)
+                userDetails: UniversalFunctions.deleteUnnecessaryDonorData(finalD)
             });
         }
     });

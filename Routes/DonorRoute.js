@@ -27,7 +27,7 @@ module.exports = [
             payload: {
                 output: 'file',
                 parse: true,
-                allow: 'multipart/form-data',
+               // allow: 'multipart/form-data',
                 maxBytes: 40485760
             },
             validate: {
