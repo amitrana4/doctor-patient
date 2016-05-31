@@ -206,7 +206,7 @@ var STATUS_MSG = {
         },
         PAYPALID_REQUIRED: {
             statusCode:400,
-            customMessage : 'PAypal Id required',
+            customMessage : 'Paypal Id required',
             type : 'PAYPALID_REQUIRED'
         },
         PASSWORD_REQUIRED: {
