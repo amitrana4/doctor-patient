@@ -41,7 +41,7 @@ module.exports = [
                     deviceToken: Joi.string().required().min(1).trim(),
                     profilePic: Joi.any()
                         .meta({swaggerType: 'file'})
-                        .required()
+                        .optional()
                         .description('image file'),
                     appVersion: Joi.string().required().trim()
 

@@ -98,7 +98,7 @@ function uploadFile(fileData, userId, type, callbackParent) {
             //Validate fileData && userId
             if (!userId || !fileData || !fileData.filename) {
                 console.log('in upload file to s3',userId,fileData)
-                cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR )
             } else {
                 // TODO Validate file extensions
                 cb();

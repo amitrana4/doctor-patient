@@ -113,16 +113,18 @@ var createDonor = function (payloadData, callback) {
             }
         },
         function(cb){
-            var criteria = {_id: donorData._id};
+            if (dataToSave.profilePic) {
+                var criteria = {_id: donorData._id};
 
-            Service.DonorService.updateDonor(criteria, dataToUpdate, {new: true}, function (err, DataFromDB) {
-                if (err) {
-                    cb(err)
-                } else {
-                    updatedDonorData = DataFromDB;
-                    cb();
-                }
-            });
+                Service.DonorService.updateDonor(criteria, dataToUpdate, {new: true}, function (err, DataFromDB) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        updatedDonorData = DataFromDB;
+                        cb();
+                    }
+                });
+            }
         },
         function (cb) {
             if (donorData) {
