@@ -1293,7 +1293,7 @@ var cronFunction = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        function (callB) {
+        /*function (callB) {
             var startDate = data.startDate;
             var endDate = data.endDate;
             var frequency = data.frequency;
@@ -1314,7 +1314,7 @@ var cronFunction = function (data, callback){
                 var d = moment(startDate).add(1, 'months');
                 if (d == today) callB();
             }
-        },
+        },*/
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();

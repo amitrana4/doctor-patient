@@ -74,7 +74,33 @@ var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
 
 //Get Users from DB
 var getCharityCampaign = function (criteria, projection, options, callback) {
-    Models.charityCampaign.find(criteria, projection, options, callback);
+
+var data1 = [];
+    Models.charityCampaign.find(criteria, function(err, data){
+        data.forEach(
+            function (newBook) {
+                console.log(newBook,'=====')
+                Models.favouriteCampaign.findOne( { "campaignId": newBook._id } ), function(err, data){console.log(data,'=====-=-=-=-=-=')};
+            }
+        );
+    })
+    console.log(data1,'=======')
+
+
+
+   /* Models.charityCampaign.aggregate(
+        [{
+            $lookup:
+            {
+                from: "favouriteCampaign",
+                localField:	"_id",
+                foreignField: "campaignId",
+                as: "inventory_docs"
+            }}], function(err, doc){ console.log(err, doc,'==========')
+        callback(doc) })
+
+*/
+   // Models.charityCampaign.find(criteria, projection, options, callback);
 };
 
 
