@@ -76,9 +76,10 @@ var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
 
-rule.minute = 20;
+rule.minute = 23;
 
 var j = schedule.scheduleJob(rule, function(){
+    console.log('j schedular function')
     Controller.DonorController.cronRecurringDonationCampaign(function (err, data) {
         if (err) {
             console.log('error in api')
@@ -90,6 +91,7 @@ var j = schedule.scheduleJob(rule, function(){
 });
 
 var q = schedule.scheduleJob(rule, function(){
+    console.log('q schedular function')
     Controller.DonorController.cronRecurringDonationCharity(function (err, data) {
         if (err) {
             console.log('error in api')
