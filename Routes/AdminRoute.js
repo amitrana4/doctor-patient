@@ -467,7 +467,7 @@ var userRoutes = [
         validate: {
             payload: {
                 charityId: Joi.string().required(),
-                donationId: Joi.optional().required(),
+                donationId: Joi.string().optional(),
                 status: Joi.string().required().valid(
                     [
                         'ONETIME',

@@ -720,7 +720,8 @@ var payCharityById = function (payload, userData, callback) {
             },
             function (cb) {
                 //Validate for facebookId and password
-                if (typeof payload.type == 'ALL' && payload.type) {
+                console.log(payload.type,'======', payload.donationId)
+                if (payload.type == 'ALL' && payload.type) {
                     if (payload.donationId) {
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_ALL_ERROR);
                     } else {
@@ -733,21 +734,21 @@ var payCharityById = function (payload, userData, callback) {
                 }
             },
             function (cb) {
-                if (typeof payload.type == 'ALL' && payload.type) {
+                if (payload.type == 'ALL' && payload.type) {
                     var crt;
                     var dataToUpdate = {paid : true};
                     if(payload.status == 'ONETIME'){
-                        crt = [{charityId: charityData._id},
-                            {recurringDonation: false}]
+                        crt = {charityId: charityData._id,
+                            recurringDonation: false}
                     }
                     else{
-                        crt = [{charityId: charityData._id},
-                            {recurringDonation: true}]
+                        crt = {charityId: charityData._id, recurringDonation: true}
                     }
-                    Service.CharityService.updateDonation(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
+                    Service.AdminService.updateManyDonation(crt, dataToUpdate, {multi:true}, function (err, charityAry) {
                         if (err) {
                             cb(err)
                         } else {
+                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                             if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                             charityData = charityAry[0];
                             cb()
@@ -756,19 +757,26 @@ var payCharityById = function (payload, userData, callback) {
                 }
                 else{
                     var crt;
-                    var dataToUpdate = {paid : true};
+                    var dataToUpdate = {
+                        $set: {
+                            paid: true
+                        }
+                    }
                     if(payload.status == 'ONETIME'){
-                        crt = [{charityId: charityData._id},
-                            {recurringDonation: false}]
+                        crt = {charityId: charityData._id,
+                            _id: payload.donationId,
+                                recurringDonation: false}
                     }
                     else{
-                        crt = [{charityId: charityData._id},
-                            {recurringDonation: true}]
+                        crt = {charityId: charityData._id,
+                            _id: payload.donationId,
+                            recurringDonation: true}
                     }
-                    Service.CharityService.updateDonation(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
+                    Service.AdminService.updateCharityDonations(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
                         if (err) {
                             cb(err)
                         } else {
+                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                             if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                             charityData = charityAry[0];
                             cb()
@@ -842,5 +850,6 @@ module.exports = {
     charityPayment: charityPayment,
     paymentStatus: paymentStatus,
     CampaignPayment: CampaignPayment,
+    payCharityById: payCharityById,
     makeFeatured: makeFeatured
 };

@@ -126,6 +126,11 @@ var updateDonation = function (criteria, dataToSet, options, callback) {
     Models.donation.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+// /Update Donation in DB
+var updateManyDonation = function (criteria, dataToSet, options, callback) {
+    Models.donation.updateMany(criteria, dataToSet, options, callback);
+};
+
 //Update User in DB
 var updateDonor = function (criteria, dataToSet, options, callback) {
     Models.donor.findOneAndUpdate(criteria, dataToSet, options, callback);
@@ -268,5 +273,6 @@ module.exports = {
     getCampaignDeepPopulate: getCampaignDeepPopulate,
     getDonationDistict: getDonationDistict,
     getDonationPopulate: getDonationPopulate,
+    updateManyDonation: updateManyDonation,
     getCampaignPopulate: getCampaignPopulate
 };

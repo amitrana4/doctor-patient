@@ -17,6 +17,17 @@ var updateAdmin = function (criteria, dataToSet, options, callback) {
     Models.Admins.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
+
+//Update User in DB
+var updateCharityDonations = function (criteria, dataToSet, options, callback) {
+    Models.charityDonations.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+//Update User in DB
+var updateManyDonation = function (criteria, dataToSet, options, callback) {
+    Models.charityDonations.update(criteria, dataToSet, options, callback);
+};
+
 //Update User in DB
 var getCampaignRecurringDonation = function (criteria, callback) {
     Models.donation.aggregate(criteria, callback);
@@ -71,6 +82,8 @@ module.exports = {
     getdonationRecurringCharityPopulate: getdonationRecurringCharityPopulate,
     getdonationRecurringCampaignPopulate: getdonationRecurringCampaignPopulate,
     getCampaignRecurringDonation: getCampaignRecurringDonation,
+    updateCharityDonations: updateCharityDonations,
+    updateManyDonation: updateManyDonation,
     updateAdmin: updateAdmin
 };
 
