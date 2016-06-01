@@ -13,7 +13,7 @@ var charityDonationSchema = new Schema({
     paymentGatewayTransactionId: {type: String, trim: true, required: true},
 
     recurringDonation: {type: Boolean, required: true, default: false},
-    payed: {type: Boolean, required: true, default: false},
+    paid: {type: Boolean, required: true, default: false},
 
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},

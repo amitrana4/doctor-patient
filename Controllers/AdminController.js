@@ -700,6 +700,92 @@ var approveCharity = function (payload, userData, callback) {
     }
 };
 
+
+var payCharityById = function (payload, userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var charityData;
+        async.series([
+            function (cb) {
+                    Service.CharityService.getCharityOwner({_id: payload.charityId}, {}, {lean: true}, function (err, charityAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            charityData = charityAry[0];
+                            cb()
+                        }
+                    })
+            },
+            function (cb) {
+                //Validate for facebookId and password
+                if (typeof payload.type == 'ALL' && payload.type) {
+                    if (payload.donationId) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_ALL_ERROR);
+                    } else {
+                        cb();
+                    }
+                } else if (!payload.donationId) {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DONATION_REQUIRED);
+                } else {
+                    cb();
+                }
+            },
+            function (cb) {
+                if (typeof payload.type == 'ALL' && payload.type) {
+                    var crt;
+                    var dataToUpdate = {paid : true};
+                    if(payload.status == 'ONETIME'){
+                        crt = [{charityId: charityData._id},
+                            {recurringDonation: false}]
+                    }
+                    else{
+                        crt = [{charityId: charityData._id},
+                            {recurringDonation: true}]
+                    }
+                    Service.CharityService.updateDonation(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            charityData = charityAry[0];
+                            cb()
+                        }
+                    })
+                }
+                else{
+                    var crt;
+                    var dataToUpdate = {paid : true};
+                    if(payload.status == 'ONETIME'){
+                        crt = [{charityId: charityData._id},
+                            {recurringDonation: false}]
+                    }
+                    else{
+                        crt = [{charityId: charityData._id},
+                            {recurringDonation: true}]
+                    }
+                    Service.CharityService.updateDonation(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            charityData = charityAry[0];
+                            cb()
+                        }
+                    })
+                }
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
 var makeFeatured = function (payload, userData, callback) {
     console.log(payload.campaignId)
     if (!userData || !userData.id) {

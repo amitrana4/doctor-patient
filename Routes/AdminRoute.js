@@ -447,6 +447,51 @@ var userRoutes = [
         }
     }
     },
+    {
+        method: 'PUT',
+        path: '/api/admin/payCharityById',
+        handler: function (request, reply) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.payCharityById(request.payload, AdminData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+
+        }, config: {
+        description: 'Approve Charity',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                charityId: Joi.string().required(),
+                donationId: Joi.optional().required(),
+                status: Joi.string().required().valid(
+                    [
+                        'ONETIME',
+                        'RECURRING'
+                    ]
+                ),
+                type: Joi.string().required().valid(
+                    [
+                        'SINGLE',
+                        'ALL'
+                    ]
+                )
+            },
+            headers: UniversalFunctions.authorizationHeaderObj,
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
+    }
+    },
 
     {
         method: 'PUT',

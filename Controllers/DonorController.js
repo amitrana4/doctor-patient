@@ -329,7 +329,7 @@ var getAllCampaign = function (callback) {
 
 var getCharities = function (callback) {
 
-console.log(new Date())
+
     var _date = new Date();
     var criteria = {},
         options = {lean: true},
@@ -1293,30 +1293,33 @@ var cronFunction = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        /*function (callB) {
-            var startDate = data.startDate;
-            var endDate = data.endDate;
+        function (callB) {
+            var startDate = moment(data.startDate);
             var frequency = data.frequency;
-            var today = new Date();
+            var today = moment();
+            today.toISOString();
 
             if(data.LastRecurring){
-                startDate = data.LastRecurring;
+                startDate = moment(data.LastRecurring);
             }
+            startDate = startDate.toISOString();
             if(frequency == 7) {
                 var d = moment(startDate).add(7, 'days');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
             else if (frequency == 15){
                 var d = moment(startDate).add(15, 'days');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
             else if (frequency == 30){
                 var d = moment(startDate).add(1, 'months');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
-        },*/
+        },
         function (callB) {
-            console.log('here')
             if(data.complete == true) return callB('completed');
             callB();
         },
@@ -1416,7 +1419,6 @@ var cronFunction = function (data, callback){
                     //  throw error;
                     callback(error)
                 } else {
-                    console.log(payment,'========')
                     paypalReturn = payment;
                     callback()
                 }
@@ -1561,28 +1563,32 @@ var cronFunctionCharity = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-       /* function (callB) {
-            var startDate = data.startDate;
-            var endDate = data.endDate;
+        function (callB) {
+            var startDate = moment(data.startDate);
             var frequency = data.frequency;
-            var today = new Date();
+            var today = moment();
+            today.toISOString();
 
             if(data.LastRecurring){
-                startDate = data.LastRecurring;
+                startDate = moment(data.LastRecurring);
             }
+            startDate = startDate.toISOString();
             if(frequency == 7) {
                 var d = moment(startDate).add(7, 'days');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
             else if (frequency == 15){
                 var d = moment(startDate).add(15, 'days');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
             else if (frequency == 30){
                 var d = moment(startDate).add(1, 'months');
-                if (d == today) callB();
+                var dif = moment(d).diff(today, 'days')
+                if (dif == 0) callB();
             }
-        },*/
+        },
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();
@@ -1684,7 +1690,6 @@ var cronFunctionCharity = function (data, callback){
         function (cb) {
 
             var dataToSave = {};
-            console.log(charityData,'==========')
             dataToSave.charityId = charityData._id;
             dataToSave.donorId = data.donorId;
             dataToSave.cardId = cardSelected._id;

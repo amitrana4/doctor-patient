@@ -75,6 +75,7 @@ var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
 //Get Users from DB
 var getCharityCampaign = function (criteria, projection, options, callback) {
 
+/*
 var data1 = [];
     Models.charityCampaign.find(criteria, function(err, data){
         data.forEach(
@@ -86,6 +87,7 @@ var data1 = [];
     })
     console.log(data1,'=======')
 
+*/
 
 
    /* Models.charityCampaign.aggregate(
@@ -100,7 +102,7 @@ var data1 = [];
         callback(doc) })
 
 */
-   // Models.charityCampaign.find(criteria, projection, options, callback);
+    Models.charityCampaign.find(criteria, projection, options, callback);
 };
 
 

@@ -194,6 +194,11 @@ var STATUS_MSG = {
             customMessage : 'Only one field should be filled at a time, either facebookId or password',
             type : 'FACEBOOK_ID_PASSWORD_ERROR'
         },
+        TYPE_ALL_ERROR: {
+            statusCode:400,
+            customMessage : 'Only one field should be filled at a time, either type or donationId',
+            type : 'TYPE_ALL_ERROR'
+        },
         INVALID_EMAIL: {
             statusCode:400,
             customMessage : 'Invalid Email Address',
@@ -213,6 +218,11 @@ var STATUS_MSG = {
             statusCode:400,
             customMessage : 'Password is required',
             type : 'PASSWORD_REQUIRED'
+        },
+        DONATION_REQUIRED: {
+            statusCode:400,
+            customMessage : 'Donation Id is required',
+            type : 'DONATION_REQUIRED'
         },
         INVALID_COUNTRY_CODE: {
             statusCode:400,
