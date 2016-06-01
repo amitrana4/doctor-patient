@@ -329,7 +329,7 @@ var getAllCampaign = function (callback) {
 
 var getCharities = function (callback) {
 
-
+console.log(new Date())
     var _date = new Date();
     var criteria = {},
         options = {lean: true},

@@ -76,8 +76,7 @@ var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
 
-rule.minute = 23;
-console.log(new Date())
+rule.minute = 35;
 
 var j = schedule.scheduleJob(rule, function(){
     console.log('j schedular function')
