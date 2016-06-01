@@ -1316,6 +1316,7 @@ var cronFunction = function (data, callback){
             }
         },*/
         function (callB) {
+            console.log('here')
             if(data.complete == true) return callB('completed');
             callB();
         },
@@ -1415,6 +1416,7 @@ var cronFunction = function (data, callback){
                     //  throw error;
                     callback(error)
                 } else {
+                    console.log(payment,'========')
                     paypalReturn = payment;
                     callback()
                 }
