@@ -275,7 +275,7 @@ var changePassword = function (queryData,userData, callback) {
 
 
 var getCampaign = function (callback) {
-console.log(new Date())
+
 
     var _date = new Date();
     var criteria = {
@@ -358,7 +358,7 @@ var getCampaignById = function (payloadData, callback) {
             },
                 {
                     path: "charityId",
-                    select: 'name website contactPerson emailId description keyWord type phoneNumber'
+                    select: 'name website contactPerson emailId description keyWord type phoneNumber logoFileId'
                 }];
 
             var criteria = {_id: payloadData.campaignId},
@@ -374,21 +374,7 @@ var getCampaignById = function (payloadData, callback) {
                     cb();
                 }
             });
-        },
-       /* function (cb) {
-            var criteria = {campaignId: payloadData.campaignId},
-                projection = {campaignId:1};
-            Service.DonorService.getDonationDistict(criteria, projection, function (err, res) {
-                console.log(err, res)
-                if (err) {
-                    cb(err)
-                } else {
-                    finalData.count = res.length;
-                    cb();
-                }
-            });
-
-        }*/
+        }
     ], function (err, result) {
         if (err) {
             callback(err);
@@ -1293,7 +1279,7 @@ var cronFunction = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        /*function (callB) {
+        function (callB) {
             var startDate = moment(data.startDate);
             var frequency = data.frequency;
             var today = moment();
@@ -1318,7 +1304,7 @@ var cronFunction = function (data, callback){
                 var dif = moment(d).diff(today, 'days')
                 if (dif == 0) callB();
             }
-        },*/
+        },
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();
@@ -1563,7 +1549,7 @@ var cronFunctionCharity = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        /*function (callB) {
+        function (callB) {
             var startDate = moment(data.startDate);
             var frequency = data.frequency;
             var today = moment();
@@ -1588,7 +1574,7 @@ var cronFunctionCharity = function (data, callback){
                 var dif = moment(d).diff(today, 'days')
                 if (dif == 0) callB();
             }
-        },*/
+        },
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();

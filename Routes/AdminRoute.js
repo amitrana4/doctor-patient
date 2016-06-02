@@ -461,7 +461,7 @@ var userRoutes = [
             });
 
         }, config: {
-        description: 'Approve Charity',
+        description: 'payment done for all or single charity ',
         auth: 'UserAuth',
         tags: ['api', 'admin'],
         validate: {
@@ -493,6 +493,51 @@ var userRoutes = [
     }
     },
 
+    {
+        method: 'PUT',
+        path: '/api/admin/payCampaignById',
+        handler: function (request, reply) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.payCampaignById(request.payload, AdminData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+
+        }, config: {
+        description: 'Payment done for perticular campaign or all campaign',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                CampaignId: Joi.string().required(),
+                donationId: Joi.string().optional(),
+                status: Joi.string().required().valid(
+                    [
+                        'ONETIME',
+                        'RECURRING'
+                    ]
+                ),
+                type: Joi.string().required().valid(
+                    [
+                        'SINGLE',
+                        'ALL'
+                    ]
+                )
+            },
+            headers: UniversalFunctions.authorizationHeaderObj,
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
+    }
+    },
     {
         method: 'PUT',
         path: '/api/admin/makeFeatured',

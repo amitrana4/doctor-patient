@@ -19,7 +19,7 @@ var donationSchema = new Schema({
     recurringDonation: {type: Boolean, required: true, default: false},
     comment: {type: String, trim: true, required: false},
     rating: {type: String, trim: true, required: false},
-    paid: {type: String, trim: true, required: false},
+    paid: {type: Boolean, required: true, default: false},
 
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},

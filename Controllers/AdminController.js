@@ -794,6 +794,97 @@ var payCharityById = function (payload, userData, callback) {
     }
 };
 
+
+var payCampaignById = function (payload, userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var CampaignData;
+        async.series([
+            function (cb) {
+                    Service.CharityService.getCharityCampaign({_id: payload.CampaignId}, {}, {lean: true}, function (err, campaignAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (campaignAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            CampaignData = campaignAry[0];
+                            cb()
+                        }
+                    })
+            },
+            function (cb) {
+                if (payload.type == 'ALL' && payload.type) {
+                    if (payload.donationId) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_ALL_ERROR);
+                    } else {
+                        cb();
+                    }
+                } else if (!payload.donationId) {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.DONATION_REQUIRED);
+                } else {
+                    cb();
+                }
+            },
+            function (cb) {
+                if (payload.type == 'ALL' && payload.type) {
+                    var crt;
+                    var dataToUpdate = {paid : true};
+                    if(payload.status == 'ONETIME'){
+                        crt = {campaignId: CampaignData._id,
+                            recurringDonation: false}
+                    }
+                    else{
+                        crt = {campaignId: CampaignData._id, recurringDonation: true}
+                    }
+                    console.log(crt,'=========')
+                    Service.AdminService.updateManyCampDonation(crt, dataToUpdate, {multi:true}, function (err, campaignAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (campaignAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            if (campaignAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            cb()
+                        }
+                    })
+                }
+                else{
+                    var crt;
+                    var dataToUpdate = {
+                        $set: {
+                            paid: true
+                        }
+                    }
+                    if(payload.status == 'ONETIME'){
+                        crt = {campaignId: CampaignData._id,
+                            _id: payload.donationId,
+                                recurringDonation: false}
+                    }
+                    else{
+                        crt = {campaignId: CampaignData._id,
+                            _id: payload.donationId,
+                            recurringDonation: true}
+                    }
+                    Service.AdminService.updateCampaignDonations(crt, dataToUpdate, {lean: true}, function (err, campaignAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (campaignAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            if (campaignAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            cb()
+                        }
+                    })
+                }
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
 var makeFeatured = function (payload, userData, callback) {
     console.log(payload.campaignId)
     if (!userData || !userData.id) {
@@ -851,5 +942,6 @@ module.exports = {
     paymentStatus: paymentStatus,
     CampaignPayment: CampaignPayment,
     payCharityById: payCharityById,
+    payCampaignById: payCampaignById,
     makeFeatured: makeFeatured
 };
