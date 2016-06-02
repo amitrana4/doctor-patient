@@ -275,7 +275,7 @@ var changePassword = function (queryData,userData, callback) {
 
 
 var getCampaign = function (callback) {
-
+console.log(new Date())
 
     var _date = new Date();
     var criteria = {
