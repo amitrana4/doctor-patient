@@ -105,6 +105,15 @@ var data1 = [];
     Models.charityCampaign.find(criteria, projection, options, callback);
 };
 
+var getCharityCampaignPopulate = function (criteria, project, options,populateModel, callback) {
+    Models.charityCampaign.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if (err) {
+            return callback(err, docs);
+        }else{
+            callback(null, docs);
+        }
+    });
+};
 
 var getCampaignDeepPopulate = function (criteria, project, options,populateModel, callback) {
     
@@ -175,6 +184,7 @@ module.exports = {
     getCharityOwnerId: getCharityOwnerId,
     getDonationPopulate: getDonationPopulate,
     getCampaignDeepPopulate: getCampaignDeepPopulate,
+    getCharityCampaignPopulate: getCharityCampaignPopulate,
     getCharityDonationPopulate: getCharityDonationPopulate,
     getCharityOwner: getCharityOwner,
     updateCharityOwnerPopulate: updateCharityOwnerPopulate
