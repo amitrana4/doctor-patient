@@ -1293,7 +1293,7 @@ var cronFunction = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        function (callB) {
+        /*function (callB) {
             var startDate = moment(data.startDate);
             var frequency = data.frequency;
             var today = moment();
@@ -1318,7 +1318,7 @@ var cronFunction = function (data, callback){
                 var dif = moment(d).diff(today, 'days')
                 if (dif == 0) callB();
             }
-        },
+        },*/
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();
@@ -1563,7 +1563,7 @@ var cronFunctionCharity = function (data, callback){
     var totalAmount;
     var paypalReturn;
     async.series([
-        function (callB) {
+        /*function (callB) {
             var startDate = moment(data.startDate);
             var frequency = data.frequency;
             var today = moment();
@@ -1588,7 +1588,7 @@ var cronFunctionCharity = function (data, callback){
                 var dif = moment(d).diff(today, 'days')
                 if (dif == 0) callB();
             }
-        },
+        },*/
         function (callB) {
             if(data.complete == true) return callB('completed');
             callB();
