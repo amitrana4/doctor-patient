@@ -76,7 +76,7 @@ var schedule = require('node-schedule');
 
 var rule = new schedule.RecurrenceRule();
 
-rule.minute = 13;
+rule.minute = 16;
 
 var j = schedule.scheduleJob(rule, function(){
     Controller.DonorController.cronRecurringDonationCampaign(function (err, data) {
