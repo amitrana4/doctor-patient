@@ -421,7 +421,7 @@ var getAllCampaign = function (userData, callback) {
             path: "charityId",
             select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         };
-        Service.AdminService.getCharityCampaignPopulate({}, {}, {lean:true}, populateVariable, function (err, charityAry) {
+        Service.CharityService.getCharityCampaignPopulate({}, {}, {lean:true}, populateVariable, function (err, charityAry) {
             if (err) {
                 callback(err);
             } else {
