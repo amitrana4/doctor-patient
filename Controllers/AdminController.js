@@ -418,9 +418,10 @@ var getAllCampaign = function (userData, callback) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
     } else {
         var populateVariable = {
-            path: "campaignId"
+            path: "charityId",
+            select: 'name website contactPerson emailId phoneNumber countryCode bankAccountNumber bankAccountHolderPhoneNumber bankAccountHolderName'
         };
-            Service.AdminService.getCharityCampaignPopulate({}, {}, {lean:true}, populateVariable, function (err, charityAry) {
+        Service.AdminService.getCharityCampaignPopulate({}, {}, {lean:true}, populateVariable, function (err, charityAry) {
             if (err) {
                 callback(err);
             } else {
