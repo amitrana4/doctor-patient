@@ -354,6 +354,7 @@ var getCampaignById = function (payloadData, callback) {
             var populateVariable = [{
                 path: "donation",
                 options: {sort: {'createdOn': -1}, limit: 2},
+                match: {recurringDonation: false},
                 select: 'donatedAmount donatedUnit donatedCurrency costPerUnit comment rating donorId createdOn'
             },
                 {
@@ -392,7 +393,7 @@ var getCommentsById = function (payloadData, callback) {
         select: 'firstName profilePic'
     };
 
-    var criteria= {campaignId: payloadData.campaignId},
+    var criteria= {campaignId: payloadData.campaignId, recurringDonation: false},
         options = {lean: true},
         projection ={comment:1, rating:1, createdOn:1, donorId:1};
 
