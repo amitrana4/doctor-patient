@@ -99,6 +99,11 @@ var STATUS_MSG = {
             customMessage : 'Invalid Id Provided',
             type : 'INVALID_ID'
         },
+        INVALID_DATE: {
+            statusCode:400,
+            customMessage : 'Date should be greater then current date.',
+            type : 'INVALID_DATE'
+        },
         NO_COMMENT_FOUND: {
             statusCode:400,
             customMessage : 'No Comment Found',
@@ -198,6 +203,11 @@ var STATUS_MSG = {
             statusCode:400,
             customMessage : 'Only one field should be filled at a time, either type or donationId',
             type : 'TYPE_ALL_ERROR'
+        },
+        TYPE_STATUS_ERROR: {
+            statusCode:400,
+            customMessage : 'Only one field should be filled at a time, status or endDate',
+            type : 'TYPE_STATUS_ERROR'
         },
         INVALID_EMAIL: {
             statusCode:400,

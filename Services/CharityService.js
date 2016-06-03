@@ -15,9 +15,9 @@ var getCharityOwnerId = function (criteria, projection, options, callback) {
 };
 
 //Get Users from DB
-var getCharityCampaign = function (criteria, projection, options, callback) {
+/*var getCharityCampaign = function (criteria, projection, options, callback) {
     Models.charityCampaign.find(criteria, projection, options, callback);
-};
+};*/
 
 //Insert User in DB
 var createCharityOwner = function (objToSave, callback) {

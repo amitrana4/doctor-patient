@@ -178,7 +178,7 @@ var getCampaignDeepPopulate = function (criteria, project, options,populateModel
         if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
         Models.donor.populate(docs[0].donation, {
             path: 'donorId'
-            , select: 'emailId firstName lastName'
+            , select: 'emailId firstName lastName profilePic '
         }, function(err, things){
             if ( err ) return callback(err, docs);
             callback(null, docs);

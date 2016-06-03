@@ -449,6 +449,46 @@ var userRoutes = [
     },
     {
         method: 'PUT',
+        path: '/api/admin/changeCampaignRecurring',
+        handler: function (request, reply) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.changeCampaignRecurring(request.payload, AdminData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+
+        }, config: {
+        description: 'Approve Charity',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                campaignId: Joi.string().required(),
+                recurringId: Joi.string().required(),
+                endDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
+                status: Joi.string().required().valid(
+                    [
+                        'true',
+                        'false'
+                    ]
+                )
+            },
+            headers: UniversalFunctions.authorizationHeaderObj,
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
+    }
+    },
+    {
+        method: 'PUT',
         path: '/api/admin/payCharityById',
         handler: function (request, reply) {
             var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
