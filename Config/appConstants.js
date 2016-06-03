@@ -206,7 +206,7 @@ var STATUS_MSG = {
         },
         TYPE_STATUS_ERROR: {
             statusCode:400,
-            customMessage : 'Only one field should be filled at a time, status or endDate',
+            customMessage : 'Only one field should be filled at a time, status or changes',
             type : 'TYPE_STATUS_ERROR'
         },
         INVALID_EMAIL: {

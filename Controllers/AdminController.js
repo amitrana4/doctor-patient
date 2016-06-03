@@ -629,7 +629,7 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                 })
             },
             function (cb) {
-                Service.DonorService.getDonationRecurring({_id: payload.recurringId}, {}, {lean: true}, function (err, recc) {
+                Service.DonorService.getDonationRecurring({_id: payload.recurringId, campaignId: payload.campaignId}, {}, {lean: true}, function (err, recc) {
                     if (err) {
                         cb(err)
                     } else {
@@ -641,17 +641,15 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                 })
             },
             function (cb) {
-                if (payload.endDate < new Date()) {
+                if (payload.endDate < new Date() && payload.endDate) {
                     cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_DATE);
                 }
                 else if (payload.status == 'true') {
-                    if (payload.endDate) {
+                    if (payload.endDate || payload.unit) {
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_STATUS_ERROR);
                     } else {
                         cb();
                     }
-                } else if (!payload.endDate) {
-                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.endDate);
                 } else {
                     cb();
                 }
@@ -678,10 +676,104 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                     var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
                     var dataToUpdate = {
                         $set: {
-                            endDate: payload.endDate
+                            endDate: payload.endDate,
+                            donatedUnit: payload.unit
                         }
                     }
                     Service.DonorService.updateDonationRecurring(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
+                        console.log(charityAry)
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            cb()
+                        }
+                    })
+                }
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
+var changeCharityRecurring = function (payload, userData, callback) {
+    var donation = {};
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var campaignData = {};
+        var recurringData = {};
+        async.series([
+            function (cb) {
+                Service.CharityService.getCharityOwner({_id: payload.charityId}, {}, {lean: true}, function (err, campArray) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (campArray.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        campaignData = campArray[0];
+                        cb()
+                    }
+                })
+            },
+            function (cb) {
+                Service.DonorService.getDonationRecurringCharity({_id: payload.recurringId, charityId: payload.charityId}, {}, {lean: true}, function (err, recc) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (recc.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        if (recc[0].complete == true) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
+                        recurringData = recc[0];
+                        cb()
+                    }
+                })
+            },
+            function (cb) {
+                if (payload.endDate < new Date() && payload.endDate) {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_DATE);
+                }
+                else if (payload.status == 'true') {
+                    if (payload.endDate || payload.donatedAmount) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_STATUS_ERROR);
+                    } else {
+                        cb();
+                    }
+                } else {
+                    cb();
+                }
+            },
+            function (cb) {
+                if (payload.status == 'true') {
+                    var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
+                    var dataToUpdate = {
+                        $set: {
+                            complete: true
+                        }
+                    };
+                    Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {multi:true}, function (err, charityAry) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                            cb()
+                        }
+                    })
+                }
+                else{
+                    var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
+                    var dataToUpdate = {
+                        $set: {
+                            endDate: payload.endDate,
+                            donatedAmount: payload.donatedAmount
+                        }
+                    }
+                    Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
                         console.log(charityAry)
                         if (err) {
                             cb(err)
@@ -1042,5 +1134,6 @@ module.exports = {
     payCharityById: payCharityById,
     payCampaignById: payCampaignById,
     changeCampaignRecurring: changeCampaignRecurring,
+    changeCharityRecurring: changeCharityRecurring,
     makeFeatured: makeFeatured
 };
