@@ -1487,7 +1487,7 @@ var deleteCampaignPictures = function (payloadData, CharityData, callback) {
                     if (err) {
                         cb(err)
                     } else {
-                        if (!userData || userData.length == 0) {
+                        if (userData.length == 0) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
                         } else {
                             operatorObj = userData && userData[0] || null;
@@ -1523,7 +1523,10 @@ var deleteCampaignPictures = function (payloadData, CharityData, callback) {
                 }
             }
         ], function (err, result) {
-            callback(err, operatorObj.pictures);
+            if (err) {
+                return callback(err);
+            }
+            callback();
         })
     }
 };
