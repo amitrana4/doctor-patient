@@ -1775,7 +1775,6 @@ var getResetPasswordToken = function (query, callback) {
                     }
                 },
                 function(callback){
-                    console.log(variableDetails, charityData.emailId, '================')
                     NotificationManager.sendEmailToUser('CHARITY_FORGOT_PASSWORD', variableDetails, charityData.emailId, function(err){
                         if(err){
                             return callback(err);

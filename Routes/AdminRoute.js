@@ -468,6 +468,7 @@ var userRoutes = [
             payload: {
                 campaignId: Joi.string().required(),
                 recurringId: Joi.string().required(),
+                frequency: Joi.string().optional(),
                 endDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
                 unit: Joi.string().regex(/^[0-9 ]+$/).optional(),
                 status: Joi.string().required().valid(
@@ -509,6 +510,7 @@ var userRoutes = [
             payload: {
                 charityId: Joi.string().required(),
                 recurringId: Joi.string().required(),
+                frequency: Joi.string().optional(),
                 endDate: Joi.date().format('YYYY-MM-DDTHH:mm:ss.SSSZ').optional(),
                 donatedAmount: Joi.string().regex(/^[0-9 ]+$/).optional(),
                 status: Joi.string().required().valid(
@@ -857,7 +859,7 @@ var adminLogin = [
         var userData = request.auth.credentials.userData;
         if (!token) {
             reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_TOKEN));
-        } else if (userData && userData.role != UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.ADMIN) {
+        } else if (userData && userData.type != UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.USER_ROLES.ADMIN) {
             reply(UniversalFunctions.sendError(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.UNAUTHORIZED))
         } else {
             Controller.AdminController.adminLogout(token, function (err, data) {
@@ -872,8 +874,10 @@ var adminLogin = [
     }, config: {
         description: 'Logout for Super Admin',
         tags: ['api', 'admin'],
+        auth: 'UserAuth',
         validate: {
-            failAction: UniversalFunctions.failActionFunction
+            failAction: UniversalFunctions.failActionFunction,
+            headers: UniversalFunctions.authorizationHeaderObj
         },
         plugins: {
             'hapi-swagger': {

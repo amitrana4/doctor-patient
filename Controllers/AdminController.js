@@ -174,7 +174,7 @@ var adminLogin = function(userData, callback) {
 
 var adminLogout = function (token, callback) {
     TokenManager.expireToken(token, function (err, data) {
-        if (!err && data == 1) {
+        if (!err && data) {
             callback(null, UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT);
         } else {
             callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TOKEN_ALREADY_EXPIRED)
@@ -641,7 +641,7 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                 })
             },
             function (cb) {
-                if (payload.endDate < new Date() && payload.endDate) {
+                if (payload.endDate < new Date() && payload.endDate && payload.frequency) {
                     cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_DATE);
                 }
                 else if (payload.status == 'true') {
@@ -659,7 +659,10 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                     var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
                     var dataToUpdate = {
                         $set: {
-                            complete: true
+                            complete: true,
+                            adminAction: true,
+                            adminEndAction: true,
+                            AdminEndDate: new Date().toISOString()
                         }
                     };
                     Service.DonorService.updateDonationRecurring(crt, dataToUpdate, {multi:true}, function (err, charityAry) {
@@ -674,11 +677,18 @@ var changeCampaignRecurring = function (payload, userData, callback) {
                 }
                 else{
                     var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
+                    var FData = {adminAction: true}
+                    if(payload.endDate){
+                        FData.endDate = payload.endDate;
+                    }
+                    if(payload.frequency){
+                        FData.frequency = payload.frequency;
+                    }
+                    if(payload.unit){
+                        FData.donatedUnit = payload.unit;
+                    }
                     var dataToUpdate = {
-                        $set: {
-                            endDate: payload.endDate,
-                            donatedUnit: payload.unit
-                        }
+                        $set: FData
                     }
                     Service.DonorService.updateDonationRecurring(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
                         console.log(charityAry)
@@ -734,7 +744,7 @@ var changeCharityRecurring = function (payload, userData, callback) {
                 })
             },
             function (cb) {
-                if (payload.endDate < new Date() && payload.endDate) {
+                if (payload.endDate < new Date() && payload.endDate && payload.frequency) {
                     cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_DATE);
                 }
                 else if (payload.status == 'true') {
@@ -752,7 +762,10 @@ var changeCharityRecurring = function (payload, userData, callback) {
                     var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
                     var dataToUpdate = {
                         $set: {
-                            complete: true
+                            complete: true,
+                            adminAction: true,
+                            adminEndAction: true,
+                            AdminEndDate: new Date().toISOString()
                         }
                     };
                     Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {multi:true}, function (err, charityAry) {
@@ -767,11 +780,18 @@ var changeCharityRecurring = function (payload, userData, callback) {
                 }
                 else{
                     var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
+                    var FData = {adminAction: true}
+                    if(payload.endDate){
+                        FData.endDate = payload.endDate;
+                    }
+                    if(payload.donatedAmount){
+                        FData.donatedAmount = payload.donatedAmount;
+                    }
+                    if(payload.frequency){
+                        FData.frequency = payload.frequency;
+                    }
                     var dataToUpdate = {
-                        $set: {
-                            endDate: payload.endDate,
-                            donatedAmount: payload.donatedAmount
-                        }
+                        $set: FData
                     }
                     Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
                         console.log(charityAry)
@@ -1026,7 +1046,6 @@ var payCampaignById = function (payload, userData, callback) {
                     else{
                         crt = {campaignId: CampaignData._id, recurringDonation: true}
                     }
-                    console.log(crt,'=========')
                     Service.AdminService.updateManyCampDonation(crt, dataToUpdate, {multi:true}, function (err, campaignAry) {
                         if (err) {
                             cb(err)

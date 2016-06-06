@@ -182,6 +182,7 @@ var expireTokenInDB = function (userId,userType, callback) {
     var setQuery = {
         accessToken : null
     };
+    var succData = {}
     async.series([
         function (cb) {
             if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DRIVER){
@@ -203,7 +204,7 @@ var expireTokenInDB = function (userId,userType, callback) {
                     if (err){
                         cb(err)
                     }else {
-                        if (dataAry && dataAry.length > 0){
+                        if (dataAry){
                             cb();
                         }else {
                             cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_TOKEN)
@@ -218,11 +219,13 @@ var expireTokenInDB = function (userId,userType, callback) {
                     if (err){
                         callback(err)
                     }else {
-                        if (dataAry && dataAry.length > 0){
+                       /* if (dataAry && dataAry.length > 0){
                             cb();
                         }else {
                             callback(Config.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_TOKEN)
-                        }
+                        }*/
+                        succData = dataAry;
+                        cb()
                     }
 
                 });
@@ -234,7 +237,7 @@ var expireTokenInDB = function (userId,userType, callback) {
         if (err){
             callback(err)
         }else {
-            callback()
+            callback(null, succData)
         }
 
     });

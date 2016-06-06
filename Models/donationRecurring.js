@@ -18,6 +18,9 @@ var donationRecurringSchema = new Schema({
     LastRecurring: {type: Date, required: false},
     startDate: {type: Date, required: true},
     endDate: {type: Date, required: true},
+    adminAction: {type: Boolean, required: true, default: false},
+    adminEndAction: {type: Boolean, required: true, default: false},
+    AdminEndDate: {type: Date, required: false},
 
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
