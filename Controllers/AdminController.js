@@ -815,7 +815,6 @@ var changeCharityRecurring = function (payload, userData, callback) {
     }
 };
 /*
-
 var editDonor = function (payload, userData, callback) {
     var donation = {};
     if (!userData || !userData.id) {
@@ -824,12 +823,12 @@ var editDonor = function (payload, userData, callback) {
         var donorData = {};
         async.series([
             function (cb) {
-                Service.DonorService.getDonor({_id: payload.donorId}, {}, {lean: true}, function (err, donorData) {
+                Service.DonorService.getDonor({_id: payload.donorId}, {}, {lean: true}, function (err, dnrData) {
                     if (err) {
                         cb(err)
                     } else {
-                        if (campArray.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                        donorData = campArray[0];
+                        if (dnrData.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        donorData = dnrData[0];
                         cb()
                     }
                 })
@@ -916,8 +915,7 @@ var editDonor = function (payload, userData, callback) {
             }
         });
     }
-};
-*/
+};*/
 
 
 var CampaignPayment = function (userData, payload, callback) {

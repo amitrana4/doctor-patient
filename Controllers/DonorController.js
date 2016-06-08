@@ -746,10 +746,11 @@ var Donation = function (payloadData, userData, callback) {
                 projection = {};
 
             Service.DonorService.getCharityCampaign(criteria, projection, options, function (err, res) {
+                var a = Number(res[0].unitRaised) + Number(dataToSave.donatedUnit)
                 if (err) callback(err);
                 if (res.length == 0) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 if (new Date(res[0].endDate) < new Date() || res[0].complete == true) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
-                if (res[0].targetUnitCount < Number(res[0].unitRaised + dataToSave.donatedUnit)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_OVERFLOW);
+                if (res[0].targetUnitCount < a) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_OVERFLOW);
                 if (Number(res[0].targetUnitCount) == Number(res[0].unitRaised)) callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
                 campaignData = res[0];
                 callback();
@@ -781,7 +782,7 @@ var Donation = function (payloadData, userData, callback) {
             })
         },function (callback) {
 
-            totalAmount = campaignData.costPerUnit * dataToSave.donatedUnit;
+            totalAmount = Number(campaignData.costPerUnit) * Number(dataToSave.donatedUnit);
             savedCard = {
                 "intent": "sale",
                 "payer": {
@@ -860,7 +861,7 @@ var Donation = function (payloadData, userData, callback) {
             })
         },
         function (callback) {
-            var newCount = campaignData.unitRaised + dataToSave.donatedUnit
+            var newCount = Number(campaignData.unitRaised) + Number(dataToSave.donatedUnit)
             var query = {
                 _id: finalDonation.campaignId
             }
