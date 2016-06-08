@@ -55,5 +55,5 @@ var charitySchema = new Schema({
     updatedOn: {default: Date.now, type: Date, required: true}
 });
 
-charitySchema.index({emailId:1, phoneNumber:1}, {unique: true});
+charitySchema.index({emailId:1, phoneNumber:1, name:1}, {unique: true});
 module.exports = mongoose.model('charitySchema', charitySchema);
