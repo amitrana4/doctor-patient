@@ -226,7 +226,7 @@ module.exports = [
                 headers: UniversalFunctions.authorizationHeaderObj,
                 payload: {
                     campaignId: Joi.string().required().trim(),
-                    donatedUnit: Joi.number().required(),
+                    donatedUnit: Joi.string().required(),
                     cardId: Joi.string().required().trim()
                 },
                 failAction: UniversalFunctions.failActionFunction

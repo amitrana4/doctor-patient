@@ -885,6 +885,44 @@ var adminLogin = [
             }
         }
     }
+    },
+
+    {
+        method: 'PUT',
+        path: '/api/admin/editDonor',
+        handler: function (request, reply) {
+            var AdminData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.editDonor(request.payload, AdminData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.UPDATED, data))
+                }
+            });
+
+        }, config: {
+        description: 'Approve Charity',
+        auth: 'UserAuth',
+        tags: ['api', 'admin'],
+        validate: {
+            payload: {
+                donorId: Joi.string().required(),
+                firstName: Joi.string().optional(),
+                lastName: Joi.string().optional(),
+                profilePic: Joi.string().optional(),
+                country: Joi.string().optional(),
+                phoneNumber: Joi.string().optional()
+            },
+            headers: UniversalFunctions.authorizationHeaderObj,
+            failAction: UniversalFunctions.failActionFunction
+        },
+        plugins: {
+            'hapi-swagger': {
+                payloadType: 'form',
+                responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+            }
+        }
+        }
     }
 ];
 
