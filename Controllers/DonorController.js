@@ -2166,6 +2166,46 @@ var getResetPasswordToken = function (query, callback) {
 };
 
 
+
+
+
+var logoutDonor = function (userData, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var userId = userData && userData.id || 1;
+
+        async.series([
+            function (cb) {
+                //Check if the driver is free or not
+                Service.DonorService.getDonor({_id : userData.id}, {},{lean:true}, function (err, donorArray) {
+                    if (err){
+                        cb(err)
+                    }else {
+                        cb()
+                    }
+                })
+            },
+            function (cb) {
+                var criteria = {
+                    _id: userId
+                };
+                var setQuery = {
+                    $unset: {
+                        accessToken: 1,
+                        deviceToken:1
+                    }
+                };
+                var options = {};
+                Service.DonorService.updateDonor(criteria, setQuery, options, cb);
+            }
+        ], function (err, result) {
+            callback(err, null);
+        })
+    }
+};
+
+
 module.exports = {
     createDonor: createDonor,
     changePassword: changePassword,
@@ -2191,5 +2231,6 @@ module.exports = {
     charityRecurringDonation: charityRecurringDonation,
     getResetPasswordToken: getResetPasswordToken,
     getAllCampaign: getAllCampaign,
+    logoutDonor: logoutDonor,
     UpdateDonor: UpdateDonor
 };
