@@ -814,6 +814,7 @@ var changeCharityRecurring = function (payload, userData, callback) {
         });
     }
 };
+/*
 
 var editDonor = function (payload, userData, callback) {
     var donation = {};
@@ -916,6 +917,7 @@ var editDonor = function (payload, userData, callback) {
         });
     }
 };
+*/
 
 
 var CampaignPayment = function (userData, payload, callback) {
