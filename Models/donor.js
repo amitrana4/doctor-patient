@@ -30,6 +30,7 @@ var donorSchema = new Schema({
     failedLogInAttempts: {type: Number, required: false},
     recurring: [{type: Schema.ObjectId, ref: 'donationRecurringSchema'}],
     charityRecurring: [{type: Schema.ObjectId, ref: 'donationRecurringCharitySchema'}],
+    deleteByAdmin: {type: Boolean, required: true, default: false},
     //**************************Must for all Schemas**********************************//
     createdOn: {type: Date, required: true},
     updatedOn: {default: Date.now, type: Number, required: true}

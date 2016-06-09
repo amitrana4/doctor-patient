@@ -8,7 +8,7 @@ var charitySchema = new Schema({
     //**************************Required Fields**********************************//
     charityOwnerId: {type: String, trim: true, required: true},
     profileComplete: {type: Number, default: 0, required: true},
-    name: {type: String, trim: true, required: true},
+    name: {type: String, trim: true, required: true, unique: true},
     website: {type: String, trim: true, required: true},
     contactPerson: {type: String, trim: true, required: true},
     emailId: {type: String, trim: true, unique: true, required: true},

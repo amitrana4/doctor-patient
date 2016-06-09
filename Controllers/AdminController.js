@@ -1078,6 +1078,49 @@ var payCharityById = function (payload, userData, callback) {
 };
 
 
+var deleteDonor = function (payload, userData, callback) {
+    var newData = {}
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var donorData = {};
+        async.series([
+            function (cb) {
+                Service.DonorService.getDonor({_id: payload.donorId}, {}, {lean: true}, function (err, dnrData) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (dnrData.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        donorData = dnrData[0];
+                        cb()
+                    }
+                })
+            },
+            function (cb) {
+                var crt = {_id: payload.donorId};
+                var dataToUpdate = {
+                    $set: {deleteByAdmin: true}
+                };
+                Service.DonorService.updateDonor(crt, dataToUpdate, {multi: true}, function (err, dnrArray) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (dnrArray == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        if (dnrArray.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        cb()
+                    }
+                })
+            }
+        ], function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        });
+    }
+};
+
 var payCampaignById = function (payload, userData, callback) {
     if (!userData || !userData.id) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
@@ -1228,5 +1271,6 @@ module.exports = {
     changeCampaignRecurring: changeCampaignRecurring,
     changeCharityRecurring: changeCharityRecurring,
     editDonor: editDonor,
+    deleteDonor: deleteDonor,
     makeFeatured: makeFeatured
 };
