@@ -814,9 +814,11 @@ var changeCharityRecurring = function (payload, userData, callback) {
         });
     }
 };
-/*
+
+
+
 var editDonor = function (payload, userData, callback) {
-    var donation = {};
+    var newData = {}
     if (!userData || !userData.id) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
     } else {
@@ -833,79 +835,48 @@ var editDonor = function (payload, userData, callback) {
                     }
                 })
             },
-            function (cb) {
-                Service.DonorService.getDonationRecurringCharity({_id: payload.recurringId, charityId: payload.charityId}, {}, {lean: true}, function (err, recc) {
-                    if (err) {
-                        cb(err)
-                    } else {
-                        if (recc.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                        if (recc[0].complete == true) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CAMPAIGN_CLOSED);
-                        recurringData = recc[0];
-                        cb()
-                    }
-                })
-            },
-            function (cb) {
-                if (payload.endDate < new Date() && payload.endDate && payload.frequency) {
-                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_DATE);
-                }
-                else if (payload.status == 'true') {
-                    if (payload.endDate || payload.donatedAmount) {
-                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.TYPE_STATUS_ERROR);
-                    } else {
-                        cb();
-                    }
-                } else {
+            function(cb){
+                if (payload.profilePic) {
+                    var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
+                    console.log(payload.profilePic, donorData._id, document)
+                    UploadManager.uploadFile(payload.profilePic, donorData._id, document, function (err, uploadedInfo) {
+                        if (err) {
+                            cb(err)
+                        }
+                        var supportingDocumentFileId = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
+                        newData.profilePic = supportingDocumentFileId;
+                        return  cb();
+                    });
+                }else{
                     cb();
                 }
             },
             function (cb) {
-                if (payload.status == 'true') {
-                    var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
-                    var dataToUpdate = {
-                        $set: {
-                            complete: true,
-                            adminAction: true,
-                            adminEndAction: true,
-                            AdminEndDate: new Date().toISOString()
-                        }
-                    };
-                    Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {multi:true}, function (err, charityAry) {
-                        if (err) {
-                            cb(err)
-                        } else {
-                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                            cb()
-                        }
-                    })
+                var crt = {_id: payload.donorId};
+                if(payload.firstName){
+                    newData.firstName = payload.firstName
                 }
-                else{
-                    var crt = {campaignId:payload.campaignId, _id:payload.recurringId};
-                    var FData = {adminAction: true}
-                    if(payload.endDate){
-                        FData.endDate = payload.endDate;
-                    }
-                    if(payload.donatedAmount){
-                        FData.donatedAmount = payload.donatedAmount;
-                    }
-                    if(payload.frequency){
-                        FData.frequency = payload.frequency;
-                    }
-                    var dataToUpdate = {
-                        $set: FData
-                    }
-                    Service.DonorService.updateDonationRecurringCharity(crt, dataToUpdate, {lean: true}, function (err, charityAry) {
-                        console.log(charityAry)
-                        if (err) {
-                            cb(err)
-                        } else {
-                            if (charityAry == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                            if (charityAry.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-                            cb()
-                        }
-                    })
+                if(payload.lastName){
+                    newData.lastName = payload.lastName
                 }
+                if(payload.country){
+                    newData.country = payload.country
+                }
+                if(payload.phoneNumber){
+                    newData.phoneNumber = payload.phoneNumber
+                }
+                var dataToUpdate = {
+                    $set: newData
+                };
+                Service.DonorService.updateDonor(crt, dataToUpdate, {multi: true}, function (err, dnrArray) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (dnrArray == null) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        if (dnrArray.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                        cb()
+                    }
+                })
             }
         ], function (err, data) {
             if (err) {
@@ -915,7 +886,7 @@ var editDonor = function (payload, userData, callback) {
             }
         });
     }
-};*/
+};
 
 
 var CampaignPayment = function (userData, payload, callback) {
@@ -1256,5 +1227,6 @@ module.exports = {
     payCampaignById: payCampaignById,
     changeCampaignRecurring: changeCampaignRecurring,
     changeCharityRecurring: changeCharityRecurring,
+    editDonor: editDonor,
     makeFeatured: makeFeatured
 };

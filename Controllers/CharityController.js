@@ -177,14 +177,14 @@ var createCharityOwner = function (payloadData, callback) {
                 var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
                 UploadManager.uploadFile(dataToSave.registrationProofFileId, charityData._id, document, function (err, uploadedInfo) {
                     if (err) {
-                        cb(err)
+                        return cb(err)
                     }
                     var registrationProofFileId = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
                     dataToUpdate.registrationProofFileId = registrationProofFileId;
                     return  cb();
                 });
             }else{
-                cb();
+                return cb();
             }
         },
         function(cb){

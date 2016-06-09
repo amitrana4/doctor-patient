@@ -900,16 +900,25 @@ var adminLogin = [
                 }
             });
 
-        }, config: {
+        },
+        config: {
         description: 'Approve Charity',
         auth: 'UserAuth',
         tags: ['api', 'admin'],
+        payload: {
+            output: 'file',
+            parse: true,
+            maxBytes: 40485760
+        },
         validate: {
             payload: {
                 donorId: Joi.string().required(),
                 firstName: Joi.string().optional(),
                 lastName: Joi.string().optional(),
-                profilePic: Joi.string().optional(),
+                profilePic: Joi.any()
+                    .meta({swaggerType: 'file'})
+                    .optional()
+                    .description('image file'),
                 country: Joi.string().optional(),
                 phoneNumber: Joi.string().optional()
             },
@@ -922,7 +931,7 @@ var adminLogin = [
                 responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
             }
         }
-        }
+    }
     }
 ];
 
