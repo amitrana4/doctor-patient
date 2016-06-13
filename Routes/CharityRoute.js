@@ -302,7 +302,7 @@ module.exports = [
                     unitName: Joi.string().required(),
                     costPerUnit: Joi.number().required(),
                     targetUnitCount: Joi.string().regex(/^[0-9 ]+$/).required(),
-                    endDate: Joi.date().min('now').format('YYYY-MM-DD').required(),
+                    endDate: Joi.date().min('now').format('YYYY-MM-DDTHH:mm:ss.SSSZ').required(),
                     pictures: Joi.array().optional().max(5),
                     videoLink: Joi.string().optional().trim()
 
