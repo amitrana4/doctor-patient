@@ -788,6 +788,44 @@ module.exports = [
             }
         }
     },
+
+    {
+        method: 'POST',
+        path: '/api/donor/loginViaAccessToken',
+        handler: function (request, reply) {
+            var userData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            //reply(request.payload.materialImages);
+            if (userData && userData.id) {
+                Controller.DonorController.loginViaAccessToken(request.payload, userData, function (err, data) {
+                    if (err) {
+                        reply(UniversalFunctions.sendError(err));
+                    } else {
+                        reply(UniversalFunctions.sendSuccess(null, data))
+                    }
+                });
+            }
+        },
+        config: {
+            description: 'Add Profile of Charity Owner',
+            tags: ['api', 'charity'],
+            auth: 'DonorAuth',
+            validate: {
+                payload: {
+                    deviceType: Joi.string().required().valid([UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.ANDROID, UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.DEVICE_TYPES.IOS]),
+                    deviceToken: Joi.string().required().min(1).trim()
+
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
     {
         method: 'PUT',
         path: '/api/donor/logout',

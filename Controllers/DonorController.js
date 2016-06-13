@@ -1047,6 +1047,41 @@ var charityDonation = function (payloadData, userData, callback) {
 
 
 
+
+var loginViaAccessToken = function (payloadData, userData, callback) {
+    if (!userData || !userData.id) {
+        return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    }
+
+    var customerDataArray ={};
+    async.series([
+        function(cb)
+        {
+            var criteria = {_id: userData.id};
+            var dataToSet = {
+                deviceToken: payloadData.deviceToken,
+                deviceType: payloadData.deviceType
+            };
+
+            Service.DonorService.updateDonor(criteria, dataToSet,{lean: true}, function(err,customerData){
+                if (err) {
+                    return cb(err);
+                }
+                customerDataArray = customerData;
+                cb();
+
+            });
+        }
+    ], function (err) {
+        if(err) return callback(err);
+        return callback(null, {
+            userDetails: UniversalFunctions.deleteUnnecessaryCharityData(customerDataArray)
+        });
+    });
+};
+
+
+
 var recurringDonation = function (payloadData, userData, callback) {
 
     var finalDonation = {};
@@ -2233,5 +2268,6 @@ module.exports = {
     getResetPasswordToken: getResetPasswordToken,
     getAllCampaign: getAllCampaign,
     logoutDonor: logoutDonor,
+    loginViaAccessToken: loginViaAccessToken,
     UpdateDonor: UpdateDonor
 };
