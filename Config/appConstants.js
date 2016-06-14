@@ -13,7 +13,7 @@ if (process.env.NODE_ENV == 'test') {
 }
 
 
-var DOMAIN_NAME_MAIL = 'http://52.91.44.245:'+PORT;
+var DOMAIN_NAME_MAIL = 'http://52.91.44.245';
 var SERVER = {
     APP_NAME: 'Your App Name',
     PORTS: {

@@ -1770,7 +1770,8 @@ var getResetPasswordToken = function (query, callback) {
                             user_name: charityData.name,
                             password_reset_token: charityData.passwordResetToken,
                             date: moment().format("D MMMM YYYY"),
-                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
+                           // password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/giveapp-dev/giveapp-admin/changePassword.html?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
                         };
                         cb();
                     } else {
