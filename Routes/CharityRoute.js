@@ -659,6 +659,7 @@ module.exports = [
         method: 'PUT',
         path: '/api/charity/forgotPassword',
         handler: function (request, reply) {
+            console.log('here')
             Controller.CharityController.getResetPasswordToken(request.query, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
@@ -698,7 +699,7 @@ module.exports = [
         },
         config: {
             description: 'Reset Password For Customer',
-            tags: ['api', 'customer'],
+            tags: ['api', 'charity'],
             validate: {
                 query: {
                     email: Joi.string().email().required(),
