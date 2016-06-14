@@ -684,7 +684,7 @@ module.exports = [
         }
     },
     {
-        method: 'GET',
+        method: 'PUT',
         path: '/api/charity/resetPassword',
         handler: function (request, reply) {
             var queryData = request.query;
