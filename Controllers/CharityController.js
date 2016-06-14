@@ -1766,6 +1766,7 @@ var getResetPasswordToken = function (query, callback) {
                 },
                 function (cb) {
                     if (charityData) {
+                        console.log('here')
                         variableDetails = {
                             user_name: charityData.name,
                             password_reset_token: charityData.passwordResetToken,

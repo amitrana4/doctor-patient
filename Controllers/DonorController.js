@@ -302,30 +302,79 @@ var getCampaign = function (callback) {
     });
 };
 
-var getAllCampaign = function (callback) {
+var getAllCampaign = function (donorData, callback) {
 
 
     var _date = new Date();
     var criteria = {
             $and:[
                 {complete:false},
+                {feature:true},
                 {'endDate':{$gte:new Date()}}
             ]},
         options = {lean: true},
         projection = {createdOn:0};
 
-    var populateVariable = {
+    /*var populateVariable = {
         path: "charityId",
         select: 'name contactPerson emailId'
-    };
+    };*/
 
-    Service.DonorService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
+   /* Service.DonorService.getCampaignPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
             callback(null,res);
         }
     });
+*/
+
+
+    var allcampaign = {}
+    var favcampaign = {}
+    async.series([
+        function (callb) {
+
+            Service.CharityService.getCharityCampaign(criteria, function (err, campaignAry) {
+                if (err) {
+                    callb(err)
+                } else {
+                    allcampaign = campaignAry;
+                    callb()
+                }
+            })
+        },
+        function (callb) {
+
+            Service.DonorService.getfavouriteCampaign({
+                donorId: donorData.id,
+                favourite: true
+            }, {createdOn: 0}, {lean: true}, function (err, campaignAry) {
+                if (err) {
+                    callb(err)
+                } else {
+                    favcampaign = campaignAry;
+                    callb()
+                }
+            })
+        },
+        function (callb) {
+            _.each(allcampaign, function(arr2obj ,i ) {
+                _.each(favcampaign, function(arr1obj) {
+                    if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
+                        allcampaign[i]["favourite"] = true;
+                    }
+                })
+            })
+            callb()
+        }
+    ], function (err, result) {
+        if (err) {
+            callback(err)
+        } else {
+            callback(null,allcampaign);
+        }
+    })
 };
 
 var getCharities = function (callback) {
