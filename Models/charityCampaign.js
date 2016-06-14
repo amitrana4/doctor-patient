@@ -26,6 +26,7 @@ var charityCampaignSchema = new Schema({
     recurringDonor: [{type: Schema.ObjectId, ref: 'donorSchema'}],
     recurring: [{type: Schema.ObjectId, ref: 'donationRecurringSchema'}],
     feature: {type: Boolean, required: true, default: false},
+    favourite: {type: Boolean, required: true, default: false},
 
     createdOn: {type: Date, required: true},
     completedOn: {type: Date, required: false},

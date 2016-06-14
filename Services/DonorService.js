@@ -9,10 +9,20 @@ var getDonor = function (criteria, projection, options, callback) {
     Models.donor.find(criteria, projection, options, callback);
 };
 
+//Get Users from DB
+var getfavouriteCampaign = function (criteria, projection, options, callback) {
+    Models.favouriteCampaign.find(criteria, projection, options, callback);
+};
+
 
 //Get Users from DB
 var getDonorCards = function (criteria, projection, options, callback) {
     Models.donorCards.find(criteria, projection, options, callback);
+};
+
+//Get Users from DB
+var getfavouriteCharity = function (criteria, projection, options, callback) {
+    Models.favouriteCharity.find(criteria, projection, options, callback);
 };
 
 //Insert User in DB
@@ -55,6 +65,7 @@ var createCampaignFavourite = function (objToSave, callback) {
 var createCharityFavourite = function (objToSave, callback) {
     new Models.favouriteCharity(objToSave).save(callback)
 };
+
 
 // /get Donation in DB
 var getFavouriteCampaignPopulate = function (criteria, project, options,populateModel, callback) {
@@ -274,5 +285,7 @@ module.exports = {
     getDonationDistict: getDonationDistict,
     getDonationPopulate: getDonationPopulate,
     updateManyDonation: updateManyDonation,
+    getfavouriteCampaign: getfavouriteCampaign,
+    getfavouriteCharity: getfavouriteCharity,
     getCampaignPopulate: getCampaignPopulate
 };

@@ -34,6 +34,7 @@ var charitySchema = new Schema({
     charityRecurring: [{type: Schema.ObjectId, ref: 'donationRecurringCharitySchema'}],
     donor: [{type: Schema.ObjectId, ref: 'donorSchema'}],
     recurringDonor: [{type: Schema.ObjectId, ref: 'donorSchema'}],
+    favourite: {type: Boolean, required: true, default: false},
 
     //**************************Optional**********************************//
     keyWord: {type: String, required: false},

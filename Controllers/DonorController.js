@@ -13,6 +13,7 @@ var Models = require('../Models');
 
 var paypal = require('paypal-rest-sdk');
 var moment = require('moment');
+var _ = require('underscore');
 var Config = require('../Config');
 
 
@@ -2070,11 +2071,49 @@ var getFavourites = function (payload, userData, callback) {
                         })
                     }
                     else {
-                        Service.CharityService.getCharityCampaign({}, function (err, campaignAry) {
+                        var allcampaign = {}
+                        var favcampaign = {}
+                        async.series([
+                            function (callb) {
+
+                                Service.CharityService.getCharityCampaign({}, function (err, campaignAry) {
+                                    if (err) {
+                                        callb(err)
+                                    } else {
+                                        allcampaign = campaignAry;
+                                        callb()
+                                    }
+                                })
+                            },
+                            function (callb) {
+
+                                Service.DonorService.getfavouriteCampaign({
+                                    donorId: userData.id,
+                                    favourite: true
+                                }, {createdOn: 0}, {lean: true}, function (err, campaignAry) {
+                                    if (err) {
+                                        callb(err)
+                                    } else {
+                                        favcampaign = campaignAry;
+                                        callb()
+                                    }
+                                })
+                            },
+                            function (callb) {
+                                 _.each(allcampaign, function(arr2obj ,i ) {
+                                     _.each(favcampaign, function(arr1obj) {
+                                         if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
+                                             allcampaign[i]["favourite"] = true;
+                                         }
+                                     })
+                                 })
+                                callb()
+                            }
+                    ], function (err, result) {
                             if (err) {
                                 cb(err)
                             } else {
-                                finalData = campaignAry;
+                                finalData = allcampaign;
                                 cb()
                             }
                         })
@@ -2102,14 +2141,62 @@ var getFavourites = function (payload, userData, callback) {
                         })
                     }
                     else{
-                        Service.CharityService.getCharityOwner({}, function (err, charityAry) {
+                        /*Service.CharityService.getCharityOwner({}, function (err, charityAry) {
                             if (err) {
                                 cb(err)
                             } else {
                                 finalData = charityAry;
                                 cb()
                             }
+                        })*/
+
+                        var allcharity = {}
+                        var favcharity = {}
+                        async.series([
+                            function (callb) {
+
+                                Service.CharityService.getCharityOwner({}, function (err, charityArray) {
+                                    if (err) {
+                                        callb(err)
+                                    } else {
+                                        allcharity = charityArray;
+                                        callb()
+                                    }
+                                })
+                            },
+                            function (callb) {
+
+                                Service.DonorService.getfavouriteCharity({
+                                    donorId: userData.id,
+                                    favourite: true
+                                }, {createdOn: 0}, {lean: true}, function (err, charityArray) {
+                                    if (err) {
+                                        callb(err)
+                                    } else {
+                                        favcharity = charityArray;
+                                        callb()
+                                    }
+                                })
+                            },
+                            function (callb) {
+                                _.each(allcharity, function(arr2obj ,i ) {
+                                    _.each(favcharity, function(arr1obj) {
+                                        if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
+                                            allcharity[i]["favourite"] = true;
+                                        }
+                                    })
+                                })
+                                callb()
+                            }
+                        ], function (err, result) {
+                            if (err) {
+                                cb(err)
+                            } else {
+                                finalData = allcharity;
+                                cb()
+                            }
                         })
+
                     }
                 }
                 else{
