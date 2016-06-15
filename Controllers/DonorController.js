@@ -2188,7 +2188,7 @@ var getFavourites = function (payload, userData, callback) {
                             function (callb) {
                                  _.each(allcampaign, function(arr2obj ,i ) {
                                      _.each(favcampaign, function(arr1obj) {
-                                         if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
+                                         if(arr1obj.campaignId == arr2obj._id){
                                              allcampaign[i]["favourite"] = true;
                                          }
                                      })
@@ -2267,6 +2267,7 @@ var getFavourites = function (payload, userData, callback) {
                             function (callb) {
                                 _.each(allcharity, function(arr2obj ,i ) {
                                     _.each(favcharity, function(arr1obj) {
+
                                         if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
                                             allcharity[i]["favourite"] = true;
                                         }
