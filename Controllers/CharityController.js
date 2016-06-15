@@ -1098,7 +1098,7 @@ var campaignList = function (payloadData, CharityData, callback) {
         if (err) {
             callback(err)
         } else {
-            if(res.length==0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            if(res.length==0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
             callback(null,res);
         }
     });
