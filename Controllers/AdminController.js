@@ -926,7 +926,7 @@ var CampaignPayment = function (userData, payload, callback) {
             if (err) {
                 callback(err);
             } else {
-                if (donations.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (donations.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.RECORD_NOT_FOUND);
                 donation = donations;
                 callback(null, donation);
             }
