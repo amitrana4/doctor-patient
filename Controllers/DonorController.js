@@ -2136,6 +2136,7 @@ var setFavourite = function (payload, userData, callback) {
 
 
 var getFavourites = function (payload, userData, callback) {
+    console.log(payload)
     if (!userData || !userData.id) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
     } else {
