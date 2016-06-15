@@ -1772,7 +1772,7 @@ var getResetPasswordToken = function (query, callback) {
                             password_reset_token: charityData.passwordResetToken,
                             date: moment().format("D MMMM YYYY"),
                            // password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
-                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/giveapp-dev/giveapp-admin/changePassword.html?passwordResetToken='+charityData.passwordResetToken+'&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/giveapp-dev/giveapp-admin/changePassword.html?passwordResetToken='+charityData.passwordResetToken+'&type=charity&email='+charityData.emailId+"&newPassword=" //TODO change this to proper html page link
                         };
                         cb();
                     } else {
@@ -1853,7 +1853,6 @@ var logoutCharity = function (userData, callback) {
 };
 
 var resetPassword = function (payloadData, callback) {
-    console.log('sdfsdfsdf')
     var charityObj = null;
     if (!payloadData || !payloadData.email || !payloadData.passwordResetToken || !payloadData.newPassword) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
@@ -1868,7 +1867,6 @@ var resetPassword = function (payloadData, callback) {
                     if (err) {
                         cb(err)
                     } else {
-                        console.log(userData,'========')
                         if (!userData || userData.length == 0) {
                             cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
                         } else {
@@ -1879,7 +1877,6 @@ var resetPassword = function (payloadData, callback) {
                 })
             },
             function (cb) {
-                console.log(charityObj,'========')
                 if (charityObj) {
                     if (charityObj.passwordResetToken != payloadData.passwordResetToken) {
                         cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_RESET_PASSWORD_TOKEN);
@@ -1900,7 +1897,6 @@ var resetPassword = function (payloadData, callback) {
                         $unset: {passwordResetToken: 1}
                     };
                     Service.CharityService.updateCharityOwnerId(criteria, setQuery, {}, function (err, userData) {
-                        console.log(userData,err,'============')
                         if (err) {
                             cb(err)
                         } else {
@@ -1912,7 +1908,6 @@ var resetPassword = function (payloadData, callback) {
                 }
             }
         ], function (err, result) {
-            console.log(err, '====================')
             callback(err, null);
         })
     }

@@ -659,7 +659,6 @@ module.exports = [
         method: 'PUT',
         path: '/api/charity/forgotPassword',
         handler: function (request, reply) {
-            console.log('here')
             Controller.CharityController.getResetPasswordToken(request.query, function (err, data) {
                 if (err) {
                     reply(UniversalFunctions.sendError(err));

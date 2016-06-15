@@ -468,7 +468,7 @@ var getCharityById = function (payloadData, callback) {
             callback(err)
         } else {
             if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
-            callback(null,res);
+            callback(null,res[0]);
         }
     });
 };
@@ -789,6 +789,7 @@ var Donation = function (payloadData, userData, callback) {
     var savedCard = {};
     var totalAmount;
     var paypalReturn;
+    var adminMargin;
     async.series([
         function (callback) {
             var criteria = {_id: dataToSave.campaignId},
@@ -831,8 +832,17 @@ var Donation = function (payloadData, userData, callback) {
                 callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             })
         },function (callback) {
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                adminMargin = data[0].rate;
+                callback()
+            })
+        },function (callback) {
 
-            totalAmount = Number(campaignData.costPerUnit) * Number(dataToSave.donatedUnit);
+            var amount = Number(campaignData.costPerUnit) * Number(dataToSave.donatedUnit);
+            var tax = amount * Number(adminMargin) / 100;
+            var costPerUnit = Number(campaignData.costPerUnit) * Number(adminMargin) / 100;
+            costPerUnit = Number(campaignData.costPerUnit) + costPerUnit;
+            totalAmount = amount + tax;
             savedCard = {
                 "intent": "sale",
                 "payer": {
@@ -848,7 +858,7 @@ var Donation = function (payloadData, userData, callback) {
                         "items": [{
                             "name": campaignData.campaignName,
                             "sku": campaignData.campaignName,
-                            "price": campaignData.costPerUnit,
+                            "price": costPerUnit,
                             "currency": "USD",
                             "quantity": dataToSave.donatedUnit
                         }]
@@ -863,6 +873,7 @@ var Donation = function (payloadData, userData, callback) {
 
             paypal.payment.create(savedCard, function (error, payment) {
                 if (error) {
+                    console.log(error.response.details)
                     //  throw error;
                     callback(error)
                 } else {
@@ -962,6 +973,7 @@ var charityDonation = function (payloadData, userData, callback) {
     var dataToSave = payloadData;
     var charityData = {};
     var cardSelected = '';
+    var adminMargin = '';
     var paypalReturn = {};
     async.series([
         function (callback) {
@@ -1002,6 +1014,13 @@ var charityDonation = function (payloadData, userData, callback) {
             })
         },
         function (callback) {
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                adminMargin = data[0].rate;
+                callback()
+            })
+        },function (callback) {
+            var costPerUnit = Number(dataToSave.donatedAmount) * Number(adminMargin) / 100;
+            costPerUnit = Number(dataToSave.donatedAmount) + costPerUnit;
             var savedCard = {
                 "intent": "sale",
                 "payer": {
@@ -1015,7 +1034,7 @@ var charityDonation = function (payloadData, userData, callback) {
                 "transactions": [{
                     "amount": {
                         "currency": "USD",
-                        "total": dataToSave.donatedAmount
+                        "total": costPerUnit
                     },
                     "description": "This is the payment description for" + charityData.campaignName
                 }]
@@ -1364,6 +1383,7 @@ var cronFunction = function (data, callback){
     var finalDonation = {};
     var cardSelected = {};
     var totalAmount;
+    var adminMargin;
     var paypalReturn;
     async.series([
         function (callB) {
@@ -1458,7 +1478,16 @@ var cronFunction = function (data, callback){
             }
         },
         function (callback) {
-            totalAmount = campaignData.costPerUnit * data.donatedUnit;
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                adminMargin = data[0].rate;
+                callback()
+            })
+        },function (callback) {
+            var amount = Number(campaignData.costPerUnit) * Number(data.donatedUnit);
+            var tax = amount * Number(adminMargin) / 100;
+            var costPerUnit = Number(campaignData.costPerUnit) * Number(adminMargin) / 100;
+            costPerUnit = Number(campaignData.costPerUnit) + costPerUnit;
+            totalAmount = amount + tax;
             var savedCard = {
                 "intent": "sale",
                 "payer": {
@@ -1474,7 +1503,7 @@ var cronFunction = function (data, callback){
                         "items": [{
                             "name": campaignData.campaignName,
                             "sku": campaignData.campaignName,
-                            "price": campaignData.costPerUnit,
+                            "price": costPerUnit,
                             "currency": "USD",
                             "quantity": data.donatedUnit
                         }]
@@ -1635,6 +1664,7 @@ var cronFunctionCharity = function (data, callback){
     var cardSelected = {};
     var totalAmount;
     var paypalReturn;
+    var adminMargin;
     async.series([
         function (callB) {
             var startDate = moment(data.startDate);
@@ -1727,8 +1757,15 @@ var cronFunctionCharity = function (data, callback){
                 callB()
             }
         },
+
         function (callback) {
-            totalAmount = data.donatedAmount;
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                adminMargin = data[0].rate;
+                callback()
+            })
+        },function (callback) {
+            var costPerUnit = Number(totalAmount) * Number(adminMargin) / 100;
+            costPerUnit = Number(totalAmount) + costPerUnit;
             var savedCard = {
                 "intent": "sale",
                 "payer": {
@@ -1742,7 +1779,7 @@ var cronFunctionCharity = function (data, callback){
                 "transactions": [{
                     "amount": {
                         "currency": "USD",
-                        "total": totalAmount
+                        "total": costPerUnit
                     },
                     "description": "This is the payment description for" + charityData.campaignName
                 }]
@@ -2307,7 +2344,8 @@ var getResetPasswordToken = function (query, callback) {
                             user_name: donorData.name,
                             password_reset_token: donorData.passwordResetToken,
                             date: moment().format("D MMMM YYYY"),
-                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+donorData.passwordResetToken+'&email='+donorData.emailId+"&newPassword=" //TODO change this to proper html page link
+                            //password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/api/charity/resetPassword?passwordResetToken='+donorData.passwordResetToken+'&email='+donorData.emailId+"&newPassword=" //TODO change this to proper html page link
+                            password_reset_link:Config.APP_CONSTANTS.DOMAIN_NAME_MAIL +'/giveapp-dev/giveapp-admin/changePassword.html?passwordResetToken='+donorData.passwordResetToken+'&type=donor&email='+donorData.emailId+"&newPassword=" //TODO change this to proper html page link
                         };
                         cb();
                     } else {
@@ -2334,6 +2372,69 @@ var getResetPasswordToken = function (query, callback) {
     }
     else {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.EMPTY_VALUE);
+    }
+};
+
+
+
+var resetPassword = function (payloadData, callback) {
+    var DonorObj = null;
+    if (!payloadData || !payloadData.email || !payloadData.passwordResetToken || !payloadData.newPassword) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        async.series([
+            function (cb) {
+                //Get User
+                var criteria = {
+                    emailId: payloadData.email
+                };
+                Service.DonorService.getDonor(criteria, {}, {lean: true}, function (err, userData) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (!userData || userData.length == 0) {
+                            cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
+                        } else {
+                            DonorObj = userData && userData[0] || null;
+                            cb()
+                        }
+                    }
+                })
+            },
+            function (cb) {
+                if (DonorObj) {
+                    if (DonorObj.passwordResetToken != payloadData.passwordResetToken) {
+                        cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_RESET_PASSWORD_TOKEN);
+                    } else {
+                        cb();
+                    }
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.NOT_FOUND);
+                }
+            },
+            function (cb) {
+                if (DonorObj) {
+                    var criteria = {
+                        emailId: payloadData.email
+                    };
+                    var setQuery = {
+                        passwordHash: UniversalFunctions.CryptData(payloadData.newPassword),
+                        $unset: {passwordResetToken: 1}
+                    };
+                    Service.DonorService.updateDonor(criteria, setQuery, {}, function (err, userData) {
+                        if (err) {
+                            cb(err)
+                        } else {
+                            cb();
+                        }
+                    })
+                } else {
+                    cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+                }
+            }
+        ], function (err, result) {
+            callback(err, null);
+        })
     }
 };
 
@@ -2405,5 +2506,6 @@ module.exports = {
     getAllCampaign: getAllCampaign,
     logoutDonor: logoutDonor,
     loginViaAccessToken: loginViaAccessToken,
+    resetPassword: resetPassword,
     UpdateDonor: UpdateDonor
 };

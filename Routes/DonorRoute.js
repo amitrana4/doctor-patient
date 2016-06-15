@@ -468,6 +468,37 @@ module.exports = [
         }
     },
     {
+        method: 'PUT',
+        path: '/api/donor/resetPassword',
+        handler: function (request, reply) {
+            var queryData = request.query;
+            Controller.DonorController.resetPassword(queryData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Reset Password For Customer',
+            tags: ['api', 'donor'],
+            validate: {
+                query: {
+                    email: Joi.string().email().required(),
+                    passwordResetToken: Joi.string().required(),
+                    newPassword : Joi.string().min(5).required()
+                },
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'POST',
         path: '/api/donor/login',
         handler: function (request, reply) {

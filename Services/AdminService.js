@@ -7,14 +7,29 @@ var getAdmin = function (criteria, projection, options, callback) {
     Models.Admins.find(criteria, projection, options, callback);
 };
 
+//Get Users from DB
+var getAdminMargin = function (criteria, projection, options, callback) {
+    Models.AdminMargin.find(criteria, projection, options, callback);
+};
+
 //Insert User in DB
 var createAdmin = function (objToSave, callback) {
     new Models.Admins(objToSave).save(callback)
 };
 
+//Insert User in DB
+var createAdminMargin = function (objToSave, callback) {
+    new Models.AdminMargin(objToSave).save(callback)
+};
+
 //Update User in DB
 var updateAdmin = function (criteria, dataToSet, options, callback) {
     Models.Admins.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+//Update User in DB
+var updateAdminMargin = function (criteria, dataToSet, options, callback) {
+    Models.AdminMargin.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
 
 
@@ -96,6 +111,9 @@ module.exports = {
     updateCampaignDonations: updateCampaignDonations,
     updateManyDonation: updateManyDonation,
     updateManyCampDonation: updateManyCampDonation,
+    getAdminMargin: getAdminMargin,
+    createAdminMargin: createAdminMargin,
+    updateAdminMargin: updateAdminMargin,
     updateAdmin: updateAdmin
 };
 

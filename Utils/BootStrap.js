@@ -20,14 +20,18 @@ mongoose.connect(Config.dbConfig.mongo.URI, function (err) {
 
 exports.bootstrapAdmin = function (callback) {
     var adminData1 = {
-        email: 'me@shahab.in',
+        email: 'admin@admin.com',
         password: '1e7eebb19ca71233686f26a43bbc18a9',
-        name: 'Shahab'
+        name: 'admin'
     };
     var adminData2 = {
         email: 'cladmin@clicklabs.in',
         password: '1e7eebb19ca71233686f26a43bbc18a9',
         name: 'Click Labs'
+    };
+    var adminMargin = {
+        rate: '10',
+        createdOn: new Date().toISOString()
     };
     async.parallel([
         function (cb) {
@@ -35,6 +39,9 @@ exports.bootstrapAdmin = function (callback) {
         },
         function (cb) {
             insertData(adminData2.email, adminData2, cb)
+        },
+        function (cb) {
+            insertMarginData(adminMargin, cb)
         }
     ], function (err, done) {
         callback(err, 'Bootstrapping finished');
@@ -123,6 +130,28 @@ function insertData(email, adminData, callback) {
         }
     }], function (err, data) {
         console.log('Bootstrapping finished for ' + email);
+        callback(err, 'Bootstrapping finished')
+    })
+}
+function insertMarginData(data, callback) {
+    var needToCreate = true;
+    async.series([function (cb) {
+        Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+            if (data && data.length > 0) {
+                needToCreate = false;
+            }
+            cb()
+        })
+    }, function (cb) {
+        if (needToCreate) {
+            Service.AdminService.createAdminMargin(data, function (err, data) {
+                cb(err, data)
+            })
+        } else {
+            cb();
+        }
+    }], function (err, data) {
+        console.log('Bootstrapping finished for Admin Margin');
         callback(err, 'Bootstrapping finished')
     })
 }

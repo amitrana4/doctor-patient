@@ -609,6 +609,23 @@ var charityPayment = function (userData, payload, callback) {
     }
 };
 
+var addAdminMargin = function (userData, payload, callback) {
+    if (!userData || !userData.id) {
+        callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
+    } else {
+        var data = {
+            $set : {rate: payload.rate}
+        };
+        Service.AdminService.updateAdminMargin({}, data, {lean: true}, function (err, data) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null);
+            }
+        })
+    }
+};
+
 var changeCampaignRecurring = function (payload, userData, callback) {
     var donation = {};
     if (!userData || !userData.id) {
@@ -1272,5 +1289,6 @@ module.exports = {
     changeCharityRecurring: changeCharityRecurring,
     editDonor: editDonor,
     deleteDonor: deleteDonor,
+    addAdminMargin: addAdminMargin,
     makeFeatured: makeFeatured
 };

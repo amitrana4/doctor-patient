@@ -212,6 +212,38 @@ var userRoutes = [
             }
         }
     },
+    {
+        method: 'PUT',
+        path: '/api/admin/addAdminMargin',
+        handler: function (request, reply) {
+            var CampaignData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.AdminController.addAdminMargin(CampaignData, request.payload, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
+                }
+            });
+        },
+        config: {
+            description: 'Create Margin',
+            tags: ['api', 'admin'],
+            auth: 'UserAuth',
+            validate: {
+                payload: {
+                    rate: Joi.number().required()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
   /*  {
         method: 'POST',
         path: '/api/admin/getCampaignPayment',

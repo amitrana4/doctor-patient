@@ -18,5 +18,6 @@ module.exports = {
     donorCards : require('./donorCards'),
     favouriteCampaign : require('./favouriteCampaign'),
     favouriteCharity : require('./favouriteCharity'),
-    Admins : require('./Admins')
+    Admins : require('./Admins'),
+    AdminMargin : require('./AdminMargin')
 };
