@@ -251,6 +251,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
     var profileDataToUpdateStep1 = {};
     var mImage = [];
     var image = {};
+    var endData = {};
     var imagesids = []
     var dataToSave = payloadData;
 
@@ -293,7 +294,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                 cb();
             }
         },
-        function (cb) {
+        /*function (cb) {
             //Validate phone No
             if (!dataToSave.officeCity) {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.CITY_REQUIRED);
@@ -308,7 +309,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
             } else {
                 cb();
             }
-        },
+        },*/
         function (cb) {
             //Validate phone No
             if (!dataToSave.officeCountry) {
@@ -463,21 +464,6 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                 cb();
             }
         },
-        /*function (cb) {
-            if (charityOwnerProfileData && charityOwnerProfileData._id && dataToSave.videos) {
-                var document = UniversalFunctions.CONFIG.APP_CONSTANTS.DATABASE.FILE_TYPES.DOCUMENT;
-                UploadManager.uploadFile(dataToSave.videos, charityOwnerProfileData._id, document, function (err, uploadedInfo) {
-                    if (err) {
-                        cb(err)
-                    }
-                    var videosFile = uploadedInfo && uploadedInfo.original && UniversalFunctions.CONFIG.awsS3Config.s3BucketCredentials.s3URL + uploadedInfo.original || null;
-                    profileDataToUpdateStep1.videos = videosFile;
-                    return cb();
-                });
-            } else {
-                cb();
-            }
-        },*/
         function (cb) {
             var criteria = {_id: charityOwnerProfileData._id};
             var options = {}; //{multi: true};
@@ -485,6 +471,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
                 if (err) {
                     return cb(err)
                 }
+                endData = data;
                 return cb();
             });
         }
@@ -492,7 +479,7 @@ var CharityOwnerProfileStep1 = function (payloadData, CharityData, callback) {
         if (err) {
             return callback(err);
         }
-        callback();
+        callback(null, endData);
     });
 };
 

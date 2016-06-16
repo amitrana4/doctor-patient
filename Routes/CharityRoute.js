@@ -146,7 +146,7 @@ module.exports = [
                 if (err) {
                     reply(UniversalFunctions.sendError(err));
                 } else {
-                    reply(UniversalFunctions.sendSuccess(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.SUCCESS.DEFAULT, data))
+                    reply(UniversalFunctions.sendSuccess(null, data))
                 }
             });
         },
@@ -172,8 +172,8 @@ module.exports = [
                     keyWord: Joi.string().required().trim(),
                     officeAddress1: Joi.string().required().trim(),
                     officeAddress2: Joi.string().optional().trim(),
-                    officeCity: Joi.string().required().trim(),
-                    officeState: Joi.string().required().trim(),
+                    officeCity: Joi.string().optional().trim(),
+                    officeState: Joi.string().optional().trim(),
                     officeCountry: Joi.string().required().trim(),
                     pictures: Joi.array().optional().max(5).description('images in array [{image1}{image2}]'),
                     videos: Joi.string().optional().trim()
