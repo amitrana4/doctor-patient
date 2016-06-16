@@ -133,6 +133,11 @@ var updateDonationRecurringCharity = function (criteria, dataToSet, options, cal
 };
 
 // /Update Donation in DB
+var updateCharityDonations = function (criteria, dataToSet, options, callback) {
+    Models.charityDonations.findOneAndUpdate(criteria, dataToSet, options, callback);
+};
+
+// /Update Donation in DB
 var updateDonation = function (criteria, dataToSet, options, callback) {
     Models.donation.findOneAndUpdate(criteria, dataToSet, options, callback);
 };
@@ -287,5 +292,6 @@ module.exports = {
     updateManyDonation: updateManyDonation,
     getfavouriteCampaign: getfavouriteCampaign,
     getfavouriteCharity: getfavouriteCharity,
+    updateCharityDonations: updateCharityDonations,
     getCampaignPopulate: getCampaignPopulate
 };

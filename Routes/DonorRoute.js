@@ -694,6 +694,40 @@ module.exports = [
         }
     },
     {
+        method: 'PUT',
+        path: '/api/donor/setCharityRating',
+        handler: function (request, reply) {
+            var donorData = request.auth && request.auth.credentials && request.auth.credentials.userData || null;
+            Controller.DonorController.setCharityRating(request.payload,donorData, function (err, data) {
+                if (err) {
+                    reply(UniversalFunctions.sendError(err));
+                } else {
+                    reply(UniversalFunctions.sendSuccess(null, data))
+                }
+            });
+        },
+        config: {
+            description: 'Set Default Card',
+            tags: ['api', 'donor'],
+            auth: 'DonorAuth',
+            validate: {
+                payload:{
+                    donationId:Joi.string().length(24).required(),
+                    rating:Joi.number().max(5).required(),
+                    comment:Joi.string().required().trim()
+                },
+                headers: UniversalFunctions.authorizationHeaderObj,
+                failAction: UniversalFunctions.failActionFunction
+            },
+            plugins: {
+                'hapi-swagger': {
+                    payloadType: 'form',
+                    responseMessages: UniversalFunctions.CONFIG.APP_CONSTANTS.swaggerDefaultResponseMessages
+                }
+            }
+        }
+    },
+    {
         method: 'POST',
         path: '/api/donor/loginViaFacebook',
         handler: function (request, reply) {

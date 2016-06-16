@@ -29,7 +29,7 @@ var charitySchema = new Schema({
     appVersion: {type: String, trim: true, required: true},
     onceLogin: {type: String, trim: true, required: true, default:false},
     pictures: [{type: Schema.ObjectId, ref: 'charityImagesSchema'}],
-    campaignId: {type: Schema.ObjectId, ref: 'charityCampaignSchema'},
+    campaignId: [{type: Schema.ObjectId, ref: 'charityCampaignSchema'}],
     donation: [{type: Schema.ObjectId, ref: 'charityDonationSchema'}],
     charityRecurring: [{type: Schema.ObjectId, ref: 'donationRecurringCharitySchema'}],
     donor: [{type: Schema.ObjectId, ref: 'donorSchema'}],

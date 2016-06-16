@@ -146,6 +146,17 @@ var createDonor = function (payloadData, callback) {
             } else {
                 cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
             }
+        },
+        function (cb) {
+            if (donorData) {
+                Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                    updatedDonorData.adminMargin = data[0].rate;
+                    donorData.adminMargin = data[0].rate;
+                    cb()
+                })
+            } else {
+                cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
+            }
         }
     ], function (err, data) {
         if (err) {
@@ -548,6 +559,12 @@ var loginDonor = function (payloadData, callback) {
             });
 
         },
+        function (cb) {
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                updatedUserDetails.adminMargin = data[0].rate;
+                cb()
+            })
+        }
     ], function (err, data) {
         if (err) {
             callback(err);
@@ -1140,6 +1157,12 @@ var loginViaAccessToken = function (payloadData, userData, callback) {
                 cb();
 
             });
+        },
+        function (cb) {
+            Service.AdminService.getAdminMargin({}, {}, {}, function (err, data) {
+                customerDataArray.adminMargin = data[0].rate;
+                cb()
+            })
         }
     ], function (err) {
         if(err) return callback(err);
@@ -1931,6 +1954,31 @@ var setRating = function (payloadData, userData, callback) {
 };
 
 
+var setCharityRating = function (payloadData, userData, callback) {
+
+    var dataToSave = payloadData;
+            var query = {
+                _id: dataToSave.donationId,
+                donorId: userData._id
+            }
+            var options = {lean: true};
+            var dataToSet = {
+                $set: {
+                    rating: dataToSave.rating,
+                    comment: dataToSave.comment
+                }
+            }
+            Service.DonorService.updateCharityDonations(query, dataToSet, options, function (err, result) {
+                console.log(result,'====', userData._id, dataToSave.donationId)
+                if (err) return callback(err);
+                if (result == null) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (result.donorId.toString() != userData._id.toString()) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (result) return callback();
+                callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            })
+};
+
+
 
 var loginViaFacebook = function (payloadData, callback) {
 
@@ -2217,7 +2265,7 @@ var getFavourites = function (payload, userData, callback) {
                         var populateVariable = {
                             path: "charityId"
                         };
-                        Service.DonorService.getFavouriteCharityPopulate({donorId: userData.id, favourite : true}, {charityId:1}, {lean: true}, populateVariable, function (err, charityAry) {
+                        Service.CharityService.getFavouriteCharityDeepPopulate({donorId: userData.id, favourite : true}, {charityId:1}, {lean: true}, populateVariable, function (err, charityAry) {
                             if (err) {
                                 cb(err)
                             } else {
@@ -2227,21 +2275,15 @@ var getFavourites = function (payload, userData, callback) {
                         })
                     }
                     else{
-                        /*Service.CharityService.getCharityOwner({}, function (err, charityAry) {
-                            if (err) {
-                                cb(err)
-                            } else {
-                                finalData = charityAry;
-                                cb()
-                            }
-                        })*/
-
                         var allcharity = {}
                         var favcharity = {}
                         async.series([
                             function (callb) {
-
-                                Service.CharityService.getCharityOwner({}, function (err, charityArray) {
+                                var populateVariable = {
+                                    path: "campaignId",
+                                    select: "campaignName"
+                                };
+                                Service.CharityService.getCharityPopulate({}, {}, {lean: true}, populateVariable, function (err, charityArray) {
                                     if (err) {
                                         callb(err)
                                     } else {
@@ -2265,10 +2307,9 @@ var getFavourites = function (payload, userData, callback) {
                                 })
                             },
                             function (callb) {
-                                console.log(allcharity, favcharity,' ====================')
                                 _.each(allcharity, function(arr2obj ,i ) {
                                     _.each(favcharity, function(arr1obj) {
-                                        if(arr1obj.campaignId == arr2obj._id){
+                                        if(arr1obj.charityId.toString() == arr2obj._id.toString()){
                                             allcharity[i]["favourite"] = true;
                                         }
                                     })
@@ -2508,5 +2549,6 @@ module.exports = {
     logoutDonor: logoutDonor,
     loginViaAccessToken: loginViaAccessToken,
     resetPassword: resetPassword,
+    setCharityRating: setCharityRating,
     UpdateDonor: UpdateDonor
 };

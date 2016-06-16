@@ -34,14 +34,6 @@ var createCharityCampaign = function (objToSave, callback) {
     new Models.charityCampaign(objToSave).save(callback)
 };
 
-
-//Insert User in DB
-/*
- var createCharityOwnerKeyWord = function (objToSave, callback) {
- new Models.charitykeyWord(objToSave).save(callback)
- };
- */
-
 //Insert User in DB
 var createCharityImages = function (objToSave, callback) {
     new Models.charityImages(objToSave).save(callback)
@@ -74,34 +66,6 @@ var updateCharityCampaign = function (criteria, dataToSet, options, callback) {
 
 //Get Users from DB
 var getCharityCampaign = function (criteria, projection, options, callback) {
-
-/*
-var data1 = [];
-    Models.charityCampaign.find(criteria, function(err, data){
-        data.forEach(
-            function (newBook) {
-                console.log(newBook,'=====')
-                Models.favouriteCampaign.findOne( { "campaignId": newBook._id } ), function(err, data){console.log(data,'=====-=-=-=-=-=')};
-            }
-        );
-    })
-    console.log(data1,'=======')
-
-*/
-
-
-   /* Models.charityCampaign.aggregate(
-        [{
-            $lookup:
-            {
-                from: "favouriteCampaign",
-                localField:	"_id",
-                foreignField: "campaignId",
-                as: "inventory_docs"
-            }}], function(err, doc){ console.log(err, doc,'==========')
-        callback(doc) })
-
-*/
     Models.charityCampaign.find(criteria, projection, options, callback);
 };
 
@@ -129,6 +93,23 @@ var getCampaignDeepPopulate = function (criteria, project, options,populateModel
         });
     });
     
+};
+
+
+var getFavouriteCharityDeepPopulate = function (criteria, project, options,populateModel, callback) {
+
+    Models.favouriteCharity.find(criteria, project, options).populate(populateModel).exec(function (err, docs) {
+        if ( err ) return callback(err, docs);
+        if(docs.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+        Models.charityCampaign.populate(docs[0].charityId, {
+            path: 'campaignId'
+            , select: 'campaignName'
+        }, function(err, things){
+            if ( err ) return callback(err, docs);
+            callback(null, docs);
+        });
+    });
+
 };
 
 var getDonationPopulate = function (criteria, project, options,populateModel, callback) {
@@ -187,5 +168,6 @@ module.exports = {
     getCharityCampaignPopulate: getCharityCampaignPopulate,
     getCharityDonationPopulate: getCharityDonationPopulate,
     getCharityOwner: getCharityOwner,
+    getFavouriteCharityDeepPopulate: getFavouriteCharityDeepPopulate,
     updateCharityOwnerPopulate: updateCharityOwnerPopulate
 };
