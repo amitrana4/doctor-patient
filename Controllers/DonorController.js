@@ -474,7 +474,12 @@ var getCharityById = function (payloadData, callback) {
         options = {lean: true},
         projection ={};
 
-    Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
+    var populateVariable = {
+        path: "campaignId",
+        select: 'campaignName'
+    };
+
+    Service.CharityService.getCharityPopulate(criteria, projection, options, populateVariable, function (err, res) {
         if (err) {
             callback(err)
         } else {
