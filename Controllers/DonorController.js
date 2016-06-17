@@ -392,7 +392,7 @@ var getCharities = function (callback) {
 
 
     var _date = new Date();
-    var criteria = {},
+    var criteria = {profileComplete:2},
         options = {lean: true},
         projection = {createdOn:0};
 
@@ -470,7 +470,7 @@ var getCommentsById = function (payloadData, callback) {
 
 var getCharityById = function (payloadData, callback) {
 
-    var criteria      = { _id:payloadData.charityId},
+    var criteria      = { _id:payloadData.charityId,profileComplete:2},
         options = {lean: true},
         projection ={};
 
@@ -483,7 +483,7 @@ var getCharityById = function (payloadData, callback) {
         if (err) {
             callback(err)
         } else {
-            if (res.length == 0) return cb(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+            if (res.length == 0) return callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
             callback(null,res[0]);
         }
     });
@@ -2300,7 +2300,7 @@ var getFavourites = function (payload, userData, callback) {
                                     path: "campaignId",
                                     select: "campaignName"
                                 };
-                                Service.CharityService.getCharityPopulate({}, {}, {lean: true}, populateVariable, function (err, charityArray) {
+                                Service.CharityService.getCharityPopulate({profileComplete:2}, {}, {lean: true}, populateVariable, function (err, charityArray) {
                                     if (err) {
                                         callb(err)
                                     } else {
