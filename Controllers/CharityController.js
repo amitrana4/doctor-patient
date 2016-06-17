@@ -553,7 +553,7 @@ var CharityOwnerBankDetails = function (payloadData, CharityData, callback) {
                     charityOwnerId: CharityData._id
                 };
             }
-            var options = {lean: true};
+            var options = {new: true};
 
             Service.CharityService.updateCharityOwner(criteria, finalDataToSave, options, function (err, charityDataFromDB) {
                 if (err) {
