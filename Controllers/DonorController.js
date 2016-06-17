@@ -1725,10 +1725,10 @@ var cronFunctionCharity = function (data, callback){
                 projection = {};
 
             Service.CharityService.getCharityOwner(criteria, projection, options, function (err, res) {
-                if (err) callB(err);
-                if (res.length == 0) callB(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
+                if (err) return callB(err);
+                if (res.length == 0) return callB(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.INVALID_ID);
                 charityData = res[0];
-                callB();
+                return callB();
             });
         },
         function (callback) {
@@ -2185,6 +2185,7 @@ var setFavourite = function (payload, userData, callback) {
 
 var getFavourites = function (payload, userData, callback) {
     var favDta = true;
+    var favCamDta = true;
     if (!userData || !userData.id) {
         callback(UniversalFunctions.CONFIG.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR);
     } else {
@@ -2229,19 +2230,29 @@ var getFavourites = function (payload, userData, callback) {
                                     if (err) {
                                         callb(err)
                                     } else {
+                                        if(campaignAry.length == 0){
+                                            favCamDta = false;
+                                        }
                                         favcampaign = campaignAry;
                                         callb()
                                     }
                                 })
                             },
                             function (callb) {
-                                 _.each(allcampaign, function(arr2obj ,i ) {
-                                     _.each(favcampaign, function(arr1obj) {
-                                         if(arr1obj.campaignId.toString() == arr2obj._id.toString()){
-                                             allcampaign[i]["favourite"] = true;
-                                         }
-                                     })
-                                 })
+                                if(favCamDta == true) {
+                                    _.each(allcampaign, function (arr2obj, i) {
+                                        _.each(favcampaign, function (arr1obj) {
+                                            if (arr1obj.campaignId.toString() == arr2obj._id.toString()) {
+                                                allcampaign[i]["favourite"] = true;
+                                            }
+                                        })
+                                    })
+                                }
+                                else{
+                                    _.each(allcampaign, function (arr2obj, i) {
+                                        allcampaign[i]["favourite"] = false;
+                                    })
+                                }
                                 callb()
                             }
                     ], function (err, result) {
@@ -2299,22 +2310,18 @@ var getFavourites = function (payload, userData, callback) {
                                     donorId: userData.id,
                                     favourite: true
                                 }, {createdOn: 0}, {lean: true}, function (err, charityArray) {
-                                    console.log(err,charityArray,'===========')
                                     if (err) {
                                         callb(err)
                                     } else {
                                         if(charityArray.length == 0){
                                             favDta = false;
                                         }
-                                        else {
                                             favcharity = charityArray;
-                                        }
                                         callb()
                                     }
                                 })
                             },
                             function (callb) {
-                                //console.log(allcharity, favcharity, '=======')
                                 if(favDta == true) {
                                     _.each(allcharity, function (arr2obj, i) {
                                         _.each(favcharity, function (arr1obj) {
