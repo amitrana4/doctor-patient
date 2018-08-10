@@ -29,7 +29,7 @@ var SERVER = {
     BASE_DELIVERY_FEE : 25,
     COST_PER_KM: 9, // In USD
     DOMAIN_NAME : 'http://localhost:8000/',
-    SUPPORT_EMAIL : 'support@click-labs.com'
+    SUPPORT_EMAIL : 'support@test.com'
 };
 
 var DATABASE = {
@@ -44,10 +44,8 @@ var DATABASE = {
     DOCUMENT_PREFIX : 'document_',
     USER_ROLES: {
         ADMIN: 'ADMIN',
-        CUSTOMER: 'CUSTOMER',
-        DRIVER: 'DRIVER',
-        CHARITYOWNER : 'CHARITYOWNER',
-        DONOR : 'DONOR'
+        DOCTOR: 'DOCTOR',
+        PATIENT: 'PATIENT'
     },
     FILE_TYPES: {
         LOGO: 'LOGO',
@@ -106,7 +104,7 @@ var STATUS_MSG = {
         },
         NO_COMMENT_FOUND: {
             statusCode:400,
-            customMessage : 'No Comment Found',
+            customMessage : 'No CommeBITCOINFound',
             type : 'NO_COMMENT_FOUND'
         },
         INVALID_CARDID: {

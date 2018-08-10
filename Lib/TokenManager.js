@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by shahab on 11/7/15.
+ * Created by Amit on 11/7/15.
  */
 var Config = require('../Config');
 var Jwt = require('jsonwebtoken');
@@ -16,7 +16,7 @@ var getTokenFromDB = function (userId, userType,token, callback) {
     };
     async.series([
         function (cb) {
-            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.CUSTOMER){
+            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DOCTOR){
                 Service.CustomerService.getCustomer(criteria,{},{lean:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
@@ -32,7 +32,7 @@ var getTokenFromDB = function (userId, userType,token, callback) {
                 });
 
             }
-            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DRIVER){
+            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.PATIENT){
                 Service.DriverService.getDriver(criteria,{},{lean:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
@@ -89,8 +89,8 @@ var setTokenInDB = function (userId,userType, tokenToSave, callback) {
     };
     async.series([
         function (cb) {
-             if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.CUSTOMER){
-                Service.CustomerService.updateCustomer(criteria,setQuery,{new:true}, function (err, dataAry) {
+             if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DOCTOR){
+                Service.DoctorService.updateDoctor(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
                     }else {
@@ -103,23 +103,8 @@ var setTokenInDB = function (userId,userType, tokenToSave, callback) {
                 });
 
             }
-            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DRIVER){
-                Service.DriverService.updateDriver(criteria,setQuery,{new:true}, function (err, dataAry) {
-                    if (err){
-                        cb(err)
-                    }else {
-                        if (dataAry && dataAry._id){
-                            cb();
-                        }else {
-                            cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
-                        }
-                    }
-
-                });
-
-            }
-             else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER){
-                Service.CharityService.updateCharityOwnerId(criteria,setQuery,{new:true}, function (err, dataAry) {
+            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.PATIENT){
+                Service.PatientService.updatePatient(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
                     }else {
@@ -133,21 +118,6 @@ var setTokenInDB = function (userId,userType, tokenToSave, callback) {
                 });
 
             }
-             else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR){
-                 Service.DonorService.updateDonor(criteria,setQuery,{new:true}, function (err, dataAry) {
-                     if (err){
-                         cb(err)
-                     }else {
-                         if (dataAry && dataAry._id){
-                             cb();
-                         }else {
-                             cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
-                         }
-                     }
-
-                 });
-
-             }
             else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.ADMIN){
                 Service.AdminService.updateAdmin(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
@@ -185,7 +155,7 @@ var expireTokenInDB = function (userId,userType, callback) {
     var succData = {}
     async.series([
         function (cb) {
-            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DRIVER){
+            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DOCTOR){
                 Service.CustomerService.updateCustomer(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
@@ -199,7 +169,7 @@ var expireTokenInDB = function (userId,userType, callback) {
                 });
 
             }
-            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DRIVER){
+            else if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.PATIENT){
                 Service.DriverService.updateDriver(criteria,setQuery,{new:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
@@ -257,7 +227,7 @@ var verifyToken = function (token, callback) {
     });
 };
 
-var verifyCharityToken = function (token, callback) {
+var verifyDoctorToken = function (token, callback) {
     var response = {
         valid: false
     };
@@ -265,12 +235,12 @@ var verifyCharityToken = function (token, callback) {
         if (err) {
             callback(err)
         } else {
-            getCharityTokenFromDB(decoded.id, decoded.type,token, callback);
+            getDoctorTokenFromDB(decoded.id, decoded.type,token, callback);
         }
     });
 };
 
-var verifyDonorToken = function (token, callback) {
+var verifyPatientToken = function (token, callback) {
     var response = {
         valid: false
     };
@@ -278,12 +248,12 @@ var verifyDonorToken = function (token, callback) {
         if (err) {
             callback(err)
         } else {
-            getDonorTokenFromDB(decoded.id, decoded.type,token, callback);
+            getPatientTokenFromDB(decoded.id, decoded.type,token, callback);
         }
     });
 };
 
-var getCharityTokenFromDB = function (userId, userType,token, callback) {
+var getPatientTokenFromDB = function (userId, userType,token, callback) {
     var userData = null;
     var criteria = {
         _id: userId,
@@ -291,8 +261,8 @@ var getCharityTokenFromDB = function (userId, userType,token, callback) {
     };
     async.series([
         function (cb) {
-            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.CHARITYOWNER){
-                Service.CharityService.getCharityOwnerId(criteria,{},{lean:true}, function (err, dataAry) {
+            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.PATIENT){
+                Service.PatientService.getPatient(criteria,{},{lean:true}, function (err, dataAry) {
                     if (err){
                         cb(err)
                     }else {
@@ -324,16 +294,18 @@ var getCharityTokenFromDB = function (userId, userType,token, callback) {
     });
 };
 
-var getDonorTokenFromDB = function (userId, userType,token, callback) {
+var getDoctorTokenFromDB = function (userId, userType,token, callback) {
     var userData = null;
     var criteria = {
         _id: userId,
         accessToken : token
     };
+    console.log(userType, token, '=====')
     async.series([
         function (cb) {
-            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DONOR){
-                Service.DonorService.getDonor(criteria,{},{lean:true}, function (err, dataAry) {
+            if (userType == Config.APP_CONSTANTS.DATABASE.USER_ROLES.DOCTOR){
+                Service.DoctorService.getDoctor(criteria,{},{lean:true}, function (err, dataAry) {
+                    console.log(err, dataAry, '===============')
                     if (err){
                         cb(err)
                     }else {
@@ -402,8 +374,8 @@ var decodeToken = function (token, callback) {
 module.exports = {
     expireToken: expireToken,
     setToken: setToken,
-    verifyDonorToken: verifyDonorToken,
+    verifyPatientToken: verifyPatientToken,
     verifyToken: verifyToken,
-    verifyCharityToken: verifyCharityToken,
+    verifyDoctorToken: verifyDoctorToken,
     decodeToken: decodeToken
 };

@@ -1,12 +1,12 @@
 /**
- * Created by shahab on 10/7/15.
+ * Created by Amit on 10/7/15.
  */
 'use strict';
-var CharityRoute = require('./CharityRoute');
-var DonorRoute = require('./DonorRoute');
+var DoctorRoute = require('./DoctorRoute');
+var PatientRoute = require('./PatientRoute');
 var AdminRoute = require('./AdminRoute');
 
-var all = [].concat(CharityRoute, AdminRoute, DonorRoute);
+var all = [].concat(DoctorRoute, AdminRoute, PatientRoute);
 
 module.exports = all;
 

@@ -1,5 +1,5 @@
 /**
- * Created by shahab on 21/7/15.
+ * Created by Amit on 21/7/15.
  */
 var Config = require('../Config');
 var UniversalFunctions = require('../Utils/UniversalFunctions');
@@ -15,66 +15,10 @@ var fsExtra = require('fs-extra');
  4) Delete Local files
  */
 
-//Set Base URL for Images
-var baseFolder = Config.awsS3Config.s3BucketCredentials.folder.profilePicture + '/';
-var baseURL = Config.awsS3Config.s3BucketCredentials.s3URL + '/' + baseFolder;
 
 function uploadFileToS3WithThumbnail(fileData, userId, callbackParent) {
-    //Verify File Data
-    var profilePicURL = {
-        original: null,
-        thumbnail: null
-    };
-    var originalPath = null;
-    var thumbnailPath = null;
-    var dataToUpload = [];
-
-    async.series([
-        function (cb) {
-            //Validate fileData && userId
-            if (!userId || !fileData || !fileData.filename) {
-                console.log('in upload file to s3',userId,fileData)
-                cb(Config.APP_CONSTANTS.STATUS_MSG.ERROR.IMP_ERROR)
-            } else {
-                // TODO Validate file extensions
-                cb();
-            }
-        }, function (cb) {
-            //Set File Names
-            profilePicURL.original = UniversalFunctions.getFileNameWithUserId(false, fileData.filename, userId);
-            profilePicURL.thumbnail = UniversalFunctions.getFileNameWithUserId(true, fileData.filename, userId);
-            cb();
-        },
-        function (cb) {
-            //Save File
-            var path = Path.resolve(".") + "/uploads/" + profilePicURL.original;
-            saveFile(fileData.path, path, function (err, data) {
-                cb(err, data)
-            })
-        },
-        function (cb) {
-            //Create Thumbnail
-            originalPath = Path.resolve(".") + "/uploads/" + profilePicURL.original;
-            thumbnailPath = Path.resolve(".") + "/uploads/" + profilePicURL.thumbnail;
-            createThumbnailImage(originalPath, thumbnailPath, function (err, data) {
-                dataToUpload.push({
-                    originalPath: originalPath,
-                    nameToSave: profilePicURL.original
-                });
-                dataToUpload.push({
-                    originalPath: thumbnailPath,
-                    nameToSave: profilePicURL.thumbnail
-                });
-                cb(err, data)
-            })
-        },
-        function (cb) {
-            //Upload both images on S3
-            parallelUploadTOS3(dataToUpload, cb);
-        }
-    ], function (err, result) {
-        callbackParent(err, profilePicURL)
-    });
+  
+        callbackParent(err, '')
 }
 
 function uploadFile(fileData, userId, type, callbackParent) {

@@ -1,11 +1,11 @@
 'use strict';
 /**
- * Created by shahab on 12/7/15.
+ * Created by Amit on 12/7/15.
  */
 var Config = require('../Config');
 var async = require('async');
 
-var client = require('twilio')(Config.smsConfig.twilioCredentials.accountSid, Config.smsConfig.twilioCredentials.authToken);
+//var client = require('twilio')(Config.smsConfig.twilioCredentials.accountSid, Config.smsConfig.twilioCredentials.authToken);
 var nodeMailerModule = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var transporter = nodeMailerModule.createTransport(smtpTransport(Config.emailConfig.nodeMailer.Mandrill));
@@ -112,15 +112,15 @@ function renderMessageFromTemplateAndVariables(templateData, variablesData) {
  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
  */
 function sendSMS(smsOptions, cb) {
-    client.messages.create(smsOptions, function (err, message) {
-        console.log('SMS RES', err, message);
-        if (err) {
-            console.log(err)
-        }
-        else {
-            console.log(message.sid);
-        }
-    });
+    // client.messages.create(smsOptions, function (err, message) {
+    //     console.log('SMS RES', err, message);
+    //     if (err) {
+    //         console.log(err)
+    //     }
+    //     else {
+    //         console.log(message.sid);
+    //     }
+    // });
     cb(null, null); // Callback is outside as sms sending confirmation can get delayed by a lot of time
 }
 

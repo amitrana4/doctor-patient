@@ -1,5 +1,5 @@
 /**
- * Created by shahab on 12/7/15.
+ * Created by Amit on 12/7/15.
  */
 module.exports = [
     { register: require('./swagger')}

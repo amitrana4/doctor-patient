@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Created by shahab on 10/7/15.
+ * Created by Amit on 10/7/15.
  */
 
 //External Dependencies
@@ -61,45 +61,6 @@ Bootstrap.bootstrapAdmin(function (err, message) {
         console.log(message);
     }
 });
-
-//Bootstrap Version data
-/*Bootstrap.bootstrapAppVersion(function (err, message) {
-    if (err) {
-        console.log('Error while bootstrapping version : ' + err)
-    } else {
-        console.log(message);
-    }
-});*/
-
-
-var schedule = require('node-schedule');
-
-var rule = new schedule.RecurrenceRule();
-
-rule.minute = 16;
-
-var j = schedule.scheduleJob(rule, function(){
-    Controller.DonorController.cronRecurringDonationCampaign(function (err, data) {
-        if (err) {
-            console.log('error in api')
-        } else {
-            console.log('Cron success campaign')
-        }
-    })
-
-});
-
-var q = schedule.scheduleJob(rule, function(){
-    Controller.DonorController.cronRecurringDonationCharity(function (err, data) {
-        if (err) {
-            console.log('error in api')
-        } else {
-            console.log('Cron success charity')
-        }
-    })
-
-});
-
 
 //Adding Views
 server.views({

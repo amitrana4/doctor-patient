@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by shahab on 12/7/15.
+ * Created by Amit on 12/7/15.
  */
 var Good = require('good');
 

@@ -1,10 +1,8 @@
 /**
- * Created by shahab on 10/7/15.
+ * Created by Amit on 10/7/15.
  */
 module.exports = {
-    CharityService : require('./CharityService'),
-    DonorService : require('./DonorService'),
-    CampaignService : require('./CampaignService'),
+    DoctorService : require('./DoctorService'),
+    PatientService : require('./PatientService'),
     AdminService : require('./AdminService'),
-    AppVersionService : require('./AppVersionService')
 };

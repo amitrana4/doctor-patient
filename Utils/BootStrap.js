@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by shahab on 12/7/15.
+ * Created by Amit on 12/7/15.
  */
 var mongoose = require('mongoose');
 var Config = require('../Config');
@@ -25,9 +25,9 @@ exports.bootstrapAdmin = function (callback) {
         name: 'admin'
     };
     var adminData2 = {
-        email: 'cladmin@clicklabs.in',
+        email: 'amit@gmail.com',
         password: '1e7eebb19ca71233686f26a43bbc18a9',
-        name: 'Click Labs'
+        name: 'Amit'
     };
     var adminMargin = {
         rate: '10',
@@ -39,9 +39,6 @@ exports.bootstrapAdmin = function (callback) {
         },
         function (cb) {
             insertData(adminData2.email, adminData2, cb)
-        },
-        function (cb) {
-            insertMarginData(adminMargin, cb)
         }
     ], function (err, done) {
         callback(err, 'Bootstrapping finished');

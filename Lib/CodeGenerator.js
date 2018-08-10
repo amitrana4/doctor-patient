@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by shahab on 11/7/15.
+ * Created by Amit on 11/7/15.
  */
 var async = require('async');
 var _ = require('underscore');

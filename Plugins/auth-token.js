@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by shahab on 12/7/15.
+ * Created by Amit on 12/7/15.
  */
 
 var TokenManager = require('../Lib/TokenManager');
@@ -25,13 +25,13 @@ exports.register = function(server, options, next){
 
             }
         });
-        server.auth.strategy('CharityAuth', 'bearer-access-token', {
+        server.auth.strategy('DoctorAuth', 'bearer-access-token', {
             allowQueryToken: false,
             allowMultipleHeaders: true,
             accessTokenName: 'accessToken',
             validateFunc: function (token, callback) {
                 console.log(token,'======')
-                TokenManager.verifyCharityToken(token, function (err,response) {
+                TokenManager.verifyDoctorToken(token, function (err,response) {
                     if (err || !response || !response.userData){
                         callback(null, false, {token: token, userData: null})
                     }else {
@@ -41,13 +41,13 @@ exports.register = function(server, options, next){
 
             }
         });
-        server.auth.strategy('DonorAuth', 'bearer-access-token', {
+        server.auth.strategy('PatientAuth', 'bearer-access-token', {
             allowQueryToken: false,
             allowMultipleHeaders: true,
             accessTokenName: 'accessToken',
             validateFunc: function (token, callback) {
                 console.log(token,'======')
-                TokenManager.verifyDonorToken(token, function (err,response) {
+                TokenManager.verifyPatientToken(token, function (err,response) {
                     if (err || !response || !response.userData){
                         callback(null, false, {token: token, userData: null})
                     }else {
@@ -57,21 +57,6 @@ exports.register = function(server, options, next){
 
             }
         });
-        /*server.auth.strategy('AdminAuth', 'bearer-access-token', {
-            allowQueryToken: false,
-            allowMultipleHeaders: true,
-            accessTokenName: 'accessToken',
-            validateFunc: function (token, callback) {
-                TokenManager.verifyAdminToken(token, function (err,response) {
-                    if (err || !response || !response.userData){
-                        callback(null, false, {token: token, userData: null})
-                    }else {
-                        callback(null, true, {token: token, userData: response.userData})
-                    }
-                });
-
-            }
-        });*/
 
     });
 
